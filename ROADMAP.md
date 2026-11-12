@@ -7,7 +7,7 @@ Diese Übersicht hält die geplanten Änderungen und ihren Fortschritt fest. Ein
 ### GPT-6.1 Terra · Medium
 
 - [x] **Orb-Bewegung und Fortschrittsbalken:** Orbs wandern mit halber aktueller Geschwindigkeit ihres Gegners nach links und verschwinden am linken Rand; Ansaugen bleibt möglich. Boss-Orbs nutzen die halbe Grundgeschwindigkeit des ersten Gegnertyps. Rechts oben zeigt ein Balken den Stufenfortschritt. Implementiert und automatisiert geprüft; Browser-Spieltest steht aus.
-- [x] **Controller-Unterstützung**: Standard-Gamepads unterstützen. Linker Stick oder Steuerkreuz bewegt das Pfert; A hält den Ladeangriff und feuert beim Loslassen, B aktiviert Käserausch. A startet auch eine Runde und bestätigt Karten. Eine Stick-Totzone verhindert unbeabsichtigte Bewegung. Tastatur und Maus bleiben nutzbar. Implementiert und automatisiert geprüft; Browser-Spieltest steht aus, da der lokale Server nicht erreichbar und das direkte Öffnen der Datei gesperrt war.
+- [x] **Controller-Unterstützung**: Standard-Gamepads unterstützen. Linker Stick oder Steuerkreuz bewegt das Pfert; A löst einen Sonderangriff aus, B aktiviert Käserausch. A startet auch eine Runde und bestätigt Karten. Eine Stick-Totzone verhindert unbeabsichtigte Bewegung. Tastatur und Maus bleiben nutzbar. Implementiert und automatisiert geprüft; Browser-Spieltest steht aus, da der lokale Server nicht erreichbar und das direkte Öffnen der Datei gesperrt war.
 - [x] **Kartenwahl**: Die erste Karte sichtbar markieren; links und rechts wechseln zyklisch, Enter oder A bestätigt. Gedrückte Tasten dürfen keine unbeabsichtigte Mehrfachauswahl auslösen. Maus und Zahlentasten bleiben nutzbar. Implementiert und automatisiert geprüft; Browser-Spieltest steht aus, da der lokale Server nicht erreichbar und das direkte Öffnen der Datei gesperrt war.
 - [x] **Seltene Karten**: Die zuletzt angebotene seltene Karte pro Runde merken. Bei der nächsten Auswahl erhält jede andere berechtigte seltene Karte das dreifache Auswahlgewicht; die vorherige bleibt möglich. Voraussetzungen, Ranggrenzen und der Zeitpunkt ab Minute 2 bleiben erhalten. Spätere legendäre Karten im selben Angebotspool erhalten dieselbe Behandlung; neue legendäre Karten sind nicht Teil dieser Etappe. Implementiert und automatisiert geprüft; Browser-Spieltest steht aus, da der lokale Server nicht erreichbar und das direkte Öffnen der Datei gesperrt war.
 
@@ -24,18 +24,18 @@ Diese Übersicht hält die geplanten Änderungen und ihren Fortschritt fest. Ein
 ### GPT-6.1 Terra · High
 
 - [x] **Schaden:** Grundwert mit 1,5 multipliziert und automatisiert geprüft.
-- [ ] **Waffenbalance:** Durchschnittlichen Schaden pro Sekunde der Waffen unter vergleichbaren Bedingungen auf höchstens 15 % Abweichung abstimmen. Ausgangspunkt sind automatische Angriffe ohne Karten und Zufallstreffer gegen ein vergleichbares Ziel; Trefferverhalten und Builds können das Ergebnis im Spiel verändern.
+- [x] **Waffenbalance:** Automatisches Feuer aller Weinwaffen auf den Standardschuss abgestimmt und automatisiert gegen ein großes stationäres Einzelziel ohne Karten und Metafreischaltungen gemessen; jede Waffe liegt innerhalb von 15 % des Standardschusses. Praktische Balanceprüfung übernimmt der Nutzer. Sonderangriffe sind nicht Teil dieser Messung.
 - [x] **Bosse:** Lebenspunkte aller Bosse und ihrer Segmente verfünffacht und automatisiert geprüft.
 - [x] **Käserausch:** Halbe Aufladerate und Heilung um bis zu zwei Herzen implementiert und automatisiert geprüft.
 
-- [ ] **Gesamtbalance und Endlosphase:** Waffen-DPS vergleichbar messen; Schadenspfade, Bosszielzeit von 45–90 Sekunden einschließlich geheimer Bosse, Käserausch-Häufigkeit, Gegner, Erfahrungskurve, Builds und Heilung bis Minute 30 sowie längere Endlosläufe praktisch erproben und abstimmen. Die exponentielle Erfahrungsschwelle ist dabei besonders zu prüfen.
+- [ ] **Gesamtbalance und Endlosphase:** Waffen-DPS automatisiert verglichen. Erfahrungsschwelle ab Stufe 10 auf 12 % Wachstum und höchstens 1500 begrenzt; Langzeitwirkung muss praktisch überprüft werden. Schadenspfade, Bosszielzeit von 45–90 Sekunden einschließlich geheimer Bosse, Käserausch-Häufigkeit, Gegner, Builds und Heilung bis Minute 30 sowie längere Endlosläufe bleiben praktisch zu erproben und abzustimmen.
 
 ## Etappe 4: Käserausch und Effekte
 
 ### GPT-6.1 Terra · Medium
 
 - [x] **Käserausch als Notfallknopf:** Bei Aktivierung nur sichtbare reguläre Gegner entfernen; vorhandene Orbs, Belohnungen und feindliche Geschosse bleiben. Besiegte Gegner hinterlassen ihre normalen Belohnungen und Orbs; Bosse bleiben. Neue Gegner erscheinen nach dem regulären Spawn-Timer. Implementiert und automatisiert geprüft; Browser-Spieltest steht aus.
-- [ ] **Boss-Treffer:** Das getroffene Segment bei jedem Schadensereignis einschließlich Schaden über Zeit unmittelbar kurz weiß aufblitzen lassen und danach seine ursprüngliche Grafik wiederherstellen. Ausgangslage: Segment-Blitze sind bereits angelegt; das gewünschte Verhalten muss geprüft werden.
+- [x] **Boss-Treffer:** Das getroffene Segment bei jedem Schadensereignis einschließlich Schaden über Zeit unmittelbar kurz weiß aufblitzen lassen und danach seine ursprüngliche Grafik wiederherstellen. Treffer und Schaden über Zeit setzen den Blitz am betroffenen Segment.
 
 ## Etappe 5: Sonderwaffen und Power-up
 
@@ -50,11 +50,12 @@ Diese Übersicht hält die geplanten Änderungen und ihren Fortschritt fest. Ein
 
 - [ ] **Talentbaum und Metaprogression:** 360 einzeln kaufbare Knoten vorsehen: fünf gemeinsame Startknoten, je drei Spezialisierungen in den Hauptbereichen Angriff, Überleben und Bewegung, Käserausch, Beute und Erfahrung sowie Waffen und Sonderangriffe und zehn Querverbindungsknoten. Weitere Unterzweige und Querverbindungen ermöglichen Mischungen. Ein Knoten setzt einen gekauften, direkt verbundenen Knoten voraus; S1 ist ohne Voraussetzung kaufbar. Alle Bereiche dürfen kombiniert und langfristig vollständig freigeschaltet werden.
   - Ausführlicher, noch ungeprüfter Entwurf: [Meta progression.md](Meta%20progression.md).
+  - Teilfortschritt: Alle 360 Knoten einschließlich Präzision, Elementarschmiede und Querverbindungen sind kaufbar und mit Wirkungen eingebunden. Speicherung, Punktvergabe, Rücksetzen und die Baumansicht sind integriert. Automatisiert wurden Erreichbarkeit aller Knoten, ausgewählte Wirkungen aller Zweige, eine Kombination mit vollem Baum und die bestehenden Spieltests geprüft. Der Punkt bleibt offen: Browser-Spieltest mit Maus, Tastatur und Controller, eine umfassende Prüfung aller Einzelwirkungen und Kombinationen sowie praktische Balance und Spielzeit stehen aus.
   - Kleine Verbesserungen führen zu sichtbaren besonderen Zielen. Große Spezialknoten dürfen neue Mechaniken wie Begleiter, Blitzketten oder Explosionen einführen. Manche sind übermäßig stark und haben einen Nachteil, bleiben nach dem Kauf bis zum Zurücksetzen aktiv und müssen auch zusammen sinnvoll funktionieren. Im Käserausch-Baum schalten drei getrennte Meilensteine insgesamt höchstens drei zusätzliche Projektile während des Käserauschs frei.
   - Dauerhafte Talentpunkte für überlebte Zeit und besiegte reguläre sowie geheime Bosse vergeben. Der vollständige Ausbau soll ungefähr 20–50 Spielstunden benötigen; die Vergaberate anhand praktischer Rundenlängen abstimmen. Ein vollständig ausgebautes Pfert soll deutlich stärker sein.
   - Fortschritt lokal im Browser speichern. Eine zusammenhängende, verschiebbare und zoombare Baumansicht mit Maus, Tastatur und Controller bedienen. Die Talentverteilung lässt sich kostenlos zurücksetzen; der gesamte Fortschritt kann nach Bestätigung gelöscht werden.
   - Talentwirkungen, Kombinationen, Punktevergabe, Speicherung und beide Rücksetzarten prüfen; `node test-game.cjs` ausführen und nach Möglichkeit im Browser testen. Teilweise erledigte Punkte offen lassen und Einschränkungen dokumentieren.
-  - **Vor der Umsetzung zu prüfen und abzustimmen:** Knoteneffekte, Verbindungen, konkrete Zahlenwerte und Punktevergabe anhand des Entwurfs und praktischer Spieltests.
+  - **Noch zu prüfen und abzustimmen:** Knoteneffekte, Verbindungen, konkrete Zahlenwerte und Punktevergabe anhand des Entwurfs und praktischer Spieltests. Die spätere Balanceüberarbeitung bleibt offen.
 
 ## Etappe 7: Online-Multiplayer – Konzept
 
@@ -74,7 +75,7 @@ In kleinen, einzeln geprüften Schritten nach dem Konzept.
 
 ### GPT-6.1 Terra · High
 
-- [ ] **Standardschuss und Kombinationen:** Zusätzliche Karten schaffen dauerhafte Modifikatoren für den Standardschuss und ermöglichen wildere kombinierbare Effekte, etwa Splitter, Verfolgung und von Gegner zu Gegner springenden Schaden. Bestehende Karten und Kombinationen berücksichtigen; konkrete Karten und Balance vor der Umsetzung ausarbeiten.
+- [x] **Standardschuss und Kombinationen:** Doppelter Käse, Streuflug, Schlangenlinie, Spürnase und Käsebruch ergänzen den Standardschuss und sind kombinierbar. Automatisiert geprüft; Browser-Spieltest und praktische Balanceprüfung übernimmt der Nutzer.
 
 ## Grafiküberarbeitung · 12.11.2026
 

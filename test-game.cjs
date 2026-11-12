@@ -29,7 +29,7 @@ for(let i=0;i<6;i++){reset();let q=a.get();q.pickups.push({x:q.player.x,y:q.play
 for(let i=0;i<5;i++){reset();a.get().player.weapon=i;a.get().player.effects[i]=18;shoot();let q=a.get();if(i===0)assert.equal(q.bullets.length,3,'Rotwein-Salve');if(i===1){assert.equal(q.bullets.length,3,'Dreifachfächer beim Tippen');assert.ok(q.bullets[0].vy<0&&q.bullets[2].vy>0)}if(i===2)assert.ok(q.bullets[0].homing);if(i===3){assert.equal(q.bullets.length,0);assert.equal(q.beams.length,1);assert.ok(q.beams[0].life>0)}if(i===4){assert.equal(q.bullets.length,2);assert.ok(q.bullets[0].vx>700)}a.render()}
 reset();a.get().player.effects[1]=18;shoot(1);assert.equal(a.get().bullets.length,5,'Weißwein geladen: fünf Richtungen');
 reset();a.get().player.effects[0]=18;shoot(1);assert.ok(a.get().bullets[0].blast,'Rotwein geladen: Flächentreffer');
-reset();a.get().player.effects[3]=18;a.enemy(0);let target=a.get().enemies[0];target.x=400;target.y=268;target.speed=0;target.hp=1;shoot();a.update(.01);assert.equal(a.get().enemies.length,0,'Laser trifft Gegner');
+reset();a.get().player.effects[3]=18;a.enemy(0);let target=a.get().enemies[0];target.x=400;target.y=268;target.speed=0;target.hp=.1;shoot();a.update(.01);assert.equal(a.get().enemies.length,0,'Laser trifft Gegner');
 for(let i=0;i<10;i++){reset();a.enemy(i);let e=a.get().enemies[0];assert.ok(e.hp>=2,'stärkere Gegner');e.x=135;e.y=270;e.speed=0;e.fire=999;a.update(.01);assert.equal(a.get().hearts,4,'Gegnerkontakt '+i);reset();a.enemy(i);e=a.get().enemies[0];e.x=400;e.y=270;e.speed=0;e.fire=999;e.hp=1;a.get().bullets.push(bullet(400,270));a.update(.01);assert.equal(a.get().enemies.length,0);assert.equal(a.get().deaths.length,1,'Todesanimation');a.render()}
 for(const i of [3,5,7,8,9]){reset();a.enemy(i);const e=a.get().enemies[0];e.x=650;e.speed=0;e.fire=0;a.update(.01);assert.ok(a.get().shots.length,'Gegnerangriff '+i)}
 for(let i=0;i<5;i++){reset();for(let j=0;j<=i;j++)a.startBoss();a.get().boss.fire=0;a.update(.01);assert.ok(a.get().shots.length);a.render();defeatBoss()}
@@ -46,13 +46,15 @@ reset();for(const card of a.cardDefs)if(!card.repeatable)a.get().upgrades[card.i
 reset();let targetPickup={x:190,y:270,w:30,h:42,i:1};a.get().pickups.push(targetPickup);a.update(.05);assert.ok(targetPickup.x<185,'Flaschen werden in Reichweite angesaugt');
 
 // New weapon pickups and both tap/charge variants.
-assert.equal(a.cardDefs.length,27,'fünf neue Synergie-Karten');
+assert.equal(a.cardDefs.length,32,'Geschosskarten ergänzt');
 for(let i=6;i<16;i++){
  reset();let q=a.get();q.pickups.push({x:135,y:270,w:30,h:42,i});a.update(.01);assert.equal(a.get().player.weapon,i);assert.ok(a.get().player.effects[i]>0);shoot();q=a.get();assert.ok(q.bullets.length||q.beams.length,'Mutator feuert '+i);a.render();
  reset();a.get().player.weapon=i;a.get().player.effects[i]=18;shoot(1);q=a.get();assert.ok(q.bullets.some(b=>b.charged)||q.beams.some(b=>b.charged),'Ladevariante '+i);a.render();
 }
 function equip(i){reset();a.get().player.weapon=i;a.get().player.effects[i]=18}
 function placeTarget(x=400,y=270,hp=100){a.enemy(0);const e=a.get().enemies.at(-1);e.x=x;e.y=y;e.speed=0;e.fire=999;e.hp=hp;e.max=hp;return e}
+reset();for(const id of ['multiShot','fanShot','snakeShot','seekShot','breakShot'])a.get().upgrades[id]=1;let target9=placeTarget(400,320,1);shoot();assert.equal(a.get().bullets.length,2);assert.ok(a.get().bullets[0].vy<0&&a.get().bullets[1].vy>0);let shot9=a.get().bullets[0],vy9=shot9.vy;a.update(.05);assert.ok(shot9.vy>vy9,'Verfolgung lenkt zum Gegner');shot9.x=400;shot9.y=target9.y;a.update(.01);let fragments9=a.get().bullets.filter(b=>b.generation===1);assert.equal(fragments9.length,2);assert.ok(fragments9.every(b=>b.seekRank===1&&b.snakeRank===1));a.update(.01);assert.ok(a.get().bullets.every(b=>(b.generation||0)<=1),'keine weitere Splittergeneration');
+reset();for(const id of ['multiShot','fanShot','snakeShot','seekShot','breakShot'])a.get().upgrades[id]=3;a.get().player.weapon=0;a.get().player.effects[0]=18;shoot();assert.equal(a.get().bullets.length,3);assert.ok(a.get().bullets.every(b=>!b.standardShot&&!b.seekRank&&!b.breakRank));a.get().player.effects[0]=0;a.get().bullets.length=0;shoot();assert.equal(a.get().bullets.length,4,'Standardschuss nach Wein');a.get().bullets.length=0;shoot(1);assert.ok(a.get().bullets.every(b=>!b.standardShot),'Sonderangriff unverändert');
 equip(6);let e=placeTarget(400,268,1);shoot();a.get().bullets[0].x=400;a.update(.01);assert.ok(a.get().bullets.length>=3,'Prisma zerfällt in Splitter');
 equip(7);shoot();for(let i=0;i<13;i++)a.update(.05);assert.ok(a.get().bullets[0].vx<0,'Säge kehrt um');
 equip(8);let first=placeTarget(400,268,1),second=placeTarget(490,290,100);shoot();a.get().bullets[0].x=400;a.update(.01);assert.ok(second.hp<100,'Kettenblitz springt');assert.ok(a.get().arcs.length>0);
@@ -170,6 +172,7 @@ reset();a.enemy(9);let elite=a.get().enemies[0];elite.x=500;elite.y=270;elite.hp
 reset();a.startBoss();defeatBoss();assert.equal(a.get().orbs.filter(o=>o.value===10).length,1);
 reset();a.setRunTime(1000);a.update(.01);assert.equal(a.get().state,'playing','keine zeitgesteuerte Karte');a.get().orbs.push({x:135,y:270,w:16,h:16,value:50,age:0});a.update(.01);assert.equal(a.get().state,'upgrade');a.chooseCard(0);assert.equal(a.get().level,2);assert.equal(a.get().xp,40);assert.equal(a.get().xpNeeded,15);assert.equal(a.get().state,'upgrade');a.chooseCard(0);assert.equal(a.get().level,3);assert.equal(a.get().xp,25);assert.equal(a.get().xpNeeded,23);assert.equal(a.get().state,'upgrade');a.chooseCard(0);assert.equal(a.get().level,4);assert.equal(a.get().xp,2);assert.equal(a.get().xpNeeded,35);assert.equal(a.get().state,'playing');
 console.log('OK: Orbs und Stufenfortschritt.');
+reset();let previousNeed=10;for(let i=0;i<100;i++){a.setXp(a.get().xpNeeded);a.update(.01);assert.equal(a.get().state,'upgrade');a.chooseCard(0);const current=a.get().xpNeeded;assert.ok(Number.isFinite(current)&&current>=previousNeed&&current<=1500);if(a.get().level===10)assert.equal(current,Math.ceil(previousNeed*1.12));previousNeed=current}assert.equal(a.get().xpNeeded,1500,'Endlosfortschritt bleibt begrenzt');
 
 // Orb-Bewegung und Notfallknopf.
 reset();a.enemy(0);let walker=a.get().enemies[0];walker.x=500;walker.y=270;walker.speed=80;walker.hp=1;a.get().bullets.push(bullet(500,270));a.update(.01);let moving=a.get().orbs[0];assert.equal(moving.speed,40);let start=moving.x;a.update(.1);assert.ok(Math.abs(moving.x-(start-4))<1e-8);moving.x=-7;moving.speed=40;a.update(.1);assert.ok(!a.get().orbs.includes(moving),'Orb verlässt das Spielfeld');
@@ -182,3 +185,4 @@ reset();a.hurt();a.get().player.rage=100;a.activateRage();assert.equal(a.get().h
 reset();shoot();assert.equal(a.get().bullets[0].damage,1.5,'Grundschaden');a.startBoss();assert.ok(a.get().boss.max>=450,'Bosssegmente erhalten erhöhte Lebenspunkte');reset();
 let rects=[];let hudctx=ctx();hudctx.fillRect=(x,y,w,h)=>rects.push([x,y,w,h]);let snapshot=a.get();let hud={...snapshot,maxHearts:5,weapon:-1,weaponNames:[],bosses:[],secret:false,secretType:0,secretTime:0,notice:0,noticeText:'',combo:0,threat:0,elements:{}};for(const [value,width] of [[0,0],[5,79],[10,158],[15,158]]){rects=[];hud.xp=value;hud.xpNeeded=10;vm.runInContext("PfertArt",sandbox).hud(hudctx,hud);assert.ok(rects.some(r=>r[0]===782&&r[1]===50&&r[2]===width),'Fortschrittsbreite '+value)}
 console.log('OK: Orb-Bewegung, Fortschrittsbalken und Notfallknopf.');
+require('node:child_process').execFileSync(process.execPath,[__dirname+'/test-balance.cjs'],{stdio:'inherit'});

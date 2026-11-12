@@ -1,0 +1,21 @@
+'use strict';
+const assert = require('node:assert/strict');
+const meta = require('./meta.js');
+assert.equal(meta.nodes.length,360);
+assert.equal(new Set(meta.nodes).size,360);
+assert(meta.edges.every(([a,b])=>meta.nodes.includes(a)&&meta.nodes.includes(b)));
+const reached=new Set(['S1']);let expanded=true;
+while(expanded){expanded=false;for(const [a,b] of meta.edges){if(reached.has(a)&&!reached.has(b)){reached.add(b);expanded=true}if(reached.has(b)&&!reached.has(a)){reached.add(a);expanded=true}}}
+assert.equal(reached.size,360);
+let data=meta.award(meta.fresh(),1199,2);
+assert.equal(data.points,3);assert.equal(data.seconds,599);
+data=meta.award(data,1,0);assert.equal(data.points,4);assert.equal(data.seconds,0);
+assert.equal(meta.buy(data,'A1-1'),null);
+data=meta.buy(data,'S1');data=meta.buy(data,'A1-1');assert.equal(data.points,2);
+assert.throws(()=>meta.validate({...data,purchased:['A1-1']}));
+const store={value:null,getItem(){return this.value},setItem(k,v){this.value=v}};
+assert(meta.save(store,data));assert.deepEqual(meta.load(store).data,data);
+data=meta.refund(data);assert.equal(data.points,4);assert.deepEqual(data.purchased,[]);
+store.value='{';assert(meta.load(store).error);
+assert.equal(meta.save({setItem(){throw Error('blocked')}},data),false);
+console.log('Meta progression core: OK');
