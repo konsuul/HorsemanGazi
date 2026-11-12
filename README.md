@@ -4,18 +4,20 @@ Unter goldenen Kuppeln zieht etwas seine Kreise, das besser nie hätte fliegen l
 
 `index.html` im Browser öffnen. Keine Installation und kein Build nötig.
 
-- WASD / Pfeiltasten: bewegen; Das Pfert schießt automatisch. Leertaste halten unterbricht das Dauerfeuer und lädt; nach ausreichender Ladezeit feuert Loslassen den Ladeangriff. Danach setzt das Dauerfeuer wieder ein. Ein kurzer Tastendruck löst keinen zusätzlichen Schuss aus.
+- WASD / Pfeiltasten: bewegen; das Pfert schießt automatisch. Leertaste löst sofort einen Sonderangriff aus, ohne das Dauerfeuer zu unterbrechen.
+- Controller: Linker Stick oder Steuerkreuz bewegt; A löst den Sonderangriff aus, B aktiviert Käserausch. A startet und bestätigt Karten; links/rechts wählt Karten.
+- Drei Sonderangriffe stehen zu Beginn bereit. Der goldene Sonderwein füllt alle drei Einsätze auf. Die aktuelle Weinwaffe bestimmt den Effekt; ohne Wein erscheint eine Käsewelle.
 - Fünf Herzen pro Runde. Die Bewegung ist gegenüber der vorigen Version weitere 5 % schneller.
 - M: die synthetischen Waffen- und Ereignisklänge ausschalten/einschalten.
-- Q: Käserausch auslösen, sobald die Anzeige voll ist. Abschüsse, Schutzblocks und einmalig gewertete knappe Ausweichmanöver laden sie auf. Acht Sekunden mehr Schaden und zusätzliche Seitenangriffe; bei Aktivierung werden feindliche Geschosse entfernt.
-- Jede Spielminute pausiert das Spiel für drei Karten. Klicken oder 1 / 2 / 3 wählen. Die Verbesserung gilt für die laufende Runde.
+- Q: Käserausch auslösen, sobald die Anzeige voll ist. Abschüsse, Schutzblocks und einmalig gewertete knappe Ausweichmanöver laden sie auf. Acht Sekunden mehr Schaden und zusätzliche Seitenangriffe; bei Aktivierung werden sichtbare reguläre Gegner besiegt; ihre Belohnungen und Orbs sowie vorhandene Gegenstände und feindliche Geschosse bleiben erhalten. Bosse bleiben.
+- Besiegte Gegner hinterlassen Leuchtkugeln mit Erfahrungspunkten. Bei jedem Stufenaufstieg pausiert das Spiel für drei Karten. Die erste Stufe benötigt 10 Punkte; jeder weitere Bedarf steigt auf das aufgerundete 1,5-Fache. Stärkere Gegner und Bosse geben mehr Punkte. Orbs wandern mit halber Gegnergeschwindigkeit nach links und verschwinden am Rand; der Balken rechts oben zeigt den Stufenfortschritt. Klicken oder 1 / 2 / 3 wählen. Die Verbesserung gilt für die laufende Runde.
 - Türkis gerahmte Flaschen mit Pluszeichen sind Powerups. Rot umrandete, hohle Projektile sind gefährlich. Getroffene Gegner blitzen weiß auf.
 
 ## Die 15 Waffen
 
 Die zuletzt aufgenommene Weinsorte bestimmt die Waffe für 18 Sekunden, verlängert durch Karten. Traubenmost heilt ein Herz. Karten wirken auf die Waffen mit; Laser bekommen z. B. mehr Breite und Dauer, Geschosse mehr Schaden, Abpraller oder Ketteneffekte.
 
-| Flasche | Kurzer Schuss | Geladener Angriff |
+| Flasche | Automatischer Schuss | Sonderangriff |
 | --- | --- | --- |
 | Rotwein | Glutsalve | Explosiver Komet |
 | Weißwein | Dreifachfächer | Fünffachfächer |
@@ -35,7 +37,7 @@ Die zuletzt aufgenommene Weinsorte bestimmt die Waffe für 18 Sekunden, verläng
 
 ## Elementareffekte
 
-Jede Weinwaffe bekommt ein Element für normale und geladene Angriffe:
+Jede Weinwaffe bekommt ein Element für automatische und Sonderangriffe:
 
 - Feuer: Rotwein, Rosé, Burgunder. Treffer brennen 1,8 Sekunden nach.
 - Frost: Weißwein, Madeira, Eiswein. Treffer verlangsamen Bewegung und Angriffe.
