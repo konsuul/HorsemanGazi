@@ -2,9 +2,9 @@
 
 ## Status und Grundlagen
 
-Dies ist ein **ungeprüfter Balanceentwurf**, keine bereits implementierte Funktion. Werte, Kombinationen, Punktevergabe und Spielzeit müssen praktisch getestet und gemeinsam abgestimmt werden. Die offene Waffen- und Gesamtbalance der Roadmap berücksichtigen: Insbesondere multiplizieren sich Feuerrate und Schaden in ihrer Gesamtwirkung. Die positiven Zahlenwerte des ursprünglichen Entwurfs wurden grundsätzlich um 50 % angehoben; Nachteile bleiben unverändert. Feste Mengen und Einmaleffekte bleiben, soweit unten nicht ausdrücklich geändert, erhalten und sind gezielt zu prüfen. Dezimalwerte dürfen intern ungerundet verarbeitet und verständlich angezeigt werden.
+Dies ist ein **noch nicht vollständig geprüfter Balanceentwurf** für den implementierten Talentbaum. Werte, Kombinationen, Punktevergabe und Spielzeit müssen praktisch getestet und gemeinsam abgestimmt werden. Die offene Waffen- und Gesamtbalance der Roadmap berücksichtigen: Insbesondere multiplizieren sich Feuerrate und Schaden in ihrer Gesamtwirkung. Die positiven Zahlenwerte des ursprünglichen Entwurfs wurden grundsätzlich um 50 % angehoben; Nachteile bleiben unverändert. Feste Mengen und Einmaleffekte bleiben, soweit unten nicht ausdrücklich geändert, erhalten und sind gezielt zu prüfen. Dezimalwerte dürfen intern ungerundet verarbeitet und verständlich angezeigt werden.
 
-Der Baum hat **360 einzeln kaufbare Knoten**, jeder kostet einen Talentpunkt: fünf Startknoten, 15 Spezialisierungen mit je 23 Knoten und zehn Querverbindungsknoten. Die Querverbindungen ersetzen die frühere Aufteilung in je 71 Knoten pro Hauptbereich.
+Der ursprüngliche Entwurf hat **360 einzelne Käufe**, jeder kostet einen Talentpunkt: fünf Startknoten, 15 Spezialisierungen mit je 23 Knoten und zehn Querverbindungsknoten. Die Querverbindungen ersetzen die frühere Aufteilung in je 71 Knoten pro Hauptbereich.
 
 ## Fortschritt, Speicherung und Bedienung
 
@@ -13,6 +13,8 @@ Der Baum hat **360 einzeln kaufbare Knoten**, jeder kostet einen Talentpunkt: f�
 - Fortschritt und Talentverteilung lokal im Browser dauerhaft speichern. Bei nicht verfügbarer oder beschädigter Speicherung verständlich informieren; ohne dauerhafte Speicherung spielbar bleiben. Laufende Runden werden nicht gespeichert.
 - Die Talentverteilung zwischen Runden kostenlos vollständig zurücksetzen und alle investierten Punkte zurückgeben. Den gesamten Fortschritt nach eindeutiger Bestätigung löschen.
 - Im Hauptmenü eine zusammenhängende, verschiebbare und zoombare Karte mit sichtbaren Verbindungen, Kosten, Wirkungen und verfügbaren Punkten anbieten. Maus, Tastatur und Controller unterstützen. Talente wirken ab der nächsten Runde.
+
+Gleiche aufeinanderfolgende Verbesserungen werden im Spiel zu einem Knoten mit bis zu fünf Rängen zusammengefasst. Der erste Rang öffnet verbundene Knoten; bestehende Käufe bleiben erhalten.
 
 ## Baumstruktur
 
@@ -202,7 +204,7 @@ Jeder Q-Knoten verbindet die beiden genannten Knoten beidseitig; er ist von jede
 | Q7 · Sonderfund | B2-20 ↔ Q7 ↔ W1-20 | Erste Waffenflasche jeder Runde gewährt zusätzlich 7,5 % Käserausch |
 | Q8 · Bossjäger | B3-10 ↔ Q8 ↔ W1-10 | +7,5 % Sonderangriffsschaden gegen Bosse |
 | Q9 · Elementarwein | A3-20 ↔ Q9 ↔ W2-20 | +12 % Elementarschaden mit aktivem Waffen-Power-up |
-| Q10 · Fluchtflasche | V1-20 ↔ Q10 ↔ W3-20 | Nach Aufsammeln einer Waffenflasche drei Sekunden lang +12 % Bewegungsgeschwindigkeit |
+| Q10 · Eichelkranzkäse | V1-20 ↔ Q10 ↔ W3-20 | Während des Käserauschs +50 % Schaden; nach Aufsammeln einer Waffenflasche drei Sekunden lang +12 % Bewegungsgeschwindigkeit |
 
 ## Prüfung bei Umsetzung
 

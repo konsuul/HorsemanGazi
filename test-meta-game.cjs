@@ -7,9 +7,12 @@ const elements={game:{getContext:()=>({})},overlay:element(),start:element(),tal
 const localStorage={getItem:()=>null,setItem:noop};
 const sandbox={PfertMeta,window:{localStorage,addEventListener:noop},document:{getElementById:id=>elements[id]||(elements[id]=element())},navigator:{},requestAnimationFrame:noop,Math,Set,console};
 vm.createContext(sandbox);
-const src=fs.readFileSync('game.js','utf8').replace('})();','globalThis.check={reset,activateRage,fireCharge,fireSpecial,update,hurt,damage,modifyDirectHit,onHit,keys,get:()=>({player,bullets,enemies,shots,pickups,hearts,orbs,xp}),setData:d=>metaData=d};})();');
+const src=fs.readFileSync('game.js','utf8').replace('})();','globalThis.check={talentWheelZoom,spreadTalentNodes,reset,activateRage,fireCharge,fireSpecial,update,hurt,damage,modifyDirectHit,onHit,keys,get:()=>({player,bullets,enemies,shots,pickups,hearts,orbs,xp}),setData:d=>metaData=d};})();');
 vm.runInContext(src,sandbox);
 const a=sandbox.check;
+{const initial={x:40,y:-20},x=200,y=120,zoom=.3;const result=a.talentWheelZoom(zoom,initial,x,y,-37);assert.ok(result.zoom>zoom&&result.zoom<.4);assert.ok(Math.abs((x-result.pan.x)/result.zoom-(x-initial.x)/zoom)<1e-9);assert.ok(Math.abs((y-result.pan.y)/result.zoom-(y-initial.y)/zoom)<1e-9);assert.equal(a.talentWheelZoom(zoom,initial,x,y,1e6).zoom,.15);assert.equal(a.talentWheelZoom(zoom,initial,x,y,-1e6).zoom,1.5);}
+assert.equal(a.talentWheelZoom(.4,{x:0,y:0},100,100,1e6,.25).zoom,.25,'Herauszoomen bleibt bei der bildfüllenden Übersicht stehen');
+{const positions=Object.fromEntries(PfertMeta.nodes.map(id=>[id,{x:700,y:550}]));a.spreadTalentNodes(PfertMeta.nodes,positions);for(let i=0;i<PfertMeta.nodes.length;i++)for(let j=i+1;j<PfertMeta.nodes.length;j++){const p=positions[PfertMeta.nodes[i]],q=positions[PfertMeta.nodes[j]];assert.ok(Math.abs(p.x-q.x)>=70||Math.abs(p.y-q.y)>=40,'Knoten überlappen nicht')}assert.deepEqual(a.spreadTalentNodes(PfertMeta.nodes,Object.fromEntries(PfertMeta.nodes.map(id=>[id,{x:700,y:550}]))),positions,'Layout ist stabil');}
 let data=PfertMeta.fresh();data.points=100;
 for(const id of ['S1','S2','S3',...Array.from({length:23},(_,i)=>'K1-'+(i+1))]){data=PfertMeta.buy(data,id);assert.ok(data,id)}
 a.setData(data);a.reset();a.get().player.rage=100;assert(a.activateRage());
@@ -26,12 +29,17 @@ assert.ok(a.get().bullets[0].life>3.5,'Geschosslebensdauer erhöht');
 const initial=a.get().bullets.length;for(let i=1;i<15;i++)a.fireCharge();
 assert.equal(a.get().bullets.length-initial,15,'zusätzlicher Schuss beim 15. Angriff');
 console.log('Meta-Spieltest: Salvenkunst OK');
+
+// Zusammengefasste Ränge und vorhandene Käufe behalten ihre Spielwirkung.
+{let d=PfertMeta.fresh();d.points=20;d=PfertMeta.buy(d,'S1');for(let i=0;i<5;i++)d=PfertMeta.buy(d,'A1-1');a.setData(d);a.reset();a.fireCharge();assert.ok(Math.abs(a.get().bullets[0].damage-1.5*1.03*1.075)<1e-9,'fünf Schadensränge wirken');
+ const old={version:1,points:0,seconds:0,purchased:['S1','A1-1','A1-2','A1-3','A1-4']};a.setData(PfertMeta.validate(old));a.reset();a.fireCharge();assert.ok(Math.abs(a.get().bullets[0].damage-1.5*1.03*1.06)<1e-9,'alte vier Käufe behalten ihren Schaden');}
+
 data=PfertMeta.fresh();data.points=100;
 for(const id of ['S1','S2','S3','S4','S5',...Array.from({length:23},(_,i)=>'W1-'+(i+1))]){data=PfertMeta.buy(data,id);assert.ok(data,id)}
-a.setData(data);a.reset();assert.equal(a.get().player.specials,2);a.fireSpecial();
-assert.equal(a.get().player.specials,2,'erster Sonderangriff kostenlos');
+a.setData(data);a.reset();a.get().player.weapon=15;a.get().player.effects[15]=18;a.get().player.effectMax=18;a.fireSpecial();
+assert.equal(a.get().player.effects[15],18,'erster Sonderangriff kostenlos');
 assert.ok(a.get().bullets[0].damage>1.5*6.5*2,'Sonderangriff gestärkt');
-a.fireSpecial();assert.equal(a.get().player.specials,1);a.fireSpecial();assert.equal(a.get().player.specials,0);
+a.fireSpecial();assert.equal(a.get().player.effects[15],9);a.fireSpecial();assert.equal(a.get().player.effects[15],0);
 console.log('Meta-Spieltest: Sonderreserve OK');
 data=PfertMeta.fresh();data.points=100;
 for(const id of ['S1','S2','S3',...Array.from({length:23},(_,i)=>'K2-'+(i+1))]){data=PfertMeta.buy(data,id);assert.ok(data,id)}
@@ -56,7 +64,7 @@ a.setData(data);a.reset();assert.equal(a.get().xp,2);a.get().orbs.push({x:135,y:
 console.log('Meta-Spieltest: Orbjagd OK');
 data=PfertMeta.fresh();data.points=100;
 for(const id of ['S1','S2','S3','S4',...Array.from({length:23},(_,i)=>'B2-'+(i+1))]){data=PfertMeta.buy(data,id);assert.ok(data,id)}
-a.setData(data);a.reset();a.fireSpecial();a.hurt();a.get().pickups.push({x:135,y:270,w:30,h:42,i:0});a.update(.01);assert.equal(a.get().hearts,5);assert.equal(a.get().player.specials,3);assert.ok(a.get().player.effects[0]>18);
+a.setData(data);a.reset();a.hurt();a.get().pickups.push({x:135,y:270,w:30,h:42,i:0});a.update(.01);assert.equal(a.get().hearts,5);assert.ok(a.get().player.effects[0]>18);
 console.log('Meta-Spieltest: Flaschensammler OK');
 data=PfertMeta.fresh();data.points=100;
 for(const id of ['S1','S2','S3','S4',...Array.from({length:23},(_,i)=>'B3-'+(i+1))]){data=PfertMeta.buy(data,id);assert.ok(data,id)}

@@ -15,5 +15,6 @@ for(const m of source.matchAll(pattern)){
  for(const n of [13,16,20,22,23]){const match=body.match(new RegExp('^- '+n+' · (.+)$','m'));if(!match)throw Error(id+'-'+n);descriptions[id+'-'+n]=match[1].trim();}
 }
 for(const m of source.matchAll(/^\| (Q\d+) · ([^|]+) \| [^|]+ \| ([^|]+) \|/gm))descriptions[m[1]]=m[2].trim()+': '+m[3].trim();
+descriptions.Q10='Eichelkranzkäse: Während des Käserauschs +50 % Schaden; beim Aufsammeln einer Waffenflasche drei Sekunden +12 % Bewegung.';
 if(Object.keys(descriptions).length!==360)throw Error('Knotenbeschreibungen: '+Object.keys(descriptions).length);
 fs.writeFileSync('meta-data.js',"/* Aus Meta progression.md erzeugt. */\n(function(root){root.PfertMetaData="+JSON.stringify({names,descriptions})+";})(globalThis);\n");

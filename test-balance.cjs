@@ -11,6 +11,6 @@ for(const weapon of [-1,0,1,2,3,4,6,7,8,9,10,11,12,13,14,15]){
  let before=0;for(let i=0;i<3000;i++){if(i===1000)before=e.hp;a.update(.01)}
  results.push([weapon,(before-e.hp)/20]);
 }
-const baseline=results[0][1];for(const [weapon,dps] of results)assert.ok(Math.abs(dps/baseline-1)<=.15,'Waffe '+weapon+' DPS '+dps+' gegenüber '+baseline);
+const baseline=results[0][1];for(const [weapon,dps] of results)assert.ok(Math.abs(dps/(baseline*(weapon<0?1:1.15))-1)<=.02,'Waffe '+weapon+' DPS '+dps+' gegenüber '+baseline);
 console.log('OK: Waffen-DPS am Einzelziel: '+results.map(([id,dps])=>id+':'+dps.toFixed(2)).join(' '));
 `+'})',{filename:'balance-runner.cjs'})(require,__dirname);

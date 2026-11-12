@@ -347,7 +347,7 @@ const PfertArt = (() => {
  }
  function spark(ctx,p){const f=Math.max(0,p.life/p.maxLife),x=Math.round(p.x),y=Math.round(p.y),size=Math.max(1,Math.round(p.size*f));ctx.save();ctx.globalAlpha=f;ctx.strokeStyle=p.col;ctx.lineWidth=Math.max(1,size*.65);ctx.beginPath();ctx.moveTo(x-Math.round(p.vx*.022),y-Math.round(p.vy*.022));ctx.lineTo(x,y);ctx.stroke();ctx.fillStyle=p.col;ctx.fillRect(x,y,size,size);if(f>.55&&size>2){ctx.fillStyle='#fff6df';ctx.fillRect(x,y,1,1)}ctx.restore()}
  function bullet(ctx,b){
-  const x=b.x,y=b.y,r=b.w/2,age=b.age||0;g=ctx;ctx.save();ctx.translate(x,y);ctx.rotate(Math.atan2(b.vy,b.vx));
+  const x=b.x,y=b.y,r=b.w/2,age=b.age||0;g=ctx;ctx.save();ctx.translate(x,y);ctx.rotate(Math.atan2(b.vy,b.vx));if(b.standardShot)ctx.scale(.7,.7);
   if(b.echoed){ctx.globalAlpha=.78;glow(ctx,-r,0,r*2,'#e4baff33')}
   if(b.charged){ctx.strokeStyle='#e2f9ff55';ctx.lineWidth=1;ctx.beginPath();ctx.arc(-r*.5,0,r*1.4,-age*10,-age*10+1.4);ctx.stroke()}
   const detailed=b.style==='normal'&&b.charged?8:b.style==='frost'?9:b.style==='phoenix'?10:b.style==='vortex'?11:b.style==='red'&&b.charged?12:-1;
@@ -444,8 +444,8 @@ const PfertArt = (() => {
   label(ctx,String(s.score).padStart(6,'0'),941,24,21,'#fff0c5','right');
   label(ctx,'STUFE '+s.level,941,43,10,'#b5c3bf','right');box(0,532,960,8,'#13283d');box(0,533,960*Math.max(0,Math.min(1,s.xp/s.xpNeeded)),6,'#83e5ef');
   const name=s.weapon>=0?s.weaponNames[s.weapon]:'KLASSISCHER KÄSE';const col=['#ffad85','#b9f5db','#efb4db','#c8b0ec','#9cdef6','#d3b4eb','#c7eeff','#dcf3ad','#83e5ff','#ccc4ff','#ffd386','#a5f8d5','#a6eaff','#b6a0ff','#e4f7ff','#ffc48e'][s.weapon]||'#f0cf91';
-  label(ctx,name,480,44,11,col,'center');if(s.weapon>=0){box(355,50,250,2,'#384d5d');box(355,50,Math.min(250,s.player.effects[s.weapon]/(18*(1+s.upgrades.duration*.08+s.upgrades.cellar*.01))*250),2,col)}
-  label(ctx,'SONDER [LEER]',320,21,9,'#e9dcae');for(let i=0;i<3;i++)label(ctx,i<(s.player.specials||0)?'★':'☆',322+i*18,39,16,'#ffd66d');
+  label(ctx,name,480,44,11,col,'center');if(s.weapon>=0){box(355,50,250,2,'#384d5d');box(355,50,Math.min(250,s.player.effects[s.weapon]/(s.player.effectMax||18)*250),2,col)}
+  label(ctx,'SONDER [LEER] · VERBRAUCHT WEIN',480,21,9,'#e9dcae','center');
   label(ctx,'◇ GEFAHR',18,77,8,'#ff9f82');label(ctx,'+ FLASCHE',18,89,8,'#99f4d5');if(s.combo>2)label(ctx,'KÄSEKETTE ×'+s.combo,941,79,10,'#ffe4aa','right');
   if(s.notice>0&&!s.boss){ctx.save();ctx.globalAlpha=Math.min(1,s.notice);box(255,78,450,30,'#26374dea');box(255,78,450,1,'#c5a274');label(ctx,s.noticeText,480,98,12,'#f5dfb4','center');ctx.restore()}
   const elements=s.elements||{},elementNames=[];if(elements.frost>0)elementNames.push('FROST');if(elements.fire>0)elementNames.push('FEUER');if(elements.lightning||elements.chainBonus>0)elementNames.push('BLITZ');if(elements.earth||elements.forkBonus>0)elementNames.push('ERDE');if(elementNames.length){box(671,519,271,15,'#24334ce8');label(ctx,elementNames.join(' · '),678,530,9,'#d9ecd6')}
