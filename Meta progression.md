@@ -126,8 +126,8 @@ Knoten **1–4 und 6–9** haben jeweils den angegebenen Effekt A; **5 und 10** 
 - 13 · Schutzrausch: Bei Aktivierung 0,75 Sekunden Unverwundbarkeit.
 - 16 · Käseernte: Im Käserausch besiegte Gegner geben 12 % mehr Orb-Erfahrung.
 - 20 · Notreserve: Einmal pro Runde werden bei einem verbleibenden Herzen 30 % Käserausch aufgefüllt.
-- 22 · Rettungsring: Bei Aktivierung werden feindliche Geschosse im Radius von 112,5 Pixeln entfernt.
-- 23 · Überladung: Käserausch entfernt zusätzlich feindliche Geschosse auf dem Bildschirm; danach kann fünf Sekunden lang kein Käserausch aufgeladen werden.
+- 22 · Rettungsring: Bei Aktivierung mindestens 1,5 Sekunden Unverwundbarkeit.
+- 23 · Überladung: Bei Aktivierung mindestens drei Sekunden Unverwundbarkeit; danach kann fünf Sekunden lang kein Käserausch aufgeladen werden.
 
 ## Beute und Erfahrung — S4
 

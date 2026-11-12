@@ -9,8 +9,8 @@ Unter goldenen Kuppeln zieht etwas seine Kreise, das besser nie hätte fliegen l
 - Drei Sonderangriffe stehen zu Beginn bereit. Der goldene Sonderwein füllt alle drei Einsätze auf. Die aktuelle Weinwaffe bestimmt den Effekt; ohne Wein erscheint eine Käsewelle.
 - Fünf Herzen pro Runde. Die Bewegung ist gegenüber der vorigen Version weitere 5 % schneller.
 - M: die synthetischen Waffen- und Ereignisklänge ausschalten/einschalten.
-- Q: Käserausch auslösen, sobald die Anzeige voll ist. Abschüsse, Schutzblocks und einmalig gewertete knappe Ausweichmanöver laden sie auf. Acht Sekunden mehr Schaden und zusätzliche Seitenangriffe; bei Aktivierung werden sichtbare reguläre Gegner besiegt; ihre Belohnungen und Orbs sowie vorhandene Gegenstände und feindliche Geschosse bleiben erhalten. Bosse bleiben.
-- Besiegte Gegner hinterlassen Leuchtkugeln mit Erfahrungspunkten. Bei jedem Stufenaufstieg pausiert das Spiel für drei Karten. Die erste Stufe benötigt 10 Punkte; der Bedarf steigt zunächst auf das aufgerundete 1,5-Fache, ab Stufe 10 um 12 % und höchstens auf 1500. Stärkere Gegner und Bosse geben mehr Punkte. Orbs wandern mit halber Gegnergeschwindigkeit nach links und verschwinden am Rand; der Balken rechts oben zeigt den Stufenfortschritt. Klicken oder 1 / 2 / 3 wählen. Die Verbesserung gilt für die laufende Runde.
+- Q: Käserausch auslösen, sobald die Anzeige voll ist. Abschüsse, Schutzblocks und einmalig gewertete knappe Ausweichmanöver laden sie auf. Acht Sekunden mehr Schaden und zusätzliche Seitenangriffe; bei Aktivierung werden sichtbare reguläre Gegner besiegt; ihre Belohnungen und Orbs sowie vorhandene Gegenstände bleiben erhalten. Sichtbare feindliche Geschosse werden entfernt. Bosse bleiben.
+- Besiegte Gegner hinterlassen Leuchtkugeln mit Erfahrungspunkten. Bei jedem Stufenaufstieg pausiert das Spiel für drei Karten. Die erste Stufe benötigt 10 Punkte; der Bedarf steigt zunächst auf das aufgerundete 1,5-Fache, ab Stufe 10 um 12 % und höchstens auf 1500. Stärkere Gegner und Bosse geben mehr Punkte. Orbs wandern mit halber Gegnergeschwindigkeit nach links und verschwinden am Rand; der Balken am unteren Spielfeldrand zeigt den Stufenfortschritt. Orbs geben 25 % mehr Erfahrung. Klicken oder 1 / 2 / 3 wählen. Die Verbesserung gilt für die laufende Runde.
 - Türkis gerahmte Flaschen mit Pluszeichen sind Powerups. Rot umrandete, hohle Projektile sind gefährlich. Getroffene Gegner blitzen weiß auf.
 
 ## Die 15 Waffen
@@ -50,7 +50,7 @@ Das dauerhafte schwebende Objekt vor dem Pfert-Mund wurde entfernt. Ein automati
 
 ## Fortschritt und Geheimnisse
 
-Es gibt 32 Kartentypen einschließlich der drei endlos wiederholbaren Verbesserungen. Doppelter Käse, Streuflug, Schlangenlinie, Spürnase und Käsebruch verändern den automatischen Standardschuss und lassen sich kombinieren. Während eine Weinwaffe aktiv ist, setzen diese fünf Karten aus. Ab Minute 2 kann eine seltene Synergie-Karte erscheinen, wenn die passenden Grundkarten vorhanden sind.
+Es gibt 32 Kartentypen einschließlich der drei endlos wiederholbaren Verbesserungen. Doppelter Käse, Streuflug, Schlangenlinie, Spürnase und Käsebruch verändern den automatischen Standardschuss und die Sonderangriffe der Weinwaffen und lassen sich kombinieren. Das automatische Feuer der Weinwaffen bleibt davon unberührt. Ab Minute 2 kann eine seltene Synergie-Karte erscheinen, wenn die passenden Grundkarten vorhanden sind.
 
 ### Seltene Synergien
 

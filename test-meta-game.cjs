@@ -41,8 +41,15 @@ a.get().player.overdrive=.01;a.update(.02);assert.equal(a.get().player.metaAfter
 console.log('Meta-Spieltest: Rauschdauer und Restwärme OK');
 data=PfertMeta.fresh();data.points=100;
 for(const id of ['S1','S2','S3',...Array.from({length:23},(_,i)=>'K3-'+(i+1))]){data=PfertMeta.buy(data,id);assert.ok(data,id)}
-a.setData(data);a.reset();a.get().player.rage=100;a.get().shots.push({x:400,y:200});assert(a.activateRage());assert.equal(a.get().shots.length,0);assert.equal(a.get().player.inv,.75);assert.equal(a.get().player.metaRageLock,13);
+a.setData(data);a.reset();a.get().player.rage=100;a.get().shots.push({x:400,y:200});assert(a.activateRage());assert.equal(a.get().shots.length,0);assert.equal(a.get().player.inv,3);assert.equal(a.get().player.metaRageLock,13);
 console.log('Meta-Spieltest: Notfallkäse OK');
+
+for(const [ids,inv,lock] of [[[],.65,false],[['K3-22'],1.5,false],[['K3-23'],3,true]]){
+ a.setData({version:1,points:0,seconds:0,purchased:ids});a.reset();a.get().player.rage=100;
+ a.get().shots.push({x:400,y:200,w:8,h:8},{x:-20,y:200,w:8,h:8});assert(a.activateRage());assert.equal(a.get().player.inv,inv);assert.equal(a.get().shots.length,1);assert.equal(a.get().shots[0].x,-20);assert.equal(a.get().player.metaRageLock>0,lock);
+ a.get().shots.push({x:400,y:200,w:8,h:8,vx:0,vy:0,life:2});a.update(.01);assert.ok(a.get().shots.some(s=>s.x===400),'neue Geschosse bleiben');
+}
+
 data=PfertMeta.fresh();data.points=100;
 for(const id of ['S1','S2','S3','S4',...Array.from({length:23},(_,i)=>'B1-'+(i+1))]){data=PfertMeta.buy(data,id);assert.ok(data,id)}
 a.setData(data);a.reset();assert.equal(a.get().xp,2);a.get().orbs.push({x:135,y:270,w:16,h:16,value:1,speed:0,age:0,kind:'elite'});a.update(.01);assert.ok(a.get().xp>3.5,'Elite-Erfahrung erhöht');
@@ -54,7 +61,7 @@ console.log('Meta-Spieltest: Flaschensammler OK');
 data=PfertMeta.fresh();data.points=100;
 for(const id of ['S1','S2','S3','S4',...Array.from({length:23},(_,i)=>'B3-'+(i+1))]){data=PfertMeta.buy(data,id);assert.ok(data,id)}
 a.setData(data);a.reset();a.get().orbs.push({x:135,y:270,w:16,h:16,value:1,speed:0,age:0,kind:'elite'});a.update(.01);assert.ok(a.get().xp>1.5,'Elite-Erfahrung erhöht');
-a.reset();a.get().orbs.push({x:135,y:270,w:16,h:16,value:1,speed:0,age:0,kind:'normal'});a.update(.01);assert.equal(a.get().xp,.9,'normale Orbs erhalten den Nachteil');
+a.reset();a.get().orbs.push({x:135,y:270,w:16,h:16,value:1,speed:0,age:0,kind:'normal'});a.update(.01);assert.equal(a.get().xp,1.125,'normale Orbs erhalten den Nachteil');
 console.log('Meta-Spieltest: Entdecker OK');
 data=PfertMeta.fresh();data.points=100;
 for(const id of ['S1','S2',...Array.from({length:23},(_,i)=>'V1-'+(i+1))]){data=PfertMeta.buy(data,id);assert.ok(data,id)}
