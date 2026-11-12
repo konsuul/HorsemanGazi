@@ -75,3 +75,8 @@ In kleinen, einzeln geprüften Schritten nach dem Konzept.
 ### GPT-6.1 Terra · High
 
 - [ ] **Standardschuss und Kombinationen:** Zusätzliche Karten schaffen dauerhafte Modifikatoren für den Standardschuss und ermöglichen wildere kombinierbare Effekte, etwa Splitter, Verfolgung und von Gegner zu Gegner springenden Schaden. Bestehende Karten und Kombinationen berücksichtigen; konkrete Karten und Balance vor der Umsetzung ausarbeiten.
+
+## Grafiküberarbeitung · 12.11.2026
+
+- [x] **Pferd:** Freigegebenen Entwurf als separate transparente Grafik mit zwei ausgerichteten Flügelstellungen eingebaut; klarere Silhouette, ausgearbeitete Federn, kräftigere Schatten und größerer Auftritt. Weißen Dauerschein entfernt; Lade-, Schuss-, Schutz- und Käserausch-Effekte bleiben erhalten. Alte Rastergrafik und gezeichnetes Pferd dienen weiter als Ladefehler-Fallback.
+  - Geprüft: `node test-game.cjs`, `node render-preview.cjs`; beide Flügelstellungen, Lade-/Schusseffekte, Käserausch, Trefferschutz und beide Fallbacks mit echtem Canvas. Spielvorschau: `previews/horse-v2-in-game.png`. Browser-Spieltest offen: lokaler Server im Browser nicht erreichbar, Datei-URLs durch Browserrichtlinie gesperrt.

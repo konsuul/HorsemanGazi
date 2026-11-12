@@ -88,7 +88,15 @@ const PfertArt = (() => {
   const accent=['#f6db98','#eeb18b','#beb4e7','#a6e2d7','#efcad2'][theme];
   if(theme>0){glint(i===3?-6:12,-23,accent);if(i===1||i===6){box(-13,6,22,2,accent)}if(i===7||i===9){box(-10,2,5,5,accent)}}
  })}
- function horseSprite(frame){const raster=rasterSprite(frame%4<2?10:11);if(raster)return raster;return makeSprite('pfert-'+frame,()=>{
+ function horseSprite(frame){
+  // Both wing poses share a fixed crop and scale, keeping the body steady during flight.
+  const pose=frame%4<2?0:1,image=typeof PfertAssets!=='undefined'&&PfertAssets.get('horse');
+  if(image){
+   const key='horse-v2-'+pose;
+   if(!cache.has(key)){const off=document.createElement('canvas');off.width=104;off.height=104;const c=off.getContext('2d');c.imageSmoothingEnabled=false;c.drawImage(image,pose*336,0,336,264,3,13,98,77);cache.set(key,off)}
+   return cache.get(key);
+  }
+  const raster=rasterSprite(frame%4<2?10:11);if(raster)return raster;return makeSprite('pfert-'+frame,()=>{
   const p=['#ffedc5','#ebc18c','#bb875e','#75534b'];
   poly([[-17,-6],[-31,-19],[-34,-15],[-28,-7],[-34,-1],[-24,2]],'#79534e',2);
   oval(-4,3,21,12,p);box(-16,7,24,5,p[2]);
@@ -221,7 +229,7 @@ const PfertArt = (() => {
   if(p.overdrive>0){
    glow(ctx,p.x,p.y,58,'#81eaff55');ctx.save();ctx.strokeStyle='#d6faff99';ctx.lineWidth=1.5;for(let i=0;i<2;i++){ctx.beginPath();ctx.ellipse(p.x,p.y,38+i*6,22+i*5,time*(i?2:-2),0,7);ctx.stroke()}ctx.restore();for(let i=0;i<6;i++){const angle=time*4+i*1.047;glint(p.x+Math.cos(angle)*42,p.y+Math.sin(angle)*31,'#d3f9ff')}
   }
-  if(!blink){ctx.save();ctx.globalAlpha=.24;const mask=whiteMask(horseSprite(frame));placeSprite(ctx,mask,p.x-1,p.y,.67);placeSprite(ctx,mask,p.x+1,p.y,.67);ctx.restore();placeSprite(ctx,horseSprite(frame),p.x,p.y,.67);if(p.charging||p.muzzle>0){ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=p.muzzle>0?.22:.05+Math.min(1,p.charge/limit)*.14;placeSprite(ctx,lightMask(horseSprite(frame),'#b5e9ff'),p.x,p.y,.67);ctx.restore()}}
+  if(!blink){placeSprite(ctx,horseSprite(frame),p.x,p.y,.67);if(p.charging||p.muzzle>0){ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=p.muzzle>0?.22:.05+Math.min(1,p.charge/limit)*.14;placeSprite(ctx,lightMask(horseSprite(frame),'#b5e9ff'),p.x,p.y,.67);ctx.restore()}}
   if(p.guardFlash>0){ctx.save();ctx.globalAlpha=p.guardFlash/.16;ctx.strokeStyle='#bcefff';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(p.x,p.y,29,25,0,0,7);ctx.stroke();ctx.restore()}
 
   if(p.effects[2]>0){ctx.save();ctx.strokeStyle='#f9b6dba6';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(p.x,p.y,30,28,Math.sin(time)*.15,0,7);ctx.stroke();ctx.restore()}
