@@ -197,9 +197,15 @@ Die Vorlage setzt eine feste Stage voraus; Pfert besitzt derzeit ein zeitbasiert
 
 ### Soundeffekte
 
+<<<<<<< HEAD
 - [ ] **Sound verfeinern:** Kräftigeres klassisches Arcade-Retro-Sounddesign mit eigenem Klangcharakter für Waffen und Ereignisse; wichtige Ereignisse wie Schaden, Bossauftritte und Käserausch sollen im Kampf hervorstechen. Keine Musik; Ton weiterhin mit M ein- und ausschaltbar.
   - Teilfortschritt: Waffen um eine tiefere Klangschicht ergänzt, mehrere Ereignisse eigenständiger gestaltet und vier Stimmen für wichtige Ereignisse reserviert. Weiterhin synthetisch, ohne zusätzliche Audiodateien. Automatisiert: Soundausgabe, Stummschaltung, Stimmenbegrenzung und Schadenssignal bei hoher Auslastung sowie bestehende Spielabläufe geprüft (`node test-game.cjs`).
   - Überarbeitung vom 13.11.2026: Alle Waffen mit eigenen mehrschichtigen Texturen, kurzen Impulsen, Körper und Nachklang versehen; Sonderangriffe mit eigenem Bassimpuls. Dynamische Filterverläufe, artikulierte Lautstärkehüllen, variierendes Rauschen und eine leise frühe Raumreflexion ergänzen die Synthese. Wichtige Signale senken Kampfklänge kurz ab; Tonumschaltung blendet weich. Keine zusätzlichen Downloads oder Musik. Geprüft mit `node test-sound.cjs`, `node test-game.cjs` und `node test-progress.cjs`: Waffenrezepte, Sonderangriffe, Stummschaltung, Priorität und Stimmenlimits sowie Kampf und Käserausch.
+=======
+- [ ] **Sound verfeinern:** Kräftigeres klassisches Arcade-Retro-Sounddesign mit eigenem Klangcharakter für Waffen und Ereignisse; wichtige Ereignisse wie Schaden, Bossauftritte und Käserausch sollen im Kampf hervorstechen. Ton weiterhin mit M ein- und ausschaltbar.
+  - Teilfortschritt: Waffen um eine tiefere Klangschicht ergänzt, mehrere Ereignisse eigenständiger gestaltet und vier Stimmen für wichtige Ereignisse reserviert. Soundeffekte werden weiterhin synthetisch erzeugt. Automatisiert: Soundausgabe, Stummschaltung, Stimmenbegrenzung und Schadenssignal bei hoher Auslastung sowie bestehende Spielabläufe geprüft (`node test-game.cjs`).
+- [x] **Hintergrundmusik:** Die acht bereitgestellten Titel starten mit jedem neuen Lauf in zufälliger Reihenfolge. Nach jedem vollständigen Durchlauf wird neu gemischt. M pausiert die Musik und schaltet die Effekte stumm. Automatisiert sind Titelwechsel, Wiederholung, Stummschaltung, Stopp und Neustart geprüft (`node test-game.cjs`).
+>>>>>>> 8b8ae3434ebeedd06b020c4f503db25977931ff9
   - Offen: Hörprobe im tatsächlichen Spiel durch den Nutzer; Klangcharakter, Unterschiede aller Waffen und Ereignisse, Lautstärke und Verständlichkeit bei dichten Kämpfen anhand des Feedbacks abstimmen.
 
 ### Etappe 3: Balancing

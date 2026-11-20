@@ -101,6 +101,6 @@ Tests passend zur Änderung auswählen; mehrere Bereiche bei Wechselwirkungen ge
 
 ## Ideenquellen
 
-Die eigenständigen Kombinationen folgen dem Prinzip verhaltensändernder Support-Effekte aus [Path of Exile](https://www.pathofexile.com/game). Geladene Abschüsse und Punktekombinationen greifen das Arcade-Prinzip auf, das [SNK für Blazing Star beschreibt](https://www.snk-corp.co.jp/us/games/acaneogeo/blazingstar/). Grafiken, Texte und Sounds sind eigens für Pfert erstellt.
+Die eigenständigen Kombinationen folgen dem Prinzip verhaltensändernder Support-Effekte aus [Path of Exile](https://www.pathofexile.com/game). Geladene Abschüsse und Punktekombinationen greifen das Arcade-Prinzip auf, das [SNK für Blazing Star beschreibt](https://www.snk-corp.co.jp/us/games/acaneogeo/blazingstar/). Grafiken, Texte und Soundeffekte sind eigens für Pfert erstellt. Die Hintergrundmusik besteht aus acht bereitgestellten Rekonstruktionen von 8-BeatsVGM aus *Super Street Fighter 2*. Sie läuft ab Spielstart in zufälliger Reihenfolge und wird nach jedem Durchlauf neu gemischt. Mit M schaltest du den Ton aus und wieder ein.
 
 Die Ruhrpott-Level haben getrennte Bilder: Das erste zeigt das bestehende Industriepanorama; die Nachtschicht zeigt einen aktiven Hochofen-Innenraum in ruhrgebiet-nachtschicht-v1.png.
