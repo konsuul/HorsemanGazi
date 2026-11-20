@@ -151,7 +151,7 @@ function activateRage(){if(state!=='playing'||player.rage<100||player.overdrive>
 function clock(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(Math.floor(s%60)).padStart(2,'0')}
 function sound(kind,strong=false){if(typeof PfertSound!=='undefined')PfertSound.play(kind,strong)}
 function reset(){
- if(typeof PfertSound!=='undefined')PfertSound.wake();
+ if(typeof PfertSound!=='undefined'){PfertSound.wake();PfertSound.startMusic()}
  transition=null;t=0;runTime=0;metaBosses=0;level=1;xp=owns('B1-13')?2:0;xpNeeded=10;orbs=[];choices=[];score=0;hearts=MAX_HEARTS;lastRare=null;
  upgrades=Object.fromEntries(cardDefs.map(card=>[card.id,0]));
  player={x:135,y:H/2,w:40,h:29,inv:0,effects:Array(16).fill(0),weapon:-1,charge:0,charging:false,specials:owns('W1-23')?2:3,specialCount:0,freeSpecialUsed:false,bossSpecialUsed:false,autoCooldown:0,autoAttacks:0,podSide:1,podCooldown:0,muzzle:0,guardFlash:0,attacks:0,rage:owns('K2-13')?15:0,overdrive:0,metaAfterglow:0,chargeCue:false,readyCue:false};
@@ -166,10 +166,11 @@ window.addEventListener('keydown',e=>{
  if(!e.repeat&&state==='talents'&&e.code==='Numpad5'&&metaAvailable){e.preventDefault();metaData.points+=360;metaSave();renderTalents();return}
  if(!e.repeat&&state==='playing'&&/^Numpad[1-4]$/.test(e.code)){e.preventDefault();const which=Number(e.code.slice(-1));boss=null;golden=null;enemies=[];shots=[];bullets=[];beams=[];cancelCharge();player.inv=2;if(which<=2){secret=false;secretType=0;secretTime=0;bossCount=which-1;nextBoss=Math.max(t,nextBoss);startBoss()}else{secret=true;secretType=which-2;secretTime=secretType===1?45:60;startRuhrBoss()}return}
  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','KeyW','KeyA','KeyS','KeyD'].includes(e.code))e.preventDefault();
+ if(e.code==='KeyM'&&!e.repeat&&typeof PfertSound!=='undefined'){const muted=PfertSound.toggle();notice=1;noticeText=muted?'TON AUS':'TON AN'}
  if(state==='transition')return;
  if(state==='talents'){if(!e.repeat){if(e.code==='ArrowLeft')moveTalent(-1,0);else if(e.code==='ArrowRight')moveTalent(1,0);else if(e.code==='ArrowUp')moveTalent(0,-1);else if(e.code==='ArrowDown')moveTalent(0,1);else if(e.code==='Enter')document.getElementById('meta-buy').click();else if(e.code==='Escape')document.getElementById('meta-back').click()}return}
  if(state==='upgrade'){if(!e.repeat){if(/^Digit[123]$/.test(e.code))chooseCard(Number(e.code.slice(-1))-1);else if(e.code==='ArrowLeft'||e.code==='ArrowRight')selectCard(selectedCard+(e.code==='ArrowRight'?1:-1));else if(e.code==='Enter')chooseCard(selectedCard)}return}
- keys.add(e.code);if(e.code==='KeyM'&&!e.repeat&&typeof PfertSound!=='undefined'){const muted=PfertSound.toggle();notice=1;noticeText=muted?'TON AUS':'TON AN'}
+ keys.add(e.code);
  if(e.code==='Space'&&!e.repeat&&state==='playing')fireSpecial();
  if(e.code==='KeyQ'&&!e.repeat)activateRage();
  if(e.code==='KeyT'&&!e.repeat&&(state==='menu'||state==='over'))showTalents();
@@ -358,7 +359,7 @@ let lastRoast=-1;
 function end(){
  if(state!=='playing')return;
  if(metaAvailable){metaData=PfertMeta.award(metaData,runTime,metaBosses);metaSave()}
- state='over';sound('die');cancelCharge();overlay.classList.remove('hidden');overlay.classList.remove('upgrade-overlay');overlay.classList.add('game-over');
+ state='over';if(typeof PfertSound!=='undefined')PfertSound.stopMusic();sound('die');cancelCharge();overlay.classList.remove('hidden');overlay.classList.remove('upgrade-overlay');overlay.classList.add('game-over');
  let roast=Math.floor(rand(0,roasts.length));if(roast===lastRoast)roast=(roast+1)%roasts.length;lastRoast=roast;
  const comeback=comebacks[Math.floor(rand(0,comebacks.length))],build=Object.values(upgrades).reduce((a,b)=>a+b,0);
  overlay.innerHTML='<div class="eyebrow">✦ DER BASAR HAT DICH AUSGELACHT ✦</div><h1>OH PFERT<span>✦</span></h1><p class="roast">'+roasts[roast]+'</p><p class="comeback">'+comeback+'</p><p class="run-stats">'+score+' Punkte · '+clock(runTime)+' überlebt · '+build+' Karten</p><button id="again">ICH BIN NOCH NICHT FERTIG →</button><p class="hint">ENTER oder den Knopf drücken</p>';

@@ -6,8 +6,9 @@ Diese Übersicht hält die geplanten Änderungen und ihren Fortschritt fest. Ein
 
 ### Soundeffekte
 
-- [ ] **Sound verfeinern:** Kräftigeres klassisches Arcade-Retro-Sounddesign mit eigenem Klangcharakter für Waffen und Ereignisse; wichtige Ereignisse wie Schaden, Bossauftritte und Käserausch sollen im Kampf hervorstechen. Keine Musik; Ton weiterhin mit M ein- und ausschaltbar.
-  - Teilfortschritt: Waffen um eine tiefere Klangschicht ergänzt, mehrere Ereignisse eigenständiger gestaltet und vier Stimmen für wichtige Ereignisse reserviert. Weiterhin synthetisch, ohne zusätzliche Audiodateien. Automatisiert: Soundausgabe, Stummschaltung, Stimmenbegrenzung und Schadenssignal bei hoher Auslastung sowie bestehende Spielabläufe geprüft (`node test-game.cjs`).
+- [ ] **Sound verfeinern:** Kräftigeres klassisches Arcade-Retro-Sounddesign mit eigenem Klangcharakter für Waffen und Ereignisse; wichtige Ereignisse wie Schaden, Bossauftritte und Käserausch sollen im Kampf hervorstechen. Ton weiterhin mit M ein- und ausschaltbar.
+  - Teilfortschritt: Waffen um eine tiefere Klangschicht ergänzt, mehrere Ereignisse eigenständiger gestaltet und vier Stimmen für wichtige Ereignisse reserviert. Soundeffekte werden weiterhin synthetisch erzeugt. Automatisiert: Soundausgabe, Stummschaltung, Stimmenbegrenzung und Schadenssignal bei hoher Auslastung sowie bestehende Spielabläufe geprüft (`node test-game.cjs`).
+- [x] **Hintergrundmusik:** Die acht bereitgestellten Titel starten mit jedem neuen Lauf in zufälliger Reihenfolge. Nach jedem vollständigen Durchlauf wird neu gemischt. M pausiert die Musik und schaltet die Effekte stumm. Automatisiert sind Titelwechsel, Wiederholung, Stummschaltung, Stopp und Neustart geprüft (`node test-game.cjs`).
   - Offen: Hörprobe im tatsächlichen Spiel durch den Nutzer; Klangcharakter, Unterschiede aller Waffen und Ereignisse, Lautstärke und Verständlichkeit bei dichten Kämpfen anhand des Feedbacks abstimmen.
 
 

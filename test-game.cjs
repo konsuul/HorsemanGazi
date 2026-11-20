@@ -147,6 +147,39 @@ const signatures=new Set();for(const style of ['normal','red','white','rose','po
 for(const event of ['hit','explode','pickup','card','synergy','heal','charge','charged','ready','block','graze','hurt','die','boss','transition','overdrive','shatter','split','echo','segment']){audioClock+=.4;const before=audioStarts;withAudio.sfx.play(event);assert.ok(audioStarts>before,event+' hat Cue');pending.splice(0).forEach(o=>o.onended())}
 assert.ok(audioLog.every(o=>o.stopped>o.started),'alle Stimmen haben ein Ende');
 
+// Die Musik verwendet ein einzelnes Audioelement für alle Durchläufe.
+let music,random=.99;
+const musicEvents={},played=[];
+class FakeMusic{
+ constructor(){music=this;this.paused=true}
+ addEventListener(name,fn){musicEvents[name]=fn}
+ play(){this.paused=false;played.push(this.src);return Promise.resolve()}
+ pause(){this.paused=true}
+}
+const withMusic={Math:{floor:Math.floor,random:()=>random},window:{Audio:FakeMusic,addEventListener:(name,fn)=>{musicEvents[name]=fn}}};
+vm.createContext(withMusic);vm.runInContext(soundSource,withMusic);
+const soundtrack=withMusic.sfx;
+assert.equal(music,undefined,'keine Musik vor Spielstart');
+soundtrack.startMusic();
+for(let i=1;i<8;i++)musicEvents.ended();
+const firstRound=played.slice();
+assert.equal(new Set(firstRound).size,8,'alle acht Titel kommen genau einmal');
+for(const path of firstRound)assert.ok(fs.existsSync(__dirname+'/'+path),path);
+random=0;
+for(let i=0;i<8;i++)musicEvents.ended();
+const secondRound=played.slice(8);
+assert.deepEqual(secondRound.slice().sort(),firstRound.slice().sort());
+assert.notDeepEqual(secondRound,firstRound,'nächste Runde wird neu gemischt');
+assert.notEqual(secondRound[0],firstRound.at(-1),'kein doppelter Titel am Rundenwechsel');
+soundtrack.toggle();assert.equal(music.paused,true);
+soundtrack.toggle();assert.equal(played.at(-1),secondRound.at(-1),'Fortsetzung beim aktuellen Titel');
+soundtrack.stopMusic();assert.equal(music.paused,true);
+const stoppedCount=played.length;
+musicEvents.ended();musicEvents.keydown();
+assert.equal(played.length,stoppedCount,'keine Wiedergabe nach Spielende');
+soundtrack.startMusic();
+assert.notEqual(played.at(-1),firstRound[0],'Neustart mischt die Playlist neu');
+
 // Jede Karte muss auch ohne andere Karten wirken.
 for(let rank=1;rank<=3;rank++){
  reset();a.get().upgrades.fanShot=rank;shoot();assert.equal(a.get().bullets.length,1+2*rank);assert.ok(a.get().bullets[0].vy<0&&a.get().bullets.at(-1).vy>0);

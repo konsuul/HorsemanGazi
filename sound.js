@@ -1,7 +1,49 @@
-/* Procedural sound effects only: no background music and no external assets. */
+/* Procedural sound effects and a shuffled soundtrack. */
 const PfertSound=(()=>{
  let ctx=null,master=null,noiseBuffer=null,muted=false,voices=0,sequence=0;
  const last={};const LIMIT=16, RESERVE=4;let priority=false;
+ const tracks=['ken','zangief','vega','blanka','cammy','chun-li','ryu','guile'];
+ let music=null,playlist=[],previousTrack=null,musicActive=false;
+ function playMusic(){
+  if(musicActive&&!muted)music.play().catch(()=>{});
+ }
+ function nextTrack(){
+  if(!musicActive)return;
+  if(!playlist.length){
+   playlist=tracks.slice();
+   for(let i=playlist.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [playlist[i],playlist[j]]=[playlist[j],playlist[i]];
+   }
+   if(playlist[0]===previousTrack){
+    const j=1+Math.floor(Math.random()*(playlist.length-1));
+    [playlist[0],playlist[j]]=[playlist[j],playlist[0]];
+   }
+  }
+  previousTrack=playlist.shift();
+  music.src='assets/music/'+previousTrack+'.mp3';
+  playMusic();
+ }
+ function startMusic(){
+  if(!window.Audio)return;
+  if(!music){
+   music=new window.Audio();
+   music.volume=.25;
+   music.addEventListener('ended',nextTrack);
+   // A controller start may need a keyboard or pointer gesture to unlock audio.
+   const resumeMusic=()=>{if(music.paused&&!music.ended)playMusic()};
+   window.addEventListener('keydown',resumeMusic);
+   window.addEventListener('click',resumeMusic);
+  }
+  musicActive=true;
+  playlist=[];
+  previousTrack=null;
+  nextTrack();
+ }
+ function stopMusic(){
+  musicActive=false;
+  if(music)music.pause();
+ }
  const profiles={
   normal:['triangle',760,370,.07,.026],red:['square',260,75,.09,.023],white:['sine',1220,760,.09,.036],rose:['sine',570,940,.13,.033],port:['sawtooth',200,128,.23,.019],speed:['triangle',1680,450,.065,.026],prism:['triangle',1120,1680,.12,.024],saw:['sawtooth',145,92,.18,.023],chain:['square',1380,460,.075,.017],orbit:['sine',340,530,.16,.038],mortar:['triangle',115,38,.2,.05],wave:['sine',280,85,.22,.05],frost:['triangle',1900,900,.12,.019],vortex:['sine',145,58,.27,.053],storm:['sawtooth',95,44,.34,.03],phoenix:['triangle',720,155,.16,.03],satellite:['sine',1000,750,.07,.02],echo:['sine',820,560,.12,.027]
  };
@@ -56,5 +98,16 @@ const PfertSound=(()=>{
   else if(kind==='shatter'||kind==='split'||kind==='echo'){tone('triangle',kind==='shatter'?1300:900,kind==='echo'?650:350,.12,.019,now);if(kind!=='echo')noise(.08,.012,now,5000)}
   return true;
  }
- return {wake,play,toggle(){muted=!muted;if(master)master.gain.setValueAtTime(muted?0:.7,ctx.currentTime);if(!muted)wake();return muted},get muted(){return muted},get activeVoices(){return voices}};
+ function toggle(){
+  muted=!muted;
+  if(master)master.gain.setValueAtTime(muted?0:.7,ctx.currentTime);
+  if(muted){
+   if(music)music.pause();
+  }else{
+   wake();
+   playMusic();
+  }
+  return muted;
+ }
+ return {wake,play,startMusic,stopMusic,toggle,get muted(){return muted},get activeVoices(){return voices}};
 })();
