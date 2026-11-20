@@ -334,10 +334,7 @@ autoReset();a.get().player.weapon=1;a.get().player.effects[1]=18;a.update(.01);a
 autoReset();a.get().player.weapon=3;a.get().player.effects[3]=18;press();const chargedBeam=a.get().beams[0];a.update(.05);assert.ok(a.get().beams.includes(chargedBeam),'Automatik überschreibt Sonderlaser nicht');assert.ok(a.get().player.attacks>1);events.keyup({code:'Space',preventDefault:noop});
 autoReset();a.setXp(a.get().xpNeeded);a.update(.02);assert.equal(a.get().state,'upgrade');let attacks=a.get().player.attacks;a.update(.5);assert.equal(a.get().player.attacks,attacks,'kein Feuer bei Kartenauswahl');a.chooseCard(0);a.update(.01);assert.ok(a.get().player.attacks>attacks);
 autoReset();for(let i=0;i<5;i++){a.get().player.inv=0;a.hurt()}attacks=a.get().player.attacks;a.update(1);assert.equal(a.get().player.attacks,attacks,'kein Feuer nach Game Over');
-<<<<<<< HEAD
 for(const step of [.01,.05]){autoReset();for(let i=0;i<Math.round(2/step);i++)a.update(step);assert.ok(a.get().player.attacks===13,'zeitbasierte Schussfolge')}
-=======
-for(const step of [.01,.05]){autoReset();for(let i=0;i<Math.round(2/step);i++)a.update(step);assert.ok(a.get().player.attacks>=8&&a.get().player.attacks<=9,'zeitbasierte Schussfolge')}
 // Audio is optional, gesture-initialized, muteable, and bounded.
 const soundSource=fs.readFileSync(__dirname+'/sound.js','utf8')+';globalThis.sfx=PfertSound;';
 const noAudio={window:{}};vm.createContext(noAudio);vm.runInContext(soundSource,noAudio);assert.doesNotThrow(()=>noAudio.sfx.play('shot'));
@@ -364,18 +361,19 @@ vm.createContext(withMusic);vm.runInContext(soundSource,withMusic);
 const soundtrack=withMusic.sfx;
 assert.equal(music,undefined,'keine Musik vor Spielstart');
 soundtrack.startMusic();
-for(let i=1;i<8;i++)musicEvents.ended();
+const trackCount=9;
+for(let i=1;i<trackCount;i++)musicEvents.ended();
 const firstRound=played.slice();
-assert.equal(new Set(firstRound).size,8,'alle acht Titel kommen genau einmal');
+assert.equal(new Set(firstRound).size,trackCount,'alle neun Titel kommen genau einmal');
 for(const path of firstRound)assert.ok(fs.existsSync(__dirname+'/'+path),path);
 random=0;
-for(let i=0;i<8;i++)musicEvents.ended();
-const secondRound=played.slice(8);
+for(let i=0;i<trackCount;i++)musicEvents.ended();
+const secondRound=played.slice(trackCount);
 assert.deepEqual(secondRound.slice().sort(),firstRound.slice().sort());
 assert.notDeepEqual(secondRound,firstRound,'nächste Runde wird neu gemischt');
 assert.notEqual(secondRound[0],firstRound.at(-1),'kein doppelter Titel am Rundenwechsel');
-soundtrack.toggle();assert.equal(music.paused,true);
-soundtrack.toggle();assert.equal(played.at(-1),secondRound.at(-1),'Fortsetzung beim aktuellen Titel');
+soundtrack.toggleMusic();assert.equal(music.paused,true);
+soundtrack.toggleMusic();assert.equal(played.at(-1),secondRound.at(-1),'Fortsetzung beim aktuellen Titel');
 soundtrack.stopMusic();assert.equal(music.paused,true);
 const stoppedCount=played.length;
 musicEvents.ended();musicEvents.keydown();
@@ -383,7 +381,6 @@ assert.equal(played.length,stoppedCount,'keine Wiedergabe nach Spielende');
 soundtrack.startMusic();
 assert.notEqual(played.at(-1),firstRound[0],'Neustart mischt die Playlist neu');
 
->>>>>>> 8b8ae3434ebeedd06b020c4f503db25977931ff9
 // Jede Karte muss auch ohne andere Karten wirken.
 for(let rank=1;rank<=3;rank++){
  reset();a.get().upgrades.fanShot=rank;shoot();assert.equal(a.get().bullets.length,1+2*rank);assert.ok(a.get().bullets[0].vy<0&&a.get().bullets.at(-1).vy>0);
