@@ -52,7 +52,13 @@ Das dauerhafte schwebende Objekt vor dem Pfert-Mund wurde entfernt. Ein automati
 
 ## Fortschritt und Geheimnisse
 
-Es gibt 32 Kartentypen einschließlich der drei endlos wiederholbaren Verbesserungen. Doppelter Käse, Streuflug, Schlangenlinie, Spürnase und Käsebruch verändern den automatischen Standardschuss und die Sonderangriffe der Weinwaffen und lassen sich kombinieren. Das automatische Feuer der Weinwaffen bleibt davon unberührt. Ab Minute 2 kann eine seltene Synergie-Karte erscheinen, wenn die passenden Grundkarten vorhanden sind.
+Es gibt 36 Kartentypen einschließlich drei endlos wiederholbarer Verbesserungen. Solange eine Standardschusskarte verfügbar ist, erscheint bei jedem Stufenaufstieg mindestens eine unter den drei Angeboten. Doppelter Käse, Streuflug, Schlangenlinie, Spürnase und Käsebruch lassen sich beim Standardschuss und bei Wein-Sonderangriffen kombinieren. Spürnase lenkt auch das automatische Weinfeuer. Aktiver Wein übernimmt das Dauerfeuer bis zum Ablauf oder Verbrauch.
+
+- **Bumerangkäse** kehrt nach dem ersten Treffer oder nach einer halben Sekunde Freiflug um. Auf dem Rückweg verursacht er 55 % Schaden und kann Ziele erneut treffen.
+- **Käsekarussell** lässt Geschosse eine Viertelsekunde um das Pfert kreisen. Danach fliegen sie in ihrem jeweiligen Abschusswinkel los und können sich schlängeln oder Ziele suchen.
+- **Sprungkruste** gibt dem Schuss einen zusätzlichen Abpraller. Beim ersten Abpraller entsteht ein Splitter mit 30 % Schaden, der Spürnase und Schlangenlinie übernimmt. Der Hauptschuss kann zusätzlich Käsebruch auslösen.
+
+Die drei neuen Formen wirken auf den Standardschuss und seine Kartenkopien. Schnellgärung, Käsefondue und Fingerfertigkeit haben ein Viertel des normalen Ziehgewichts. Ab Minute 2 sind seltene Synergien mit passenden Grundkarten verfügbar. Ein gezogenes Angebot für Mondschmelze erscheint mit 25 % Wahrscheinlichkeit.
 
 ### Seltene Synergien
 
@@ -64,7 +70,13 @@ Es gibt 32 Kartentypen einschließlich der drei endlos wiederholbaren Verbesseru
 
 Käsereifung multipliziert den Schaden je Rang mit 1,12. Die Boni wirken zusammen; der Angriffsdruck reagiert zeitversetzt auf starke Synergie-Builds. Treffer-, Klang-, Partikel- und Projektillimits halten die Darstellung begrenzt.
 
-Gegner bleiben ungefähr gleich häufig. Widerstandskraft und Angriffsdruck steigen schrittweise mit Zeit und Karten. Elitegegner sind mit einem goldenen Zeichen markiert. Schnelle Abschussfolgen erhöhen die Punktekette.
+Im Hauptspiel erscheint außerhalb von Bosskämpfen alle 45 bis 65 Sekunden eines von drei Power-ups. Alle drei kommen pro Durchgang in gemischter Reihenfolge vor.
+
+- **Suchraketen** füllen auf drei kreisende Raketen auf. Sobald ein sichtbarer Gegner oder ein lebendes Bosssegment höchstens 200 Pixel entfernt ist, startet eine Rakete. Zwischen Starts liegen mindestens 0,6 Sekunden. Ladungen bleiben bei Gebietswechseln erhalten.
+- **Schutzschild** fängt zwei feindliche Geschosse innerhalb von acht Sekunden ab. Kontakt mit Gegnern bleibt gefährlich.
+- **Räumstrahl** löscht eine Sekunde lang feindliche Geschosse auf einer horizontalen Bahn vor dem Pfert. Gegner nehmen dabei keinen Schaden.
+
+Widerstandskraft und Angriffsdruck steigen schrittweise mit Zeit und Karten. Die Basarlaterne nimmt von ihrer gepanzerten Vorderseite 55 % des direkten Schadens. Beim Großwesir dämpft das markierte Segment **Arme & Gewand** direkten Schaden bei Vorwarnung und Vorstoß um 35 %. Elitegegner tragen ein goldenes Zeichen. Schnelle Abschussfolgen erhöhen die Punktekette.
 
 Bei Minute 7 öffnet eine abgeschossene goldene Sucuk den ersten Ruhrpott-Abstecher. Bei Minute 14 öffnet eine abgeschossene Grubenlampe die Nachtschicht am Hochofen. Während eines laufenden Bosskampfes warten die Zugänge. Sie erscheinen jeweils nur einmal pro Runde. Der erste Abstecher dauert 45 Sekunden bis zum Fan-Boss, der zweite 60 Sekunden bis Hochofen-Horst. Nach dem Boss kehrt man mit seinen Herzen und Karten in das Hauptspiel zurück; dessen Uhr pausiert im Abstecher.
 

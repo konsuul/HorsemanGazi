@@ -6,6 +6,13 @@ Diese Übersicht hält die geplanten Änderungen und ihren Fortschritt fest. Ein
 
 - [x] **Ansaugreichweite:** XP-Orbs fliegen nur innerhalb des Magnetradius zum Pferd. Außerhalb driften sie nach links. Grundradius, Korkenzieher und getrennte Flaschenreichweite sind mit gezielten Orb-Assertions geprüft.
 
+## Schussmutationen und Power-ups · 20.11.2026
+
+- [x] **Kartenangebote und Schussformen:** Garantierter Standardschussplatz bei verfügbaren Karten, Viertelgewicht für reine Sonderschusskarten und drei neue kombinierbare Formen. Angebot, Rückflug, kombinierte Flugbahnen, Splittergrenzen und Wechsel zwischen Käse und Wein sind geprüft.
+- [x] **Suchraketen, Schutzschild und Räumstrahl:** Drei Power-ups mit eigenem Drop-Zeitplan. Zielwahl, Verbrauch, Auffüllen, Bosssegmente, Abstecher, Schildtreffer und Schussbahn sind geprüft.
+- [x] **Gegnerkonter:** Die Basarlaterne dämpft Fronttreffer. Beim Großwesir schützen Vorwarnung und Vorstoß das Segment Arme & Gewand. Schaden aus unterschiedlichen Winkeln und außerhalb des Schutzfensters ist geprüft.
+- [ ] **Spieltest:** Wirkung der kombinierten Flugbahnen, Lesbarkeit der zusätzlichen Effekte, Häufigkeit der Power-ups und Schwierigkeit gegen Laterne und Großwesir im Browser beurteilen.
+
 ## Grafikpolitur · 20.11.2026
 
 - [x] **Startbildschirm und Menüs:** Neuer Pixel-Schriftzug, animiertes Pfert vor dem Bosporus-Panorama, größerer 16:9-Spielrahmen und neu gestaltete Karten und Pause.

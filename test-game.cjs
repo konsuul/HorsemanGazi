@@ -10,7 +10,7 @@ const sandbox={navigator:{getGamepads:()=>gamepad?[gamepad]:[]},console,Math,Set
 vm.createContext(sandbox);vm.runInContext(fs.readFileSync(__dirname+'/art.js','utf8'),sandbox);
 const source=fs.readFileSync(__dirname+'/game.js','utf8').replace('})();',
  'globalThis.testApi={reset,update,render,renderTransition,pollGamepad,offerCards,enemy,enemyAttack,startBoss,partHit,activateRage,hurt,keys,chooseCard,cardDefs,fireCharge,get:()=>({selectedCard,lastRare,t,runTime,level,xp,xpNeeded,orbs,choices,upgrades,hearts,score,player,enemies,bullets,beams,shots,pickups,boss,nextBoss,bossCount,state,transition,levelIndex,secret,secretTime,golden,goldenAppeared,secondAppeared,secretType,particles,deaths,arcs,flashes,threat}),setXp:v=>xp=v,setTime:v=>t=v,setFirstSeen:v=>goldenAppeared=v,setRunTime:v=>runTime=v,setNextBoss:v=>nextBoss=v,setSecretTime:v=>secretTime=v,setSpawn:v=>spawn=v,setDrop:v=>drop=v};})();');
-vm.runInContext(source.replace('globalThis.testApi={','globalThis.testApi={shouldSpawnPickup,damagePart,art:PfertArt,startDebugRun,'),sandbox);const a=sandbox.testApi;
+vm.runInContext(source.replace('globalThis.testApi={','globalThis.testApi={shouldSpawnPickup,damagePart,art:PfertArt,startDebugRun,modifyDirectHit,updateFieldPowerupSpawns,'),sandbox);const a=sandbox.testApi;
 for(let i=0;i<17;i++){const count=Array.from({length:100},(_,n)=>a.shouldSpawnPickup(i,(n+.5)/100)).filter(Boolean).length;assert.equal(count,i===5||i===16?100:40,'Dropchance Flasche '+i)}
 function reset(){a.reset();a.setSpawn(999);a.setDrop(999);a.get().player.autoCooldown=Infinity}
 function debugReset(){a.startDebugRun();a.setSpawn(999);a.setDrop(999);a.get().player.autoCooldown=Infinity}
@@ -232,13 +232,147 @@ reset();for(const card of a.cardDefs)if(!card.repeatable)a.get().upgrades[card.i
 reset();let targetPickup={x:190,y:270,w:30,h:42,i:1};a.get().pickups.push(targetPickup);a.update(.05);assert.ok(targetPickup.x<185,'Flaschen werden in Reichweite angesaugt');
 
 // New weapon pickups and both tap/charge variants.
-assert.equal(a.cardDefs.length,33,'Geschosskarten ergänzt');
+assert.equal(a.cardDefs.length,36,'Geschosskarten ergänzt');
 for(let i=6;i<16;i++){
  reset();let q=a.get();q.pickups.push({x:135,y:270,w:30,h:42,i});a.update(.01);assert.equal(a.get().player.weapon,i);assert.ok(a.get().player.effects[i]>0);shoot();q=a.get();assert.ok(q.bullets.length||q.beams.length,'Mutator feuert '+i);a.render();
  reset();a.get().player.weapon=i;a.get().player.effects[i]=18;shoot(1);q=a.get();assert.ok(q.bullets.some(b=>b.charged)||q.beams.some(b=>b.charged),'Ladevariante '+i);a.render();
 }
 function equip(i){reset();a.get().player.weapon=i;a.get().player.effects[i]=18}
 function placeTarget(x=400,y=270,hp=100){a.enemy(0);const e=a.get().enemies.at(-1);e.x=x;e.y=y;e.speed=0;e.fire=999;e.hp=hp;e.max=hp;return e}
+{
+ reset();const {upgrades,player}=a.get();
+ Object.assign(upgrades,{carousel:1,boomerang:1,bounceCrust:1,fanShot:1,snakeShot:1,seekShot:1});
+ shoot();const [wing,main]=a.get().bullets;
+ const direction=wing.vy;
+ a.update(.1);
+ assert.ok(Math.abs(main.x-player.x)<61&&Math.abs(main.y-player.y)<=38,'Kreisflug um das Pfert');
+ assert.equal(wing.vy,direction);
+ a.update(.16);
+ assert.ok(main.x>player.x+60&&Math.abs(main.y-player.y)<3,'Ausflug auf der gespeicherten Bahn');
+ const outbound=main.damage;
+ for(let i=0;i<10;i++)a.update(.05);
+ assert.ok(main.returning&&main.vx<0);
+ assert.equal(main.damage,outbound*.55);
+ player.weapon=1;player.effects[1]=18;
+ a.get().bullets.length=0;shoot();shoot(1);
+ assert.ok(a.get().bullets.every(b=>!b.carousel&&!b.boomerangAt&&!b.crust),'Wein-Dauerfeuer und Sonderangriffe behalten ihre Formen');
+ player.effects[1]=0;
+ const projectiles=a.get().bullets;
+ while(projectiles.length<360)projectiles.push(bullet(700,100));
+ shoot();
+ assert.equal(projectiles.length,360);
+ assert.equal(projectiles.at(-1).damage,outbound,'Platz für Hauptschuss vor Fächerkopien');
+}
+{
+ reset();const {upgrades}=a.get();Object.assign(upgrades,{boomerang:1,bounceCrust:1,ricochet:2,seekShot:1,snakeShot:1,breakShot:1});
+ shoot();const [main]=a.get().bullets;
+ main.y=74;main.vy=-100;
+ a.update(.05);
+ const [edgeSplit]=a.get().bullets.filter(b=>b.generation===1);
+ assert.ok(edgeSplit&&edgeSplit.damage===main.damage*.3&&edgeSplit.seekRank===1&&edgeSplit.snakeRank===1);
+ assert.ok(!edgeSplit.boomerangAt&&!edgeSplit.crust&&!edgeSplit.bounces);
+ main.y=515;main.vy=100;
+ a.update(.05);
+ assert.equal(a.get().bullets.filter(b=>b.generation===1).length,1,'nur der erste Abpraller splittert');
+ main.y=268;main.vy=0;
+ const target=placeTarget(main.x+8,268);
+ a.update(.02);
+ assert.equal(target.hp,100-main.damage);
+ assert.equal(a.get().bullets.filter(b=>b.generation===1).length,3,'Käsebruch bleibt nach dem Sprung verfügbar');
+ a.update(.05);
+ assert.ok(main.returning,'Treffer löst den Rückflug vor Ablauf aus');
+ const afterOutbound=target.hp;
+ a.update(.05);
+ assert.equal(main.returnContact,null,'vor einem erneuten Treffer muss der Schuss das Ziel verlassen');
+ target.x=main.x-45;target.y=main.y;
+ a.update(.05);a.update(.05);
+ assert.ok(Math.abs(target.hp-(afterOutbound-main.damage))<1e-9,'ein erneuter Treffer auf dem Rückweg');
+}
+function collectFieldPickup(i){
+ const {player,pickups}=a.get();
+ pickups.push({x:player.x,y:player.y,w:30,h:42,i,age:0});
+ a.update(.01);
+}
+{
+ reset();const {player}=a.get(),power=player.fieldPower;
+ const found=new Set();
+ for(let i=0;i<3;i++){
+  power.dropIn=.01;a.updateFieldPowerupSpawns(.02);
+  const pickup=a.get().pickups.at(-1);
+  found.add(pickup.i);assert.ok(pickup.x>960);
+  assert.ok(power.dropIn>=45&&power.dropIn<=65);
+ }
+ assert.equal(found.size,3,'gemischte Reihenfolge ohne Wiederholung');
+ a.render();
+ collectFieldPickup('rockets');assert.equal(power.rockets,3);
+ const far=placeTarget(player.x+220,player.y);
+ a.update(.05);assert.equal(power.rockets,3);
+ const near=placeTarget(player.x-75,player.y);
+ player.weapon=1;player.effects[1]=18;
+ a.update(.01);
+ const rocket=a.get().bullets.find(b=>b.style==='rocket');
+ assert.equal(rocket.target,near);assert.equal(rocket.damage,2.25);assert.equal(power.rockets,2);
+ a.render();
+ for(let i=0;i<6;i++)a.update(.05);
+ assert.equal(near.hp,97.75);assert.equal(far.hp,100);assert.equal(power.rockets,2);
+ for(let i=0;i<7;i++)a.update(.05);
+ assert.equal(power.rockets,1,'weitere Rakete nach dem Startintervall');
+ collectFieldPickup('rockets');assert.equal(power.rockets,3);
+ events.keydown({code:'Escape',preventDefault:noop});
+ const frozen=power.launchCooldown;a.update(2);assert.equal(power.launchCooldown,frozen);
+ reset();assert.equal(a.get().player.fieldPower.rockets,0);
+}
+{
+ reset();a.setTime(419.99);a.setNextBoss(600);a.update(.02);
+ const {player,golden,bullets}=a.get(),power=player.fieldPower;
+ power.rockets=2;power.launchCooldown=5;
+ golden.x=500;golden.y=270;bullets.push(bullet(500,270));
+ a.update(.01);finishTransition();assert.equal(a.get().secret,true);
+ const nextPickup=power.dropIn;
+ a.update(.02);
+ assert.equal(power.rockets,2,'Raketenladungen bleiben im Abstecher erhalten');
+ assert.equal(power.dropIn,nextPickup,'Power-up-Uhr pausiert im Abstecher');
+ a.setSecretTime(44.99);a.update(.02);defeatBoss();finishTransition();
+ assert.equal(a.get().secret,false);assert.equal(power.rockets,2);
+}
+{
+ reset();const {player}=a.get(),power=player.fieldPower;
+ const projectile=(x,y)=>({x,y,vx:0,vy:0,w:8,h:8,life:10});
+ collectFieldPickup('shield');assert.equal(power.shield,2);
+ player.podCooldown=10;
+ a.get().shots.push(projectile(player.x,player.y),projectile(player.x,player.y));
+ a.update(.01);assert.equal(power.shield,0);assert.equal(a.get().hearts,5);
+ collectFieldPickup('shield');
+ placeTarget(player.x,player.y);a.update(.01);assert.equal(a.get().hearts,4);assert.equal(power.shield,2);
+ power.shieldTime=.01;a.update(.02);assert.equal(power.shield,0);
+ collectFieldPickup('sweeper');
+ const inBeam=projectile(player.x+80,player.y),beside=projectile(player.x+80,player.y+40);
+ a.get().shots.push(inBeam,beside);a.render();a.update(.05);
+ assert.equal(inBeam.life,0);assert.ok(beside.life>0);
+ assert.equal(a.get().enemies[0].hp,100,'Räumstrahl trifft keine Gegner');
+ for(let i=0;i<20;i++)a.update(.05);
+ assert.equal(power.beamTime,0);
+}
+{
+ reset();const enemy=placeTarget();enemy.patrol={sprite:'lantern'};
+ assert.equal(a.modifyDirectHit(enemy,10,{vx:2,vy:0},false,enemy.x,enemy.y),5.5);
+ assert.equal(a.modifyDirectHit(enemy,10,{vx:-2,vy:0},false,enemy.x,enemy.y),10);
+ assert.equal(a.modifyDirectHit(enemy,10,{vx:1,vy:2},false,enemy.x,enemy.y),10);
+ assert.equal(a.modifyDirectHit(enemy,10,{charged:true},false,enemy.x,enemy.y),5.5,'Sonderlaser trifft von vorn');
+ a.render();a.startBoss();
+ const {boss,player}=a.get(),armor=boss.parts.find(part=>part.role===1),exposed=boss.parts[0];
+ const hitPart=(part,attack)=>a.modifyDirectHit(part,10,attack,true,boss.x,boss.y);
+ assert.equal(hitPart(armor,{vx:1}),10);
+ boss.strike={elapsed:0,warning:1.15,fromX:boss.x,toX:boss.x-300};
+ assert.equal(hitPart(armor,{vx:-1}),6.5);
+ assert.equal(hitPart(armor,{charged:true}),6.5);
+ assert.equal(hitPart(exposed,{vx:1}),10);
+ a.render();
+ boss.strike=null;boss.fire=999;player.x=boss.x-175;player.y=boss.y+armor.aim[1];
+ const power=player.fieldPower;power.rockets=1;const nextPickup=power.dropIn;
+ a.update(.01);assert.ok(a.get().bullets.some(b=>b.style==='rocket'&&b.target===armor));
+ assert.equal(power.dropIn,nextPickup,'keine neuen Power-ups während des Bosskampfs');
+}
 equip(15);a.get().upgrades.seekShot=1;placeTarget(650,400);shoot();let tracking=a.get().bullets[0];a.update(.05);assert.ok(tracking.vy>0,'Weingeschoss verfolgt auch entfernten Gegner');
 for(const weapon of [0,1,2,3,4,6,7,8,9,10,11,12,13,14,15]){equip(weapon);for(const id of ['multiShot','fanShot','snakeShot','seekShot','breakShot'])a.get().upgrades[id]=1;shoot(1);const q=a.get(),attacks=q.bullets.length?q.bullets:q.beams;assert.ok(attacks.length>=4,'Wein-Sonderangriff vervielfacht '+weapon);assert.ok(attacks.every(b=>b.seekRank===1&&b.snakeRank===1&&b.breakRank===1),'Karteneffekte auf Wein-Sonderangriff '+weapon);a.render()}
 equip(3);a.get().upgrades.breakShot=1;let beamTarget=placeTarget(400,270,1000);shoot(1);a.update(.01);assert.equal(a.get().bullets.filter(b=>b.generation===1).length,2,'Sonderlaser splittert');for(let i=0;i<5;i++)a.update(.03);assert.ok(a.get().bullets.filter(b=>b.generation===1).length<=2,'Laser splittert je Ziel nur einmal');

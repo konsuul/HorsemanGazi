@@ -23,7 +23,7 @@ vm.createContext(sandbox);
 vm.runInContext(fs.readFileSync(__dirname+'/art.js','utf8'),sandbox);
 vm.runInContext(fs.readFileSync(__dirname+'/sound.js','utf8'),sandbox);
 const source=fs.readFileSync(__dirname+'/game.js','utf8').replace('})();',`
- globalThis.testApi={reset,update,render,pollGamepad,offerCards,chooseCard,cardDefs,cardEffect,
+ globalThis.testApi={reset,update,render,pollGamepad,offerCards,chooseCard,cardDefs,cardEffect,drawCard,
   get:()=>({state,t,runTime,player,hearts,choices,upgrades,transition,enemies,shots,bullets}),
   setHearts:value=>hearts=value,setTime:value=>runTime=value,
   startPortal(){try{beginTransition('enter')}catch(error){if(error!==transitionInterrupt)throw error}}
@@ -108,4 +108,22 @@ assert.equal(a.get().choices[0].id,'shatter');
 assert.match(dom.overlay.innerHTML,/Benötigt Kühlkette \+ Räucherkammer/);
 assert.match(dom.overlay.innerHTML,/0 % Trefferschaden als Explosion → 40 % Trefferschaden als Explosion/);
 assert.equal(a.cardEffect('damage',2),'+25,44 % Schaden');
+
+// A forced standard choice complements a rare offer and one general offer.
+assert.ok(a.get().choices.some(card=>card.id==='multiShot'));
+assert.equal(new Set(a.get().choices.map(card=>card.id)).size,3);
+const findCard=id=>a.cardDefs.find(card=>card.id===id);
+for(const id of ['charge','blast','tempo']){
+ const offers=Array.from({length:50},(_,index)=>{
+  random.random=()=>(index+.5)/50;
+  return a.drawCard([findCard(id),findCard('damage')]).id;
+ });
+ assert.equal(offers.filter(offer=>offer===id).length,10,id+' hat ein Viertel des Normalgewichts');
+}
+for(const roll of [.249,.25]){
+ random.random=()=>roll;
+ a.reset();a.setTime(121);a.get().upgrades.guard=1;a.offerCards();
+ assert.equal(a.get().choices.some(card=>card.id==='orbital'),roll<.25);
+ assert.equal(a.get().choices.length,3);
+}
 console.log('OK: Pausen, Fokusverlust, Portal, sinnvolle Kartenangebote und Rangvorschau.');
