@@ -147,7 +147,7 @@ Knoten **1–4 und 6–9** haben jeweils den angegebenen Effekt A; **5 und 10** 
 - A: +4,5 % Ansaugradius für Flaschen. B: +4,5 % Waffen-Power-up-Dauer. C: +1,5 % Waffen-Power-up-Dauer.
 - 13 · Korkensinn: Flaschen werden zusätzlich aus 60 Pixeln Entfernung angezogen.
 - 16 · Frischer Jahrgang: Die erste Waffenflasche jeder Runde hält 30 % länger.
-- 20 · Nachschub: Die erste aufgesammelte Waffenflasche füllt einen fehlenden Sonderangriff auf.
+- 20 · Nachschub: Die erste Waffenflasche der Runde gibt zusätzlich ein Drittel der Basisdauer auf den Weinbalken.
 - 22 · Kellerfund: Einmal pro Runde heilt eine Waffenflasche ein fehlendes Herz.
 - 23 · Sammlertrieb: Flaschen-Ansaugradius +150 %; Bewegungsgeschwindigkeit −10 %.
 
@@ -165,11 +165,11 @@ Knoten **1–4 und 6–9** haben jeweils den angegebenen Effekt A; **5 und 10** 
 ### W1 · Sonderreserve
 
 - A: +1,5 % Sonderangriffsschaden. B: +3 % Sonderangriffsschaden. C: +1,5 % Sonderangriffsschaden.
-- 13 · Sparsamer Korken: Einmal pro Runde verbraucht ein Sonderangriff keine Ladung.
+- 13 · Sparsamer Korken: Der erste Sonderangriff der Runde verbraucht keinen Wein.
 - 16 · Eröffnungsfeier: Der erste Sonderangriff verursacht 30 % zusätzlichen Schaden.
-- 20 · Sondernachschub: Einmal pro Runde wird nach dem Besiegen eines Bosses ein fehlender Sonderangriff aufgefüllt.
-- 22 · Letzter Tropfen: Der letzte verfügbare Sonderangriff verursacht 30 % zusätzlichen Schaden.
-- 23 · Große Flasche: Sonderangriffe verursachen 90 % mehr Schaden; maximal verfügbare Einsätze sinken von drei auf zwei.
+- 20 · Sondernachschub: Einmal pro Runde füllt ein Boss-Sieg bis zu einem Drittel des Weinbalkens auf, sofern eine Weinwaffe aktiv ist und Wein fehlt.
+- 22 · Letzter Tropfen: Liegt der Weinbalken beim Auslösen bei höchstens 10 %, verursacht der Sonderangriff 30 % zusätzlichen Schaden.
+- 23 · Große Flasche: Sonderangriffe verursachen 90 % mehr Schaden; mit Sondernachschub füllt ein Boss-Sieg bis zur Hälfte des Weinbalkens auf.
 
 ### W2 · Waffenliebhaber
 

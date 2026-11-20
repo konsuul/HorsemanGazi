@@ -15,6 +15,15 @@ Die Bilder werden ohne weiche Interpolation skaliert. Panoramen werden gespiegel
 
 Die neue Kulisse ist aufwändiger, aber nicht als fertiggestellte AAA-Produktion zu verstehen. Die Kombination aus Artwork, Animation, Beleuchtung und Lesbarkeit wird über native Canvas-Vorschaubilder geprüft.
 
+## Bosporus-Parallax
+
+| Datei | Verwendung | Größe |
+| --- | --- | --- |
+| [bosporus-mittelgrund-v1.png](bosporus-mittelgrund-v1.png) | Uferhäuser, Kuppeln und Minarette | 2164 × 395 |
+| [bosporus-vordergrund-v1.png](bosporus-vordergrund-v1.png) | Markisen, Iznik-Mosaike und bepflanzte Terrassen | 2164 × 290 |
+
+Beide transparenten Streifen stammen aus einem gemeinsamen Pixelgrafik-Entwurf. Sie werden proportional skaliert, horizontal gespiegelt und hinter der Spielebene mit 23 beziehungsweise 39 Canvas-Pixeln pro Sekunde gescrollt. Das Stadtpanorama bewegt sich mit 7 Pixeln pro Sekunde.
+
 ## Zweiter Ruhrpott-Hintergrund
 
 [ruhrgebiet-nachtschicht-v1.png](ruhrgebiet-nachtschicht-v1.png) ist ein separat mit dem eingebauten Imagegen-Tool erzeugtes Bild für den Innenraum der aktiven Stahlgießerei. Der vollständige Prompt steht unter industryNight in prompts.json. Das erste Ruhrpott-Level verwendet weiterhin unverändert ruhrgebiet-v1.png.

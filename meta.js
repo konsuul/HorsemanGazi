@@ -43,7 +43,15 @@
  function buy(data,id){const d=validate(data),root=canonical(id),group=members.get(root);if(!nodes.includes(root)||d.points<1||rank(d,root)>=limit(root))return null;const owned=new Set(d.purchased.map(x=>canonical(x.replace(/\+\d+$/, ''))));if(!owned.has(root)&&root!=='S1'&&!edges.some(([a,b])=>(a===root&&owned.has(b))||(b===root&&owned.has(a))))return null;const candidates=group?[...group,...extras(group)]:[root];const next=candidates.find(x=>!d.purchased.includes(x));d.points--;d.purchased.push(next);return d;}
  function refund(data){const d=validate(data);d.points+=d.purchased.length;d.purchased=[];return d;}
  function sell(data,id){const d=validate(data),root=canonical(id),group=members.get(root);if(!nodes.includes(root)||rank(d,root)<1)return null;const candidates=group?[...group,...extras(group)]:[root];const chosen=candidates.filter(x=>d.purchased.includes(x)).at(-1);d.purchased.splice(d.purchased.indexOf(chosen),1);d.points++;try{return validate(d)}catch(e){return null}}
- function award(data,seconds,bosses){const d=validate(data);if(!Number.isFinite(seconds)||seconds<0||!Number.isSafeInteger(bosses)||bosses<0)throw new Error('Ungültige Belohnung');const elapsed=d.seconds+seconds;d.points+=Math.floor(elapsed/600)+bosses;d.seconds=elapsed%600;return d;}
- const api={key,nodes,edges,fresh,validate,load,save,buy,sell,refund,award,canonical,rank,limit,describe};
+ function reward(data,seconds,bosses){
+  const next=validate(data);
+  if(!Number.isFinite(seconds)||seconds<0||!Number.isSafeInteger(bosses)||bosses<0)throw new Error('Ungültige Belohnung');
+  const elapsed=next.seconds+seconds,timePoints=Math.floor(elapsed/600);
+  next.points+=timePoints+bosses;
+  next.seconds=elapsed%600;
+  return {data:next,timePoints,bossPoints:bosses,nextIn:600-next.seconds};
+ }
+ function award(data,seconds,bosses){return reward(data,seconds,bosses).data}
+ const api={key,nodes,edges,fresh,validate,load,save,buy,sell,refund,award,reward,canonical,rank,limit,describe};
  if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.PfertMeta=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
