@@ -1284,14 +1284,7 @@ function updatePickupSpawns(dt){
 }
 function attackElements(charged=false){const base=weaponElements[activeWeapon()];return {frost:Math.min(.65,(base==='frost'?(charged?.4:.25):0)+cardValues.frost(upgrades.frost)),fire:(base==='fire'?.28:0)+cardValues.ember(upgrades.ember),lightning:base==='lightning',earth:base==='earth',chainBonus:upgrades.chain,forkBonus:cardValues.fork(upgrades.fork)}}
 const bulletLimit=360;
-let reducedProjectileEffects=false;
-function projectileEffectsReduced(){
- const margin=reducedProjectileEffects?12:0;
- reducedProjectileEffects=bullets.length>=48-margin||shots.length>=40-margin||bullets.length+shots.length>=64-margin;
- return reducedProjectileEffects;
-}
-function recordProjectileTrail(shot,dt,interval,limit,reduced){
- if(reduced){if(shot.trail?.length)shot.trail.length=0;return}
+function recordProjectileTrail(shot,dt,interval,limit){
  shot.trailClock=(shot.trailClock||0)+dt;
  if(shot.trailClock<interval)return;
  shot.trailClock%=interval;
@@ -2784,11 +2777,10 @@ function updateGameplay(dt){
  updateFieldPowerupSpawns(dt);
  updateFormation(previousTime);
  updateStarRoute(dt);
- const reducedEffects=projectileEffectsReduced();
  for(let i=0,count=bullets.length;i<count;i++){
   const b=bullets[i];
   const previousX=b.x,previousY=b.y;
-  recordProjectileTrail(b,dt,.025,7,reducedEffects);
+  recordProjectileTrail(b,dt,.025,7);
   b.age=(b.age||0)+dt;b.life=(b.life===undefined?4:b.life)-dt;
   const carousel=b.carousel,orbiting=b.orbit&&b.age<b.orbit;
   const leavingCarousel=carousel&&!orbiting&&b.age-dt<b.orbit;
@@ -2831,7 +2823,7 @@ function updateGameplay(dt){
  }
  for(let i=0,count=shots.length;i<count;i++){
   const s=shots[i];
-  recordProjectileTrail(s,dt,.035,4,reducedEffects);
+  recordProjectileTrail(s,dt,.035,4);
   moveHostileShot(s,dt);s.life-=dt;
   if(s.life>0&&clearing&&sweeperClears(clearing,s)){s.life=0;particle(s.x,s.y,fieldPowerups.sweeper.color,3)}
   if(s.life>0&&s.burstAt&&s.age>=s.burstAt)burstHostileShot(s);
@@ -3075,7 +3067,6 @@ function drawDamageFrame(){
  c.restore();
 }
 function render(){
- const reducedEffects=projectileEffectsReduced();
  const now=secret?secretTime:t;
  c.save();
  if(shake>0&&!reducedMotion?.matches)c.translate(Math.sin(now*83)*shake,Math.cos(now*77)*shake*.5);
@@ -3118,11 +3109,11 @@ function render(){
  for(const d of deaths)PfertArt.death(c,d,levelIndex);
  for(const drop of gearDrops)if(!drop.returning)drawGearDrop(drop);
  for(const b of bullets){
-  if(!reducedEffects)PfertArt.trail(c,b);
+  PfertArt.trail(c,b);
   if(b.style==='rocket')drawRocket(b.x,b.y,Math.atan2(b.vy,b.vx),true);
-  else PfertArt.bullet(c,b,reducedEffects);
+  else PfertArt.bullet(c,b);
  }
- for(const beam of beams)PfertArt.beam(c,beam,now,reducedEffects);
+ for(const beam of beams)PfertArt.beam(c,beam,now);
  for(const arc of arcs)PfertArt.arc(c,arc);for(const f of flashes)PfertArt.flash(c,f);
  for(const effect of elementalBursts)PfertArt.elementalBurst(c,effect);
  for(const r of rings)PfertArt.ring(c,r);
@@ -3147,7 +3138,7 @@ function render(){
  }
  if(player&&state==='playing'&&owns('V2-13')){const angle=runTime*2; c.fillStyle=player.metaGuardCooldown>0?'#71888b':'#fff0aa';c.beginPath();c.arc(player.x+Math.cos(angle)*45,player.y+Math.sin(angle)*32,6,0,Math.PI*2);c.fill()}
  if(player)drawFieldPowerEffects();
- for(const s of shots)if(s.life>0)PfertArt.hostile(c,s,reducedEffects);
+ for(const s of shots)if(s.life>0)PfertArt.hostile(c,s);
  if(player)PfertArt.hitCue(c,player,runTime);
  c.restore();
  if(player&&(state==='playing'||state==='upgrade'||state==='transition'||state==='paused')){

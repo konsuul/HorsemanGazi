@@ -28,7 +28,7 @@ vm.runInContext(read('art.js'),sandbox);
 vm.runInContext(read('game.js').replace('})();',`globalThis.check={
  art:PfertArt,reset,update,render,pollGamepad,enemy,fireSpecial,drawFieldPickup,
  setRunTime:value=>runTime=value,
- state:()=>({hearts,player,enemies,shots,bullets}),setMeta:value=>metaData=value,
+ state:()=>({hearts,player,enemies,shots,bullets,beams}),setMeta:value=>metaData=value,
  wine:()=>wineStatus(activeWeapon())
 };})();`),sandbox);
 const a=sandbox.check;
@@ -156,7 +156,7 @@ for(const tier of [1,2,3]){
  assert.equal(labels.length,46);
  assert.ok(labels.every(([,label,x,y,width])=>x-width/2>=618&&x+width/2<=860&&y<=55&&y>=22));
 }
-// Compare the same dense scene with and without decorative projectile effects.
+// Dense scenes keep the standard drawing paths and keep recording trails.
 a.reset();
 const {player,bullets,shots}=a.state();
 player.autoCooldown=Infinity;
@@ -168,23 +168,25 @@ for(let i=0;i<216;i++)shots.push({
  x:550+i%80*4,y:120+i%70*5,vx:-120,vy:0,w:10,h:10,age:0,life:3,kind:'needle',
  trail:[{x:205,y:220},{x:200,y:220}]
 });
-const detailed=makeContext(),reduced=makeContext();
-for(const shot of bullets){
- a.art.trail(detailed,shot);a.art.bullet(detailed,shot);
- a.art.bullet(reduced,shot,true);
-}
-for(const shot of shots){a.art.hostile(detailed,shot);a.art.hostile(reduced,shot,true)}
-assert.ok(reduced.calls.length<detailed.calls.length*.65);
 const previousX=shots[0].x;
-a.update(.02);
+a.update(.04);
 assert.equal(a.state().bullets.length,360);
 assert.equal(a.state().shots.length,216);
 assert.ok(shots[0].x<previousX);
-assert.ok([...bullets,...shots].every(shot=>!shot.trail.length));
-a.render();
-a.state().bullets.length=1;
-a.state().shots.length=0;
-a.update(.03);
-assert.equal(a.state().bullets[0].trail.length,1);
-console.log('OK: Geschosslast 360 + 216, protokollierte Zeichenoperationen '+detailed.calls.length+' → '+reduced.calls.length+'.');
+assert.ok(bullets.every(shot=>shot.trail.length===4));
+assert.ok(shots.every(shot=>shot.trail.length===3));
+a.state().beams.push({x:300,y:250,width:20,life:.15,style:'light'});
+for(const [name,arity,count] of [['trail',2,360],['bullet',2,360],['hostile',2,216],['beam',3,1]]){
+ const draw=a.art[name];
+ let calls=0;
+ a.art[name]=(...args)=>{
+  assert.equal(args.length,arity,name+' nutzt die reguläre Darstellung');
+  calls++;
+  return draw(...args);
+ };
+ a.render();
+ a.art[name]=draw;
+ assert.equal(calls,count);
+}
+console.log('OK: Geschosslast 360 + 216 mit regulärer Darstellung und Leuchtspuren.');
 console.log('OK: Trefferursachen, Wein-Sonderangriffe, Minenwarnung, Splitterwarnung und Orb-Kontrast.');

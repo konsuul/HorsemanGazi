@@ -140,7 +140,7 @@ Diese Übersicht hält die geplanten Änderungen und ihren Fortschritt fest. Ein
 - [x] **Ruhrpott-Buden als Parallax-Kulisse:** Stilisierte Puszta-Stube aus Gladbeck, detaillierte Currywurstbude und Trinkhalle mit Watt-Mann im ersten Ruhrpott-Level. Bildausschnitte, zwei Scrolltempi und Ersatzdarstellung automatisiert geprüft.
 - [ ] **Ruhrpott-Buden im Browser:** Lesbarkeit der Schilder und des Watt-Mann-Cameos während des Scrollens prüfen.
 
-- [x] **Lesbarkeit bei hoher Geschossdichte:** Kompakte Spielergeschosse, schmalere Laser und keine Leuchtspuren. Feindgeschosse behalten Silhouette und Warnzeichen. Zusatzgrafik und Spuraufzeichnung kehren bei sinkender Dichte verzögert zurück. `node test-readability.cjs` prüft die Umschaltung und die Zeichenlast mit 360 Spieler- und 216 Feindgeschossen.
+- [x] **Darstellung bei hoher Geschossdichte:** Ab Version 1.0.5 bleiben Geschossformen, Laserbreiten, Glüheffekte und Leuchtspuren bei hoher Projektilzahl erhalten. `node tests/test-readability.cjs` prüft Zeichenpfade und Spuraufzeichnung mit 360 Spieler- und 216 Feindgeschossen. Die Bildrate bei hoher Dichte bleibt im Browser zu prüfen.
 - [ ] **Bildrate bei hoher Geschossdichte:** FPS und Lesbarkeit der vereinfachten Darstellung im tatsächlichen Browser-Gefecht prüfen.
 
 - [x] **Talentbaum-Bonusübersicht:** Rechts stehen alle gekauften Talente mit ihrem aktuellen Bonus. Leerer Stand, Kauf, Rangsteigerung und Rückgabe sind mit `node test-meta-game.cjs` geprüft.
