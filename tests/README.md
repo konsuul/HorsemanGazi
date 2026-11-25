@@ -152,6 +152,7 @@ Die veröffentlichte Versionsnummer steht direkt auf dem Startbildschirm in `Pfe
 - **Patchversion** für Fehlerbehebungen und Feinschliff. Aus 1.4.2 wird 1.4.3.
 
 Bei einem Release die Anzeige aktualisieren und den Release-Commit mit dem passenden Git-Tag markieren, zum Beispiel `v1.0.0`.
+Den Tag zu GitHub pushen und unter **Actions → Publish Pfert** auf `main` die Versionsnummer ohne `v` eingeben. Der Workflow veröffentlicht die Dateien des Tags und prüft die Anzeige vor dem Upload.
 
 Die folgenden Befehle laufen vom Projektstamm aus.
 
