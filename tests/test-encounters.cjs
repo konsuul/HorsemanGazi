@@ -148,7 +148,9 @@ if(process.argv.includes('--formation')){
   advance(2.4);
   assert.ok(units.every(unit=>unit.formationVolleys===0&&unit.fire===Infinity),'Jede Staffel feuert zwei Salven');
   const shots=game.state().shots;
-  assert.ok(shots.length>=units.length*6&&shots.every(shot=>shot.vy===0),'Auch Zusatzgeschosse bleiben auf geraden Spuren');
+  const primary=units.length*6,baseline=primary+Math.floor(primary/5);
+  assert.ok(shots.length>0&&shots.length<=Math.ceil(baseline*.75),'Auch Formationssalven haben weniger Projektile');
+  assert.ok(shots.every(shot=>shot.vy===0),'Auch Zusatzgeschosse bleiben auf geraden Spuren');
   assert.equal(game.route(),null,'Fällige Sternenpost wartet während der Formation');
   if(expected.some(([, ,rear])=>rear))assert.ok(shots.some(shot=>shot.vx>0));
  }
@@ -288,13 +290,11 @@ if(process.argv.includes('--caravan')){
  console.log('OK: Zehn Karten, Nachladung, Rotation, drei Maschinen und zwei Bossabschlüsse.');
  process.exit(0);
 }
-setup();
-for(let i=0;i<10;i++)game.projectile(900,270,-200,0);
-const densityShots=game.state().shots;
-assert.equal(densityShots.length,12);
-const bonusShots=densityShots.filter(shot=>shot.bonus);
-assert.equal(bonusShots.length,2);
-assert.ok(bonusShots[0].vy*bonusShots[1].vy<0);
+for(const [fromBoss,expected] of [[false,9],[true,15]]){
+ setup();
+ for(let i=0;i<10;i++)game.projectile(900,270,-200,0,'',10,{fromBoss});
+ assert.equal(game.state().shots.length,expected);
+}
 for(const [phase,baseInterval] of [[1,2.5],[2,2.3]]){
  setup(180,1);
  game.startBoss();
@@ -593,7 +593,7 @@ for(const [index,pattern,specials] of cases){
    const attack=boss.special;
    drawLabels.length=0;
    game.render();
-   assert.ok(drawLabels.includes(expected.toUpperCase()),expected+' ist angekündigt');
+   assert.ok(!drawLabels.includes(expected.toUpperCase()),expected+' bleibt ohne Schriftzug');
    game.state().player.y=505;
    advance(.35);
    assert.equal(boss.special,attack);

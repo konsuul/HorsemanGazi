@@ -63,6 +63,9 @@
 
 ## Balance, Basisskills und Ruhrpott · 25.11.2026
 
+- [x] Reguläre Gegner erzeugen im Mittel 25 % weniger Projektile, Bosse 25 % mehr. Kampftexte und schwebende Beschriftungen entfallen. Symbole, Warnspuren und Balken zeigen den Spielzustand.
+- [ ] Projektilverteilung und Lesbarkeit der visuellen Signale im Browser prüfen.
+
 - [x] Vier wählbare Basisskills für jeden Run. Passende Kartenempfehlungen und Talentboni geben jedem Build einen eigenen Einstieg. Zusatzgeschosse verlieren mit weiteren Kopien an Schaden. Krit und Letzter Bissen stärken Einzelziel-Builds.
 - [x] Talentbaum mit fünf Bereichen, 15 benannten Clustern, hervorgehobenen Abschlussknoten und sichtbaren Querverbindungen. Talentpunkte, gekaufte Ränge und Verbindungen bleiben erhalten.
 - [ ] Talenttexte nutzen zoomabhängige Bereichs- und Clusterschrift. Der Tooltip zeigt Namen und Effekt auch bei gesperrten Talenten, damit sich weitere Pfade vor dem Kauf planen lassen. Detailtexte ausgewählter Talente stehen in der Seitenleiste. Lesbarkeit auf kleinen Ansichten und über die Zoomstufen im Browser abnehmen.

@@ -347,7 +347,7 @@ let state='menu', t=0, runTime=0, level=1, xp=0, xpNeeded=10, choices=[], score=
 let orbs=[];
 let elementalBursts=[];
 let enemies=[], bullets=[], shots=[], pickups=[], particles=[], deaths=[], rings=[], beams=[];
-let hostileShotCount=0;
+let hostileShotCount=0, enemyShotBudget=3, bossShotCount=0;
 let bossPickups=[];
 let firstBossDefeated=false;
 let rareEnemyQueue=[],nextRareEnemy=0;
@@ -819,7 +819,7 @@ function startRun(mode,skill=baseSkills[0]){
  player={skill,x:135,y:H/2,w:40,h:29,inv:0,effects:Array(16).fill(0),weapon:-1,charge:0,charging:false,specials:owns('W1-23')?2:3,specialCount:0,freeSpecialUsed:false,bossSpecialUsed:false,autoCooldown:0,autoAttacks:0,podSide:1,podCooldown:0,muzzle:0,guardFlash:0,attacks:0,rage:owns('K2-13')?15:0,overdrive:0,metaAfterglow:0,chargeCue:false,readyCue:false};
  player.fieldPower={dropIn:rand(45,65),queue:[],rockets:0,launchCooldown:0,shield:0,shieldTime:0,beamTime:0};
  enemies=[];bullets=[];shots=[];pickups=[];bossPickups=[];particles=[];deaths=[];rings=[];beams=[];
- hostileShotCount=0;
+ hostileShotCount=0;enemyShotBudget=3;bossShotCount=0;
  elementalBursts=[];
  boss=null;firstBossDefeated=false;rareEnemyQueue=[];nextRareEnemy=rand(120,145);spawn=1;spawnIndex=0;drop=8;nextBoss=300;bossCount=0;flash=0;shake=0;levelIndex=0;
  blockerPatrolDelay=rand(95,120);blockerPatrolQueue=[];
@@ -1926,20 +1926,35 @@ function hostileProjectile(x,y,vx,vy,col='#e7b575',size=10,options={}){
  return {x,y,vx:vx*pace,vy:vy*pace,w:size,h:size,col,life:8,age:0,...options,
   gravity:(options.gravity||0)*hostileShotSpeed};
 }
+function extraHostileShot(shot,side){
+ const angle=shot.laneLocked?0:.12*side;
+ return {...shot,y:shot.y+side*(shot.h+2),
+  vx:shot.vx*Math.cos(angle)-shot.vy*Math.sin(angle),
+  vy:shot.vx*Math.sin(angle)+shot.vy*Math.cos(angle),
+  life:shot.burstAt||shot.life,burstAt:0,bonus:true};
+}
+function emitHostileShot(shot){
+ if(shots.length>=216)return;
+ if(shot.fromBoss){
+  shots.push(shot);
+  if(++bossShotCount%4===0&&shots.length<216){
+   shots.push(extraHostileShot(shot,bossShotCount%8===0?-1:1));
+  }
+  return;
+ }
+ // Keep mines and splitters intact and account for them in the next shots.
+ enemyShotBudget+=3;
+ if(enemyShotBudget<4&&!shot.burstAt)return;
+ enemyShotBudget-=4;
+ shots.push(shot);
+}
 function projectile(x,y,vx,vy,color,size,options){
  if(shots.length>=216)return;
  const shot=hostileProjectile(x,y,vx,vy,color,size,options);
- shots.push(shot);
- if(!shot.vx&&!shot.vy)return;
- hostileShotCount++;
- if(hostileShotCount%5!==0||shots.length>=216)return;
- const side=hostileShotCount%10===0?-1:1;
- const angle=options?.laneLocked?0:.12*side;
- // Bonus splitters and mines expire without creating a second burst.
- shots.push({...shot,y:shot.y+side*(shot.h+2),
-  vx:shot.vx*Math.cos(angle)-shot.vy*Math.sin(angle),
-  vy:shot.vx*Math.sin(angle)+shot.vy*Math.cos(angle),
-  life:shot.burstAt||shot.life,burstAt:0,bonus:true});
+ emitHostileShot(shot);
+ if((shot.vx||shot.vy)&&++hostileShotCount%5===0){
+  emitHostileShot(extraHostileShot(shot,hostileShotCount%10===0?-1:1));
+ }
 }
 const enemyShotTypes=['mortar','sickle','splitter','needle','sickle','mine','needle','pulse','splitter','mortar'];
 const normalPulse={reach:175,width:12,life:.16};
@@ -2039,34 +2054,34 @@ function hostileVolley(type,x,y,target,strong){
   case 'needle':{
    const aim=Math.atan2(target.y-y,target.x-x);
    for(const offset of strong?[-.19,0,.19]:[0]){
-    projectile(x,y,Math.cos(aim+offset)*190,Math.sin(aim+offset)*190,'',strong?11:8,{kind:type});
+    projectile(x,y,Math.cos(aim+offset)*190,Math.sin(aim+offset)*190,'',strong?11:8,{fromBoss:strong,kind:type});
    }
    break;
   }
   case 'sickle':
    for(const sign of strong?[-1,1]:[y<target.y?1:-1]){
-    projectile(x,y,direction*180,sign*70,'',strong?14:10,{kind:type,curve:-direction*sign*1.15,curveUntil:.65});
+    projectile(x,y,direction*180,sign*70,'',strong?14:10,{fromBoss:strong,kind:type,curve:-direction*sign*1.15,curveUntil:.65});
    }
    break;
   case 'splitter':
-   projectile(x,y,direction*155,0,'',strong?16:12,{kind:type,burstAt:.85,burstCount:strong?5:3,direction});
+   projectile(x,y,direction*155,0,'',strong?16:12,{fromBoss:strong,kind:type,burstAt:.85,burstCount:strong?5:3,direction});
    break;
   case 'mortar':
    for(const speed of strong?[145,195,240]:[150]){
-    projectile(x,y,direction*speed,-125,'',strong?14:10,{kind:type,gravity:145});
+    projectile(x,y,direction*speed,-125,'',strong?14:10,{fromBoss:strong,kind:type,gravity:145});
    }
    break;
   case 'mine':
-   projectile(x,y,direction*(strong?65:47),0,'',strong?20:15,{kind:type,burstAt:1.2,burstCount:strong?8:4,direction});
+   projectile(x,y,direction*(strong?65:47),0,'',strong?20:15,{fromBoss:strong,kind:type,burstAt:1.2,burstCount:strong?8:4,direction});
    break;
   case 'pulse':{
    const {reach,width,life}=strong?bossPulse:normalPulse;
-   projectile(x+direction*reach/2,y,0,0,'',width,{kind:type,w:reach,originX:x,life});
+   projectile(x+direction*reach/2,y,0,0,'',width,{fromBoss:strong,kind:type,w:reach,originX:x,life});
    break;
   }
   case 'football':{
    const vertical=y<270?1:-1;
-   projectile(x,y,direction*225,vertical*240,'',28,{kind:type,bounces:2,life:4});
+   projectile(x,y,direction*225,vertical*240,'',28,{fromBoss:strong,kind:type,bounces:2,life:4});
    break;
   }
  }
@@ -2161,7 +2176,7 @@ function burstHostileShot(shot){
  if(shot.x<0||shot.x>W||shot.y<62||shot.y>H)return;
  for(let i=0;i<shot.burstCount;i++){
   const angle=shot.kind==='mine'?i*2*Math.PI/shot.burstCount:(i-(shot.burstCount-1)/2)*.23;
-  projectile(shot.x,shot.y,shot.direction*Math.cos(angle)*135,Math.sin(angle)*135,'',8,{kind:'needle'});
+  projectile(shot.x,shot.y,shot.direction*Math.cos(angle)*135,Math.sin(angle)*135,'',8,{kind:'needle',fromBoss:shot.fromBoss});
  }
 }
 
@@ -2571,7 +2586,7 @@ function updateVizierStrike(b,dt){
  if(strike.elapsed<vizierStrike.warning)return true;
  if(!strike.launched){
   strike.launched=true;
-  projectile(b.x-30,b.y,-260,0,'#e8b68a',18,{kind:'needle'});
+  projectile(b.x-30,b.y,-260,0,'#e8b68a',18,{kind:'needle',fromBoss:true});
  }
  const progress=clamp((strike.elapsed-vizierStrike.warning)/vizierStrike.duration,0,1);
  b.x=strike.fromX+(strike.toX-strike.fromX)*progress;
@@ -2588,12 +2603,12 @@ function fireBossPhaseSalvo(b,part,target,second){
  const direction=target.x<x?-1:1;
  if(b.i===1){
   const side=second?1:-1;
-  projectile(x,y,direction*180,side*70,'',14,{kind:'sickle',curve:-direction*side*1.15,curveUntil:.65});
+  projectile(x,y,direction*180,side*70,'',14,{fromBoss:true,kind:'sickle',curve:-direction*side*1.15,curveUntil:.65});
  }else{
   const laneY=second?clamp(y,395,475):clamp(y,125,200);
   const speeds=second?[210,255]:[235,280];
   for(const speed of speeds){
-   projectile(x,laneY,direction*speed,second?-72:-105,'',14,{kind:'mortar',gravity:second?72:80,life:2.3});
+   projectile(x,laneY,direction*speed,second?-72:-105,'',14,{fromBoss:true,kind:'mortar',gravity:second?72:80,life:2.3});
   }
  }
 }
@@ -2624,7 +2639,7 @@ function updateBossSpecial(b,dt){
  if(special.wait>0)return true;
  for(const [x,y,vx,vy,kind,options] of special.waves[special.index]){
   const size={needle:12,sickle:15,splitter:17,mortar:15,mine:20,football:28,pulse:specialPulseWidth}[kind];
-  projectile(x,y,vx,vy,special.color,size,{kind,bossSpecial:special.name,...options});
+  projectile(x,y,vx,vy,special.color,size,{fromBoss:true,kind,bossSpecial:special.name,...options});
  }
  if(++special.index<special.waves.length){
   special.wait=.55;
@@ -2983,10 +2998,6 @@ function drawFieldPowerEffects(){
  if(power.beamTime>0){
   const ray=sweeperRay();
   PfertArt.focusBeam(c,{...ray,color:laserColor()},runTime,reducedMotion?.matches);
-  const control=lastFlightInput==='gamepad'?padButtons[3]:'E / KLICK';
-  c.fillStyle='#f5e5ff';c.font='bold 12px monospace';c.textAlign='center';
-  c.fillText('RÄUMSTRAHL · '+control+' ZIEL WECHSELN',W/2,H-27);
-  c.textAlign='start';
  }
 }
 function drawLanternArmor(e){
@@ -3129,8 +3140,7 @@ function render(){
  if(player&&(state==='playing'||state==='upgrade'||state==='transition'||state==='paused')){
   if(flash>0&&!reducedMotion?.matches)drawDamageFrame();
   const weapon=activeWeapon();
-  const hudNotice=noticeText==='KÄSERAUSCH BEREIT · Q'&&lastFlightInput==='gamepad'?'KÄSERAUSCH BEREIT · ['+padButtons[1]+']':noticeText;
-  PfertArt.hud(c,{hearts,score,t,runTime,secret,secretType,secretTime,player,boss,weapon,cartridges,wine:wineStatus(weapon),weaponNames,bosses,level,xp,xpNeeded,notice,noticeText:hudNotice,upgrades,build:collectedCards(),combo,comboRemaining:comboTime/comboWindow,threat,elements:weapon<0&&player.skill.id==='element'?{...attackElements(),fire:.64}:weapon<0&&player.skill.id==='salvo'?{...attackElements(),frost:.25}:attackElements(),maxHearts:maxHearts(),talentPoints:metaTimePoints+metaBosses});
+  PfertArt.hud(c,{hearts,score,t,runTime,secret,secretType,secretTime,player,boss,weapon,cartridges,wine:wineStatus(weapon),weaponNames,level,xp,xpNeeded,upgrades,build:collectedCards(),combo,comboRemaining:comboTime/comboWindow,threat,maxHearts:maxHearts(),talentPoints:metaTimePoints+metaBosses});
  }
 }
 function pollGamepad(now=Date.now()){
