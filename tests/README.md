@@ -107,7 +107,7 @@ Ab drei Abschüssen in Folge zeigt ein Balken unter der Käsekette, wie lange du
 
 Nach dem Spielende siehst du deine Stufe, Abschüsse, Boss-Siege, beste Käsekette, Windschatten und zugestellte Sternenpost. Die lokale Punktetafel sortiert die letzten zehn Runden nach Punkten und hebt die aktuelle Runde hervor. Bei nicht verfügbarem Browserspeicher bleiben Ergebnisse für die laufende Sitzung erhalten.
 
-Mit der Systemeinstellung „Bewegung reduzieren“ entfallen Bildwackeln und der rote Vollbildblitz. Beim Ruhrpott-Portal blenden die Schauplätze aus und wieder ein.
+Bei Herzverlust leuchtet der Spielfeldrand kurz rot. Mit der Systemeinstellung „Bewegung reduzieren“ entfallen Bildwackeln und das Randblinken. Beim Ruhrpott-Portal blenden die Schauplätze aus und wieder ein.
 
 Das Game Over wählt einen spöttischen Roast und einen motivierenden Nachsatz. Zwei aufeinanderfolgende Runden erhalten nicht denselben Roast.
 
@@ -152,6 +152,7 @@ Tests passend zur Änderung auswählen; mehrere Bereiche bei Wechselwirkungen ge
 - `node tests/test-scoreboard.cjs`: Punktetafel, Sortierung und Speicherung.
 - `node tests/test-game.cjs`: Kampf, Waffen, Karten, Gegner, Bosssegmente und Geheimlevel.
 - `node tests/test-encounters.cjs --boss-attacks`: Angriffsfolgen aller neun Bosse inklusive Warnungen und Wellen der 18 Sonderangriffe.
+- `node tests/test-encounters.cjs --telegraphs` prüft beim Teppich und bei Impulsangriffen die sichtbaren Warnlinien gegen die ausgesandten Geschosse.
 - `node tests/test-encounters.cjs --formation`: Fünf Formationen, Vorwarnung, Einflugspuren, Salven, Pause und Ausschluss bei Bossen und im Ruhrpott.
 - `node tests/test-encounters.cjs --caravan`: Munitionskarten, Nachladung, Maschinen und Abschluss der neuen Hauptbosse.
 - `node tests/test-encounters.cjs --wind`: Windschatten, Nachladeschub, Pausen und Sternenpost.

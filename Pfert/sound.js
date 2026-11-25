@@ -3,9 +3,16 @@ const PfertSound=(()=>{
  let ctx=null,master=null,combat=null,noiseBuffer=null,muted=false,voices=0,sequence=0,duckUntil=0;
  const last={};const LIMIT=16, RESERVE=4;let priority=false;
  const tracks=['ken','zangief','vega','blanka','cammy','chun-li','ryu','guile','balrog'];
- let music=null,playlist=[],previousTrack=null,musicActive=false,musicEnabled=true,musicVolume=.32;
+ const musicVolumeKey='pfert-music-volume';
+ let music=null,playlist=[],previousTrack=null,musicActive=false,musicEnabled=true,musicHidden=false;
+ let musicVolume=.32;
+ try{
+  const saved=window.localStorage?.getItem(musicVolumeKey);
+  const value=Number(saved);
+  if(saved&&Number.isFinite(value)&&value>=0&&value<=1)musicVolume=value;
+ }catch{}
  function playMusic(){
-  if(musicActive&&musicEnabled)music.play().catch(()=>{});
+  if(musicActive&&musicEnabled&&!musicHidden)music.play().catch(()=>{});
  }
  function nextTrack(){
   if(!musicActive)return;
@@ -50,6 +57,18 @@ const PfertSound=(()=>{
   else if(music)music.pause();
   return musicEnabled;
  }
+ function setMusicHidden(hidden){
+  if(musicHidden===hidden)return;
+  musicHidden=hidden;
+  if(hidden)music?.pause();
+  else playMusic();
+ }
+ function setMusicVolume(value){
+  if(!Number.isFinite(value))return;
+  musicVolume=Math.max(0,Math.min(1,value));
+  if(music)music.volume=musicVolume;
+  try{window.localStorage?.setItem(musicVolumeKey,String(musicVolume))}catch{}
+ }
  const profiles={
   normal:['triangle',760,370,.07,.026],red:['square',260,75,.09,.023],white:['sine',1220,760,.09,.036],rose:['sine',570,940,.13,.033],port:['sawtooth',200,128,.23,.019],speed:['triangle',1680,450,.065,.026],prism:['triangle',1120,1680,.12,.024],saw:['sawtooth',145,92,.18,.023],chain:['square',1380,460,.075,.017],orbit:['sine',340,530,.16,.038],mortar:['triangle',115,38,.2,.05],wave:['sine',280,85,.22,.05],frost:['triangle',1900,900,.12,.019],vortex:['sine',145,58,.27,.053],storm:['sawtooth',95,44,.34,.03],phoenix:['triangle',720,155,.16,.03],satellite:['sine',1000,750,.07,.02],echo:['sine',820,560,.12,.027]
  };
@@ -63,7 +82,7 @@ const PfertSound=(()=>{
   portal:[.41,[134,203,311,477],.21,9]
  };
  const foleyBuffers=new Map();
- const priorityCues=new Set(['hurt','die','boss','bossSpecial','formation','transition','overdrive','ready','levelUp']);
+ const priorityCues=new Set(['hurt','die','boss','bossSpecial','bossClear','formation','transition','overdrive','ready','levelUp']);
  const throttle={hit:.065,explode:.055,graze:.18,shot:.035,split:.1,shatter:.12,levelUp:.24,bossSpecial:.22};
  const pitchSteps=[1,.97,1.04,1.015];
  const shotBodies={normal:155,red:96,white:240,rose:185,port:80,speed:195,prism:220,saw:72,chain:130,orbit:165,mortar:62,wave:100,frost:260,vortex:55,storm:68,phoenix:115};
@@ -226,6 +245,11 @@ const PfertSound=(()=>{
   else if(kind==='hurt'){tone('square',85,45,.18,.025,now,0,700);tone('sawtooth',180,52,.24,.045,now);noise(.16,.024,now,1300)}
   else if(kind==='die'){tone('triangle',120,30,.75,.035,now);tone('square',220,65,.45,.016,now+.1,0,900);tone('sawtooth',310,32,.65,.035,now);noise(.35,.025,now,1600)}
   else if(kind==='boss'){tone('sine',60,32,.65,.045,now);tone('sawtooth',110,55,.48,.04,now,0,1100);tone('square',220,165,.38,.025,now+.08);noise(.3,.025,now,1200)}
+  else if(kind==='bossClear'){
+   tone('square',262,262,.15,.027,now,-.19,2300);
+   tone('triangle',392,392,.2,.04,now+.1,.19);
+   tone('triangle',523,523,.36,.047,now+.22);
+  }
   else if(kind==='bossSpecial'){
    tone('triangle',290,385,.11,.043,now,0,2100);
    tone('triangle',480,645,.13,.038,now+.12,0,2400);
@@ -260,5 +284,5 @@ const PfertSound=(()=>{
   if(!muted)wake();
   return muted;
  }
- return {wake,play,startMusic,stopMusic,toggleMusic,toggle,get musicVolume(){return musicVolume},set musicVolume(value){musicVolume=value;if(music)music.volume=value},get muted(){return muted},get activeVoices(){return voices}};
+ return {wake,play,startMusic,stopMusic,toggleMusic,setMusicHidden,toggle,get musicVolume(){return musicVolume},set musicVolume(value){setMusicVolume(value)},get muted(){return muted},get activeVoices(){return voices}};
 })();

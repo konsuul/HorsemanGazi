@@ -9,30 +9,35 @@ function context(){
   set:(obj,key,value)=>(obj[key]=value,true)
  });
 }
-const dom={},keys={},page={};
+const dom={},keys={},page={},storage=new Map();
+let focused;
 const pad={mapping:'standard',axes:[0,0],buttons:Array.from({length:16},()=>({pressed:false}))};
 const random=Object.create(Math);
 random.random=()=>0;
-const sandbox={Math:random,requestAnimationFrame:noop,navigator:{getGamepads:()=>[pad]},window:{Audio:class {constructor(){dom.music=this} addEventListener(){} play(){this.paused=false;return Promise.resolve()} pause(){this.paused=true}},addEventListener:(name,fn)=>{keys[name]??=fn}},document:{
+const sandbox={Math:random,requestAnimationFrame:noop,navigator:{getGamepads:()=>[pad]},window:{Audio:class {constructor(){dom.music=this} addEventListener(){} play(){this.paused=false;return Promise.resolve()} pause(){this.paused=true}},localStorage:{getItem:key=>storage.get(key)??null,setItem:(key,value)=>storage.set(key,value)},addEventListener:(name,fn)=>{keys[name]??=fn}},document:{
  hidden:false,
  addEventListener:(name,fn)=>page[name]=fn,
- getElementById:id=>dom[id]||(dom[id]={classList:{add:noop,remove:noop,toggle:noop},addEventListener(name,fn){this['on'+name]=fn},getContext:context}),
+ getElementById:id=>dom[id]||(dom[id]={id,classList:{add:noop,remove:noop,toggle:noop},addEventListener(name,fn){this['on'+name]=fn},focus(){focused=this;this.onfocus?.()},getContext:context}),
  createElement:()=>({getContext:context})
 }};
 vm.createContext(sandbox);
 vm.runInContext(fs.readFileSync(__dirname+'/../Pfert/art.js','utf8'),sandbox);
 vm.runInContext(fs.readFileSync(__dirname+'/../Pfert/sound.js','utf8'),sandbox);
 const source=fs.readFileSync(__dirname+'/../Pfert/game.js','utf8').replace('})();',`
- globalThis.testApi={reset,update,render,pollGamepad,hurt,offerCards,chooseCard,cardDefs,cardEffect,drawCard,
-  get:()=>({state,t,runTime,player,hearts,choices,upgrades,transition,enemies,shots,bullets}),
+ globalThis.testApi={reset,update,render,frame,pollGamepad,hurt,offerCards,chooseCard,cardDefs,cardEffect,drawCard,startBoss,damagePart,
+  get:()=>({state,t,runTime,player,hearts,choices,upgrades,transition,enemies,shots,bullets,boss}),
   setHearts:value=>hearts=value,setTime:value=>runTime=value,
   startPortal(){try{beginTransition('enter')}catch(error){if(error!==transitionInterrupt)throw error}}
  };
 })();`);
 vm.runInContext(source,sandbox);
 const a=sandbox.testApi;
-const press=(code,repeat=false)=>keys.keydown({code,repeat,preventDefault:noop});
+const press=(code,repeat=false)=>keys.keydown({code,repeat,target:focused,preventDefault:noop});
 const poll=()=>a.pollGamepad();
+function pressPad(button){
+ pad.buttons[button].pressed=true;poll();
+ pad.buttons[button].pressed=false;poll();
+}
 
 // Escape opens the music slider, whose setting survives reopening the pause menu.
 a.reset();
@@ -51,6 +56,12 @@ press('KeyN');assert.equal(dom.music.paused,true);
 press('KeyN');assert.equal(dom.music.paused,false);
 press('Escape');press('Escape');
 assert.equal(Number(volume.value),58);
+poll();pressPad(12);
+assert.equal(focused,volume);
+pressPad(15);
+assert.equal(dom.music.volume,.63);
+assert.equal(storage.get('pfert-music-volume'),'0.63');
+press('Enter');assert.equal(a.get().state,'paused');
 press('Escape');
 
 // Visibility and focus pauses freeze gameplay and require an explicit resume.
@@ -71,8 +82,15 @@ poll();a.update(.05);assert.equal(weapon.x,playerX,'gehaltener Stick bewegt nach
 pad.axes[0]=0;poll();
 sandbox.document.hidden=true;page.visibilitychange();
 assert.equal(a.get().state,'paused');
+assert.equal(dom.music.paused,true);
 sandbox.document.hidden=false;page.visibilitychange();
+assert.equal(dom.music.paused,false);
 assert.equal(a.get().state,'paused','Fokusgewinn setzt die Runde nicht automatisch fort');
+press('KeyN');
+sandbox.document.hidden=true;page.visibilitychange();
+sandbox.document.hidden=false;page.visibilitychange();
+assert.equal(dom.music.paused,true,'Ein ausgeblendeter Tab setzt die Musik-Stummschaltung nicht zurück');
+press('KeyN');
 press('Escape');poll();
 
 // A controller menu press during the portal freezes its own timeline.
@@ -114,6 +132,9 @@ assert.equal(a.cardEffect('damage',2),'+25,44 % Schaden');
 // A build-specific choice complements a rare offer and one general offer.
 assert.ok(a.get().choices.some(card=>a.get().player.skill.cards.includes(card.id)));
 assert.equal(new Set(a.get().choices.map(card=>card.id)).size,3);
+const focusedCard=a.get().choices[2];
+dom['card-2'].focus();press('Enter');
+assert.equal(a.get().upgrades[focusedCard.id],1,'Enter übernimmt die per Tab fokussierte Karte');
 const findCard=id=>a.cardDefs.find(card=>card.id===id);
 for(const id of ['charge','blast','tempo']){
  const offers=Array.from({length:50},(_,index)=>{
@@ -128,9 +149,26 @@ for(const roll of [.249,.25]){
  assert.equal(a.get().choices.some(card=>card.id==='orbital'),roll<.25);
  assert.equal(a.get().choices.length,3);
 }
+// Paused frames keep polling inputs without repainting the stationary world.
+const paints=[];
+vm.runInContext('const drawBackground=PfertArt.background;PfertArt.background=(...args)=>{recordPaint();drawBackground(...args)}',Object.assign(sandbox,{recordPaint:()=>paints.push(1)}));
+a.reset();a.frame(1000);a.frame(1016);
+assert.equal(paints.length,2);
+press('Escape');
+for(let i=0;i<60;i++)a.frame(1032+i*16);
+assert.equal(paints.length,3);
+press('Escape');a.frame(2000);
+assert.equal(paints.length,4);
+
 // Voluntary finish uses the normal recap without saving a score or emitting the death cue.
 const cues=[];
 vm.runInContext('PfertSound.play=kind=>recordCue(kind)',Object.assign(sandbox,{recordCue:kind=>cues.push(kind)}));
+a.reset();a.startBoss();
+const boss=a.get().boss;
+for(const part of boss.parts.slice(0,-1))a.damagePart(part,part.hp,0,0);
+assert.equal(cues.filter(cue=>cue==='bossClear').length,0);
+for(let i=0;i<2;i++)a.damagePart(boss.parts.at(-1),boss.parts.at(-1).hp,0,0);
+assert.equal(cues.filter(cue=>cue==='bossClear').length,1);
 a.reset();press('Escape');dom['end-run'].onclick();
 assert.match(dom.overlay.innerHTML,/Runde beenden\?/);
 press('Escape');assert.match(dom.overlay.innerHTML,/Fortsetzen/);

@@ -1058,10 +1058,6 @@ const PfertArt = (() => {
   if(e.warning){label(ctx,'!',e.x-38,e.y-13,19,'#ffe7a0');ctx.save();ctx.strokeStyle='#ffd18a88';ctx.setLineDash([5,5]);ctx.beginPath();ctx.moveTo(e.x-110,e.y);ctx.lineTo(e.x-34,e.y);ctx.stroke();ctx.restore()}
   if(e.rareEnemy&&e.aimTarget){
    g=ctx;glint(Math.round(e.x-25),Math.round(e.y),e.rareEnemy.color);
-   if(e.pulseCharging){
-    ctx.save();ctx.strokeStyle=e.rareEnemy.color;ctx.globalAlpha=.48;ctx.setLineDash([5,7]);
-    ctx.beginPath();ctx.moveTo(e.x-200,e.y);ctx.lineTo(e.x-25,e.y);ctx.stroke();ctx.restore();
-   }
   }
   if(e.pulseCharging)pulseCharge(ctx,e.x-(e.rareEnemy?25:22),e.y);
  }
@@ -1906,6 +1902,26 @@ const PfertArt = (() => {
   frost:{palette:['#3875b6','#78dbff','#e9fdff'],rows:['..2..','1.3.1','.232.','23332','.232.','1.3.1','..2..'],dx:40,dy:18},
   earth:{palette:['#604336','#bb8654','#efd39a'],rows:['..12.','.1332','12321','12211','.111.'],dx:36,dy:40}
  };
+ const elementalPieces=new Map();
+ function elementalPiece(kind,pixel){
+  const key=kind+pixel;
+  if(!elementalPieces.has(key)){
+   const {palette,rows}=elementalSprites[kind];
+   const sprite=document.createElement('canvas');
+   sprite.width=rows[0].length*pixel;
+   sprite.height=rows.length*pixel;
+   const pen=sprite.getContext('2d');
+   rows.forEach((row,y)=>{
+    for(let x=0;x<row.length;x++){
+     if(row[x]==='.')continue;
+     pen.fillStyle=palette[Number(row[x])-1];
+     pen.fillRect(x*pixel,y*pixel,pixel,pixel);
+    }
+   });
+   elementalPieces.set(key,sprite);
+  }
+  return elementalPieces.get(key);
+ }
  function elementalBurst(ctx,e){
   const art=elementalSprites[e.kind],age=1-e.life/e.maxLife;
   ctx.save();
@@ -1916,14 +1932,7 @@ const PfertArt = (() => {
    const side=i%2===0?1:-1,pixel=i===0?3:2;
    const x=Math.round(e.x+side*(e.offset*.45+art.dx*flight)*(1-i*.11));
    const y=Math.round(e.y+art.dy*(flight+.18)+(i%3-1)*11*(1+flight));
-   for(let dy=0;dy<art.rows.length;dy++){
-    const row=art.rows[dy];
-    for(let dx=0;dx<row.length;dx++){
-     if(row[dx]==='.')continue;
-     ctx.fillStyle=art.palette[Number(row[dx])-1];
-     ctx.fillRect(x+(dx-2)*pixel,y+(dy-3)*pixel,pixel,pixel);
-    }
-   }
+   ctx.drawImage(elementalPiece(e.kind,pixel),x-2*pixel,y-3*pixel);
   }
   ctx.restore();
  }

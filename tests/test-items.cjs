@@ -22,7 +22,7 @@ function element(id){
     contains:name=>classes.has(name)
    },
    addEventListener:(event,handler)=>handlers.set(event,handler),
-   click:()=>handlers.get('click')?.(),
+   click:()=>handlers.get('click')?.({type:'click',target:element(id)}),
    focus:()=>handlers.get('focus')?.()
   });
  }
@@ -177,6 +177,9 @@ place(item(2));a.update(.01);
 assert.equal(scene().gearBag[0],item(2));
 key('Escape');key('ArrowRight');key('Enter');
 assert.equal(scene().pauseView,'inventory');
+assert.ok(element('gear-worn-head').classList.contains('gear-target'));
+key('Escape');element('gear-open').click();
+assert.equal(scene().pauseView,'inventory','Mausklick öffnet den Rucksack ohne den Auswahlindex zu ändern');
 assert.ok(element('gear-worn-head').classList.contains('gear-target'));
 element('gear-bag-0').click();
 assert.equal(scene().wornGear.head,item(2));

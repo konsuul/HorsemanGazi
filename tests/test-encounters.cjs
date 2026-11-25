@@ -6,10 +6,15 @@ const path = require('node:path');
 
 const noop = () => {};
 const drawLabels = [],drawBars=[];
+const dangerTracks=[];
+let line;
 const random=Object.create(Math);
 const canvas = new Proxy({
  fillText(label){drawLabels.push(label);},
  fillRect(x,y,w,h){if(w>0&&h===3)drawBars.push({x,y,w,color:this.fillStyle});},
+ moveTo(x,y){line=[x,y];},
+ lineTo(x,y){if(line)line.push(x,y);},
+ stroke(){if(line?.length===4&&this.lineWidth===2&&['#ffcd86','#ffb382'].includes(this.strokeStyle))dangerTracks.push([this.strokeStyle,...line]);},
  createLinearGradient(){return {addColorStop:noop};},
  createRadialGradient(...coords){
   assert.ok(coords.every(Number.isFinite),'Endliche Koordinaten beim Aufladen');
@@ -61,6 +66,68 @@ function setup(clock = 0, bosses = 0) {
 }
 function advance(seconds) {
  for (let i = 0; i < Math.round(seconds * 20); i++) game.update(.05);
+}
+
+if(process.argv.includes('--telegraphs')){
+ function drawTracks(){
+  dangerTracks.length=0;
+  game.render();
+  return dangerTracks.slice();
+ }
+ function assertPulseRails(tracks,shot){
+  const start=shot.originX,end=2*shot.x-start;
+  const snap=value=>Math.round(value);
+  assert.deepEqual(tracks,[-1,1].map(side=>{
+   const y=snap(shot.y+side*shot.h/2);
+   return ['#ffb382',snap(start),y,snap(end),y];
+  }));
+ }
+ setup(67.99);
+ game.update(.02);
+ const carpet=game.state().enemies.find(unit=>unit.blocker);
+ const starts=[];
+ let sawWarning=false;
+ for(let i=0;i<100&&!starts.length;i++){
+  game.update(.05);
+  starts.push(...game.state().shots.filter(s=>s.age===0&&!s.bonus&&s.kind==='needle'&&s.vy===0));
+  if(!starts.length&&carpet.aimTarget){
+   assert.deepEqual(drawTracks().filter(([color])=>color==='#ffcd86'),
+    [-48,48].map(offset=>['#ffcd86',Math.round(carpet.x-carpet.w/2),carpet.y+offset,0,carpet.y+offset]));
+   sawWarning=true;
+  }
+ }
+ assert.ok(sawWarning);
+ assert.equal(starts.length,2);
+ assert.equal(starts[0].x,carpet.x-carpet.w/2);
+ assert.deepEqual(starts.map(s=>s.y-carpet.y),[-48,48]);
+
+ for(const playerX of [100,880]){
+  setup(190);
+  const {player}=game.state();
+  player.x=playerX;
+  const enemy=game.enemy(7,250);
+  Object.assign(enemy,{x:600,speed:0,fire:.4});
+  game.update(.02);
+  const tracks=drawTracks().filter(([color])=>color==='#ffb382');
+  advance(.4);
+  const shot=game.state().shots.find(s=>s.kind==='pulse');
+  assert.equal(shot.w,175);
+  assertPulseRails(tracks,shot);
+ }
+ setup(905,4);
+ game.startBoss();
+ const boss=game.state().boss;
+ Object.assign(boss,{fire:.1});
+ game.update(.05);
+ const tracks=drawTracks().filter(([color])=>color==='#ffb382');
+ game.update(.05);
+ const shot=game.state().shots.find(s=>s.kind==='pulse');
+ assert.equal(shot.w,420);
+ const span=tracks.map(([,x1,y1,x2,y2])=>[x2-x1,y2-y1]);
+ assert.deepEqual(span,[[-420,0],[-420,0]]);
+ assert.equal(tracks[1][2]-tracks[0][2],shot.h);
+ console.log('OK: Teppich-Linien und Impulsgrenzen zeigen die Schussbahnen.');
+ process.exit(0);
 }
 
 if(process.argv.includes('--formation')){
@@ -268,8 +335,12 @@ game.update(.02);
 const carpet=game.state().enemies.find(unit=>unit.blocker);
 assert.ok(carpet&&!carpet.patrol,'Der bisherige Teppich hat bei 1:08 Vorrang');
 game.drawEnemy(carpet);
-advance(5);
-assert.ok(game.state().shots.some(shot=>shot.kind==='needle'&&shot.vx<0&&Math.abs(shot.vy)<1e-8&&Math.abs(shot.y-carpet.y)===48));
+let carpetFired=false;
+for(let frame=0;frame<100;frame++){
+ game.update(.05);
+ carpetFired||=game.state().shots.some(shot=>shot.kind==='needle'&&shot.age===0&&!shot.bonus&&shot.vx<0&&shot.vy===0&&Math.abs(shot.y-carpet.y)===48);
+}
+assert.ok(carpetFired);
 advance(9);
 assert.ok(!game.state().enemies.some(unit=>unit.patrol));
 advance(1.1);

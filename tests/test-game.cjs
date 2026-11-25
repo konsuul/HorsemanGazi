@@ -757,10 +757,14 @@ for(const weapon of [-1,3]){
  const area=blocker.w*blocker.h/(960*540);
  assert.ok(area>=1/8&&area<=1/7);
  a.get().player.y=440;
- for(let step=0;step<100;step++)a.update(.05);
+ let carpetFired=false;
+ for(let step=0;step<100;step++){
+  a.update(.05);
+  carpetFired||=a.get().shots.some(s=>s.kind==='needle'&&s.age===0&&!s.bonus&&s.vx<0&&s.vy===0&&Math.abs(s.y-blocker.y)===48);
+ }
  assert.ok(blocker.x+blocker.w/2<960);
  assert.equal(a.get().hearts,5);
- assert.ok(a.get().shots.some(s=>s.kind==='needle'&&s.vx<0&&Math.abs(s.vy)<1e-8&&Math.abs(s.y-blocker.y)===48),'Blocker feuert entlang seiner eigenen Bahnen');
+ assert.ok(carpetFired,'Blocker feuert entlang seiner eigenen Bahnen');
  a.render();
  for(let step=0;step<180;step++)a.update(.05);
  assert.ok(a.get().enemies.includes(blocker));

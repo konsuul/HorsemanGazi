@@ -16,10 +16,11 @@ const makeContext=()=>{
 const elements={},events={},context=makeContext();
 const makeElement=()=>({classList:{add:noop,remove:noop},innerHTML:'',addEventListener:noop,appendChild:noop,getContext:()=>context});
 let pad=null;
+const motion={matches:false};
 const sandbox={
  PfertMeta,navigator:{getGamepads:()=>pad?[pad]:[]},requestAnimationFrame:noop,
  document:{getElementById:id=>elements[id]||=makeElement(),addEventListener:noop,createElement:makeElement},
- window:{addEventListener:(event,listener)=>events[event]=listener,localStorage:{getItem:()=>null,setItem:noop}}
+ window:{matchMedia:()=>motion,addEventListener:(event,listener)=>events[event]=listener,localStorage:{getItem:()=>null,setItem:noop}}
 };
 vm.createContext(sandbox);
 const read=file=>fs.readFileSync(path.join(__dirname,'../Pfert',file),'utf8');
@@ -64,6 +65,14 @@ a.state().player.inv=0;
 a.update(.01);
 assert.equal(a.state().hearts,4);
 assert.equal(a.state().player.lastDamage.source,'contact');
+context.calls.length=0;a.render();
+const damagePixels=context.calls.filter(call=>call[0]==='box'&&call[1]==='#ef7968');
+assert.equal(damagePixels.length,12);
+assert.ok(damagePixels.every(([, ,x,y,w,h])=>y>=62&&y+h<=533&&(w<=5||h<=5)));
+motion.matches=true;
+context.calls.length=0;a.render();
+assert.ok(!context.calls.some(call=>call[0]==='box'&&call[1]==='#ef7968'));
+motion.matches=false;
 enemy.hp=0;
 const p=a.state().player;
 for(let i=0;i<4;i++){
@@ -123,6 +132,20 @@ for(const tier of [1,2,3]){
  a.art.experienceOrb(ctx,{x:100,y:100,tier});
  assert.equal(ctx.calls.filter(call=>call[0]==='box'&&call[1]==='#f3ffff').length,tier);
  assert.ok(ctx.calls.some(call=>call[0]==='stroke'&&call[1]==='#162033'));
+}
+// Each elemental hit uses the same five raster pieces as it moves and fades.
+{
+ const ctx=makeContext(),pieces=[];
+ ctx.drawImage=(sprite,x,y)=>pieces.push([sprite,x,y]);
+ const hit={kind:'fire',x:400,y:270,offset:15,life:.12,maxLife:.52};
+ a.art.elementalBurst(ctx,hit);
+ a.art.elementalBurst(ctx,{...hit,x:450});
+ assert.equal(pieces.length,10);
+ assert.equal(new Set(pieces.map(([sprite])=>sprite)).size,2);
+ for(let i=0;i<5;i++){
+  assert.equal(pieces[i][0],pieces[i+5][0]);
+  assert.equal(pieces[i+5][1]-pieces[i][1],50);
+ }
 }
 // Every card stays inside the framed build panel, including a complete late run.
 {

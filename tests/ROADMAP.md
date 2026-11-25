@@ -1,5 +1,13 @@
 # Pfert – Testfeedback vom 11.11.2026
 
+## Kampflesbarkeit, Bedienung und Audio · 25.11.2026
+
+- [x] Der große Teppich markiert die beiden Schusslinien vor seiner Salve. Impulsangriffe zeigen die Breite und Reichweite des Strahls. Gerade Boss-Sonderangriffe zeichnen ihre Flugspur bis zum Spielfeldrand. Warnungen und Sternenpost-Siegel bleiben vor dekorativen Effekten sichtbar. Aktive Feindgeschosse liegen weiterhin darüber.
+- [x] Ein Herzverlust färbt für 180 Millisekunden nur den Spielfeldrand. Bei reduzierter Bewegung bleibt der Rand ruhig. Die vier Elementartreffer verwenden je zwei wiederverwendete Pixelgrafiken. Pause und Auswahlmenüs zeichnen das stehende Spielfeld einmal und fragen den Controller weiter ab.
+- [x] Basisskill- und Kartenwahl halten Tastaturfokus und Auswahl synchron. Beim Wiederöffnen ist der zuletzt bestätigte Basisskill markiert. Ein Mausklick öffnet den Rucksack mit gültiger Auswahl. Im Pausenmenü erreicht das Steuerkreuz die Musiklautstärke und ändert sie in 5-%-Schritten.
+- [x] Die Musiklautstärke bleibt nach dem Neuladen gespeichert. Im ausgeblendeten Tab pausiert der Titel an seiner Position. Alle Boss-Siege haben eine kurze Fanfare und auch die Ruhrpott-Bosse erscheinen mit Namen in der Siegesmeldung.
+- [ ] Browser-Spieltest und Hörprobe für die Warnspuren bei dichtem Feuer, den Herzverlust, die Lautstärkeregelung per Controller und die Boss-Fanfare.
+
 ## Grafik und Kampf · 25.11.2026
 
 - [x] Die 32 Gegnertypen und neun Bosse nutzen materialabhängige Lichtkanten und gestaffelte Schatten. Fünf Ruhrpott-Gegner, drei Karawanenmaschinen und fünf Bosse haben eigene neue Sprites. Die Portalziele passen zur Figurenoptik. Schlotzonen, Messingwiege und Karawanenmeister-Beine wurden an die sichtbaren Bauteile angepasst. Native Canvas-Vorschauen zeigen alle Kategorien sowie Trefferblitz und zerstörtes Segment.
@@ -127,7 +135,7 @@ Diese Übersicht hält die geplanten Änderungen und ihren Fortschritt fest. Ein
 - [x] **Scharfe Figuren und neue Gegnergrafiken:** Pfert, reguläre Gegner und Bosse verwenden bereinigte Pixelkonturen. Zehn seltene Gegner und vier Blocker haben eigene Rastergrafiken mit abgestuften Licht- und Schattenfarben. Zuschnitte und Laden geprüft.
 - [x] **Geschosse und Klang:** Sechzehn bereinigte Geschossmotive, gestufte Leuchtspuren und klarere Flächen an Feindgeschossen. Materialabhängige Treffer, schwere Explosionen, kurze Stereo-Reflexionen und ein Level-up-Signal. Lesbarkeit, Klangvarianten, Stimmenlimit und Pause automatisiert geprüft.
 - [ ] **Sicht- und Hörprobe:** Gegnerkonturen, Geschossspuren und Klangmischung im dichten Gefecht im Browser beurteilen.
-- [ ] **Teppich-Salve:** Der aktuelle Begegnungstest erwartet nach fünf Sekunden eine Zielnadel mit 48 Pixeln Höhenversatz. Diese Prüfung schlägt im aktuellen Projektstand fehl.
+- [x] **Teppich-Salve:** Prüfung auf den Abschusszeitpunkt verlegt. Die Nadeln können nach fünf Sekunden bereits das Spielfeld verlassen haben. Beide Warnlinien und beide Höhenversätze sind direkt beim ersten Abschuss geprüft.
 
 - [x] **Startbildschirm und Menüs:** Neuer Pixel-Schriftzug, animiertes Pfert vor dem Bosporus-Panorama, größerer 16:9-Spielrahmen und neu gestaltete Karten und Pause.
 - [x] **Darstellung im Spiel:** Eigene Lichtstimmung pro Schauplatz, dezente Pixelpartikel hinter der Spielebene, Flugspur am Pfert, Boss-Funken und neu gefasste Statusanzeigen. Bestehende Zeichenreihenfolge für Gefahren bleibt erhalten.
