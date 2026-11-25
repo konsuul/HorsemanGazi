@@ -2,7 +2,7 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 const PfertMeta=require('../Pfert/meta.js');
 const noop=()=>{};
-const element=()=>({classList:{add:noop,remove:noop},addEventListener:noop,innerHTML:'',style:{},
+const element=()=>({classList:{add:noop,remove:noop},addEventListener(name,fn){this[name]=fn},innerHTML:'',style:{},
  querySelector:()=>element(),querySelectorAll:()=>[],clientWidth:900,clientHeight:620});
 const elements={game:{getContext:()=>({})},overlay:element(),start:element(),talents:element()};
 const stored=new Map(),localStorage={getItem:key=>stored.get(key)??null,setItem:(key,value)=>stored.set(key,value)};
@@ -42,6 +42,10 @@ for(const id of PfertMeta.nodes){
  assert.equal(saved().points,3,'Neuer Run beginnt mit geladenem Fortschritt');
  a.setData(saved());a.startDebugRun();a.update(600);a.end();
  assert.equal(saved().points,3,'Bossprobe zählt nicht für den Talentfortschritt');
+ a.setData(saved());a.reset();a.update(.2);
+ const priorSeconds=saved().seconds;
+ events.pagehide();events.pagehide();
+ assert.ok(Math.abs(saved().seconds-priorSeconds-.2)<1e-8,'Beim Seitenwechsel wird Spielzeit genau einmal gespeichert');
 }
 {const initial={x:40,y:-20},x=200,y=120,zoom=.3;const result=a.talentWheelZoom(zoom,initial,x,y,-37);assert.ok(result.zoom>zoom&&result.zoom<.4);assert.ok(Math.abs((x-result.pan.x)/result.zoom-(x-initial.x)/zoom)<1e-9);assert.ok(Math.abs((y-result.pan.y)/result.zoom-(y-initial.y)/zoom)<1e-9);assert.equal(a.talentWheelZoom(zoom,initial,x,y,1e6).zoom,.15);assert.equal(a.talentWheelZoom(zoom,initial,x,y,-1e6).zoom,1.5);}
 assert.equal(a.talentWheelZoom(.4,{x:0,y:0},100,100,1e6,.25).zoom,.25,'Herauszoomen bleibt bei der bildfüllenden Übersicht stehen');
@@ -138,33 +142,40 @@ assert.equal(a.talentWheelZoom(.4,{x:0,y:0},100,100,1e6,.25).zoom,.25,'Herauszoo
  const regular={...PfertMeta.fresh(),points:7};
  const press=(code,repeat=false)=>events.keydown({code,repeat,preventDefault:noop});
  a.setData(regular);a.goToStartMenu();
- const before=stored.get(PfertMeta.key);
  press('Numpad1');press('Numpad1',true);
  assert.equal(a.get().metaData.points,367);
- assert.equal(stored.get(PfertMeta.key),before);
- assert.match(elements.overlay.innerHTML,/Debug · <b>367<\/b>/);
- a.goToStartMenu();assert.equal(a.get().metaData.points,7);
+ assert.equal(PfertMeta.load(localStorage).data.points,367);
+ assert.match(elements.overlay.innerHTML,/<b>367<\/b> Talentpunkte/);
+ elements['meta-buy'].click();
+ elements['meta-back'].click();
+ a.showTalents();
+ assert.equal(a.get().metaData.points,366);
+ assert.deepEqual(PfertMeta.load(localStorage).data.purchased,['S1']);
+ a.goToStartMenu();
+ a.setData(PfertMeta.load(localStorage).data);
+ assert.equal(a.get().metaData.points,366);
+ const after=stored.get(PfertMeta.key);
  for(let key=2;key<=9;key++){
   a.goToStartMenu();
   press('Numpad'+key);
   assert.equal(a.get().boss.i,key===9?0:key-2);
   assert.equal(a.get().secretType,key===7?1:key===8?2:0);
-  assert.equal(a.get().metaData.points,367);
+  assert.equal(a.get().metaData.points,366);
   if(key===9)assert.equal(a.get().boss.encounter.phase,1);
  }
- a.reset();assert.equal(a.get().metaData.points,7);
+ a.reset();assert.equal(a.get().metaData.points,366);
  press('Numpad1');
- assert.equal(a.get().metaData.points,7,'Reguläre Runde behält ihren Talentstand');
+ assert.equal(a.get().metaData.points,366,'Reguläre Runde behält ihren Talentstand');
  assert.equal(a.get().boss,null);
  press('Numpad2');
  const boss=a.get().boss;
  assert.equal(boss.i,0);
- assert.equal(a.get().metaData.points,727);
+ assert.equal(a.get().metaData.points,726);
  press('Numpad2',true);
  assert.equal(a.get().boss,boss,'Gedrückthalten startet den Boss nur einmal');
  press('Numpad8');
  assert.equal(a.get().boss.i,6,'Bosswechsel während der Debug-Runde');
- assert.equal(stored.get(PfertMeta.key),before);
+ assert.equal(stored.get(PfertMeta.key),after);
  a.reset();
 }
 let data=PfertMeta.fresh();data.points=100;

@@ -101,7 +101,7 @@ Die obere Leiste zählt die Talentpunkte dieser Runde. Ein besiegter Boss oder z
 
 Der Talentbaum zeigt fünf Bereiche mit 15 benannten Clustern. Große Abschlussknoten markieren die stärksten Spezialisierungen. Gestrichelte Querverbindungen erlauben Mischungen zwischen den Bereichen. Käufe geben benachbarte Knoten frei. Inspiriert von den Notables und Keystones im [passiven Talentbaum von Path of Exile 1](https://www.pathofexile.com/passive-skill-tree).
 
-**Debug:** Numpad 1 gibt pro Druck 360 Talentpunkte für einen getrennten Teststand bis zum Neuladen. Numpad 2–8 starten direkt einen Debug-Kampf gegen Großwesir, Sultan, Pascha, Dschinn, Großmeister, Schalke-Fan und Hochofen-Horst. Umschalt + Numpad 2 startet das Prisma-Observatorium, Umschalt + Numpad 3 die Gezeitenwerft. Numpad 9 startet die Basar-Variante des Großwesirs mit zweiter Phase. Die Kürzel funktionieren im Hauptmenü und während des Spiels.
+**Debug:** Numpad 1 gibt im Menü und regulären Talentbaum 360 dauerhaft gespeicherte Talentpunkte. Während einer Runde gehen die Zusatzpunkte in den getrennten Debug-Stand. Numpad 2–8 starten direkt einen Debug-Kampf gegen Großwesir, Sultan, Pascha, Dschinn, Großmeister, Schalke-Fan und Hochofen-Horst. Umschalt + Numpad 2 startet das Prisma-Observatorium, Umschalt + Numpad 3 die Gezeitenwerft. Numpad 9 startet die Basar-Variante des Großwesirs mit zweiter Phase. Die Kürzel funktionieren im Hauptmenü und während des Spiels.
 
 Ab drei Abschüssen in Folge zeigt ein Balken unter der Käsekette, wie lange du Zeit für den nächsten Abschuss hast.
 

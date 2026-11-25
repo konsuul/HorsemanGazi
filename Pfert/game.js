@@ -1035,7 +1035,7 @@ function grantDebugTalentPoints(){
  const atHome=state==='menu'||state==='over';
  const openTalentTree=state==='talents'||atHome;
  if(openTalentTree||runMode==='debug'){
-  useDebugTalents();
+  if(runMode==='debug')useDebugTalents();
   metaData={...metaData,points:metaData.points+360};
   metaSave();
  }else{
@@ -1140,10 +1140,14 @@ window.addEventListener('keydown',e=>{
 window.addEventListener('keyup',e=>{
  keys.delete(e.code);
 });
+function checkpointRunTalents(){
+ if(player&&runTime>metaSavedAt)bankRunTalents(0,true);
+}
+window.addEventListener('pagehide',checkpointRunTalents);
 window.addEventListener('blur',pauseOnFocusLoss);
 document.addEventListener?.('visibilitychange',()=>{
  if(typeof PfertSound!=='undefined')PfertSound.setMusicHidden(!!document.hidden);
- if(document.hidden)pauseOnFocusLoss();
+ if(document.hidden){checkpointRunTalents();pauseOnFocusLoss()}
 });
 function drawCard(pool){
  const weights=pool.map(card=>specialCards.has(card.id)?1:4);
