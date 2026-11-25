@@ -2,6 +2,8 @@
 
 ## Talent-Sicherung, Sternenpost und Schussvorwarnungen
 
+- [x] **Sternenpost-Orbs:** Pro Orb 50 % blau, 30 % grün, 15 % rot und 5 % golden. Rote und goldene Orbs geben doppelte XP, auch bei regulären Drops. Ziehgrenzen und XP-Werte gezielt geprüft.
+
 - [x] **Patch 1.0.2:** Num 1 schreibt die im Menü oder Talentbaum gutgeschriebenen Punkte direkt in den regulären Speicher. Kauf, Menüwechsel und erneutes Laden sind geprüft. Beim Ausblenden oder Verlassen der Seite wird offene reguläre Spielzeit einmalig verbucht. Bossproben bleiben vom regulären Fortschritt getrennt.
 
 - [ ] **Talentstand für GitHub Pages:** Automatische Speicherung für Zeit- und Bosspunkte sowie Download und Wiederherstellung der Talent-Sicherung sind mit simuliertem Browser-Speicher geprüft. GitHub Pages liefert Version 1.0.1 mit aktualisiertem Spielskript aus. Die praktische Browserprüfung steht aus.
@@ -163,7 +165,7 @@ Diese Übersicht hält die geplanten Änderungen und ihren Fortschritt fest. Ein
 
 ## Neues Spieltest-Feedback · 18.11.2026
 
-1. [x] **Astra 6.2 · High – Schalke-Fan:** Der Fußball wechselt sich mit Zielnadeln und Splitterkugeln ab und kann zweimal an den oberen und unteren Feldgrenzen abprallen. Angriffsfolge und Zeichnen sind geprüft.
+1. [x] **Astra 6.2 · High – Schalke-Fan:** Der Fußball wechselt sich mit Zielnadeln und Splitterkugeln ab. Die Fußbälle des Fanbusses prallen an allen vier Feldgrenzen ab und verschwinden beim fünften Abpraller. Alle vier Wände und das Abpralllimit sind für den Standardangriff, Doppelpass und Freistoß gezielt geprüft.
 2. [x] **Astra 6.2 · High – Power-ups bei Bossen:** Noch nicht eingesammelte Flaschen behalten Position und Alter. Sie erscheinen nach dem Hauptboss oder beim Rückwechsel aus dem Ruhrpott wieder. Aufbewahrung und einmaliges Einsammeln sind geprüft.
 3. [x] **Astra 6.2 · High – Angriffe für alle Gegner:** Simit und der zweite Gegnertyp dürfen beim ersten Auftreten feuern. Heckfledermäuse schießen in Flugrichtung und Blocker feuern auf zwei Bahnen. Reguläre Typen, Sondergegner und Bossangriffe sind automatisiert geprüft.
 4. [x] **Astra 6.2 · High – Klarere Benutzeroberfläche:** Statusleiste mit getrennten Anzeigen für Leben, Käserausch, Talentpunkte, Karten und Rundenscore. Die technische Zeichenprüfung ist abgeschlossen. Lesbarkeit im Kampf prüft der Nutzer.

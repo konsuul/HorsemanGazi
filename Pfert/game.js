@@ -1225,6 +1225,7 @@ function particle(x,y,col,n=7,speed=1){
 function ring(x,y,col,size=35){if(rings.length<22)rings.push({x,y,col,size,life:.4,maxLife:.4})}
 function impact(x,y,col,n=7){particle(x,y,col,n);ring(x,y,col,20);shake=Math.max(shake,.7)}
 function dropOrb(x,y,value,speed=32.5,kind='normal',tier=1){
+ if(tier>=3||kind==='boss')value*=2;
  const orb={x:clamp(x,22,W-22),y:clamp(y,85,H-22),w:16,h:16,value,speed,age:0,kind,tier};
  orbs.push(orb);return orb;
 }
@@ -1898,7 +1899,9 @@ function updateStarRoute(dt){
  const centerY=clamp(burst.y,85+starOrbRadius,H-22-starOrbRadius);
  for(let i=0;i<10;i++){
   const angle=i*Math.PI/5;
-  const orb=dropOrb(burst.x,burst.y,1);
+  const roll=Math.random();
+  const tier=roll<.5?1:roll<.8?2:roll<.95?3:4;
+  const orb=dropOrb(burst.x,burst.y,tier===4?10:tier,32.5,'normal',tier);
   orb.starBurst=burst;
   orb.starX=centerX+Math.cos(angle)*starOrbRadius;
   orb.starY=centerY+Math.sin(angle)*starOrbRadius;
@@ -1923,6 +1926,7 @@ function spawnRegularEnemy(){
 }
 function hostileProjectile(x,y,vx,vy,col='#e7b575',size=10,options={}){
  const pace=(1+threat*.075)*hostileShotSpeed;
+ if(options.fromBoss&&options.kind==='football')options={...options,bounces:5,life:Infinity};
  return {x,y,vx:vx*pace,vy:vy*pace,w:size,h:size,col,life:8,age:0,...options,
   gravity:(options.gravity||0)*hostileShotSpeed};
 }
@@ -2015,13 +2019,13 @@ const bossSpecials=[
  ],
  [
   ['Doppelpass','#91ddff',({lane})=>[
-   [[875,lane-80,-245,-260,'football',{bounces:2,life:4}]],
-   [[875,lane+80,-245,260,'football',{bounces:2,life:4}]]
+   [[875,lane-80,-245,-260,'football']],
+   [[875,lane+80,-245,260,'football']]
   ]],
   ['Freistoß','#ffedaa',({x,y})=>[
    [-.34,0,.34].map(offset=>{
     const angle=Math.atan2(y-285,x-895)+offset;
-    return [895,285,Math.cos(angle)*300,Math.sin(angle)*300,'football',{bounces:1,life:4}];
+    return [895,285,Math.cos(angle)*300,Math.sin(angle)*300,'football'];
    })
   ]]
  ],
@@ -2163,13 +2167,22 @@ function moveHostileShot(shot,dt){
  }
  if(shot.gravity)shot.vy+=shot.gravity*dt;
  shot.x+=shot.vx*dt;shot.y+=shot.vy*dt;
+ const fanBall=shot.fromBoss&&shot.kind==='football';
+ if(fanBall&&shot.bounces>0){
+  const left=shot.w/2,right=W-shot.w/2;
+  if((shot.x<=left&&shot.vx<0)||(shot.x>=right&&shot.vx>0)){
+   const edge=shot.vx<0?left:right;
+   shot.x=edge*2-shot.x;shot.vx=-shot.vx;shot.bounces--;
+  }
+ }
  if(shot.bounces>0){
   const top=62+shot.h/2,bottom=H-shot.h/2;
-  if(shot.y<top||shot.y>bottom){
-   const edge=shot.y<top?top:bottom;
+  if(fanBall?((shot.y<=top&&shot.vy<0)||(shot.y>=bottom&&shot.vy>0)):(shot.y<top||shot.y>bottom)){
+   const edge=shot.y<=top?top:bottom;
    shot.y=edge*2-shot.y;shot.vy=-shot.vy;shot.bounces--;
   }
  }
+ if(fanBall&&shot.bounces===0)shot.life=0;
 }
 function burstHostileShot(shot){
  shot.life=0;

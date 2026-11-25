@@ -132,7 +132,7 @@ Kampflicht reagiert lokal auf geladene Geschosse und Treffer. Die Bosskörper be
 ## Flugmanöver und Sternenpost
 
 - **Windschatten** — Innerhalb von 2,5 Sekunden drei verschiedene Feindgeschosse knapp passieren. Das bringt zusätzlich zu den Streifpunkten 125 Punkte und zieht bei jeder nachladenden Patrone bis zu 1,5 Sekunden ab. Ein Herzverlust unterbricht die Serie. Im HUD zeigen drei Rauten den Stand.
-- **Sternenpost** — Frühestens ab 1:40 erscheinen im Hauptspiel drei offene goldgrüne Siegel. Wer alle drei der Reihe nach durchfliegt, löst eine Explosion mit zehn XP-Orbs aus. Nach dem Auseinanderfliegen bleiben sie 0,25 Sekunden gesperrt. Zusätzlich besteht eine Chance von 30 % auf ein Item. Die nächste Gelegenheit kommt frühestens 110 Sekunden später. Ein verpasstes Siegel beendet nur die Lieferung.
+- **Sternenpost** — Frühestens ab 1:40 erscheinen im Hauptspiel drei offene goldgrüne Siegel. Wer alle drei der Reihe nach durchfliegt, löst eine Explosion mit zehn XP-Orbs aus. Jeder Orb wird einzeln gewürfelt: 50 % blau (1 Basis-XP), 30 % grün (2), 15 % rot (6) und 5 % golden (20). Rote und goldene Orbs geben auch bei Gegner- und Boss-Drops doppelte XP. Nach dem Auseinanderfliegen bleiben sie 0,25 Sekunden gesperrt. Zusätzlich besteht eine Chance von 30 % auf ein Item. Die nächste Gelegenheit kommt frühestens 110 Sekunden später. Ein verpasstes Siegel beendet nur die Lieferung.
 - Beim Standardschuss zeigt das mittlere HUD-Feld die nächste Patrone und ihren Ladefortschritt.
 
 ## Die mechanische Karawane

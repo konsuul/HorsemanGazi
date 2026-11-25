@@ -190,7 +190,7 @@ if(process.argv.includes('--wind')){
  game.hurt('contact');assert.equal(pilot.slipstreamCount,0);
   game.readyTime(initialReady);drawLabels.length=0;drawBars.length=0;game.render();
  assert.ok(drawBars.some(bar=>bar.color==='#b3f4d1'),'Zündrakete ist bereit');
- for(const [roll,expectItem] of [[.29,true],[.3,false]]){
+ for(const [roll,expectItem,tier,value] of [[.29,true,1,1],[.3,false,1,1],[.499,false,1,1],[.5,false,2,2],[.799,false,2,2],[.8,false,3,6],[.949,false,3,6],[.95,false,4,20]]){
   random.random=()=>roll;
   setup(100);game.update(.05);
   const route=game.route();
@@ -206,6 +206,7 @@ if(process.argv.includes('--wind')){
   assert.equal(game.route(),null);
   assert.equal(game.state().score,0);
   assert.equal(game.orbs().length,10);
+  assert.ok(game.orbs().every(orb=>orb.tier===tier&&orb.value===value));
   assert.equal(Object.keys(game.worn()).length,expectItem?1:0);
   {
    const first=game.orbs()[0];
@@ -560,6 +561,24 @@ game.update(.05);
 assert.ok(game.state().boss);
 assert.equal(game.state().enemies.some(unit=>unit.rareEnemy),false);
 
+function assertFanBallBounces(ball){
+ assert.equal(ball.bounces,5);
+ assert.equal(ball.life,Infinity);
+ for(const [axis,edge,velocity] of [
+  ['x',ball.w/2,-200],['x',960-ball.w/2,200],
+  ['y',62+ball.h/2,-200],['y',540-ball.h/2,200],['x',ball.w/2,-200]
+ ]){
+  ball.x=480;ball.y=270;ball.vx=0;ball.vy=0;
+  ball[axis]=edge;
+  ball['v'+axis]=velocity;
+  const remaining=ball.bounces-1;
+  game.moveHostileShot(ball,.01);
+  assert.equal(ball[axis],edge-velocity*.01);
+  assert.equal(ball['v'+axis],-velocity);
+  assert.equal(ball.bounces,remaining);
+  assert.equal(ball.life,remaining?Infinity:0);
+ }
+}
 function testBossAttacks(){
 const cases=[
  [0,['needle','strike'],['Teppichwand','Seidenzange']],
@@ -605,6 +624,7 @@ for(const [index,pattern,specials] of cases){
     assert.equal(emitted.length,attack.waves[index].length,expected+' feuert die angekündigte Welle');
     assert.deepEqual(Array.from(emitted,shot=>shot.kind),Array.from(attack.waves[index],shot=>shot[4]));
     assert.ok(emitted.every(shot=>[shot.x,shot.y,shot.vx,shot.vy].every(Number.isFinite)));
+    for(const ball of emitted.filter(shot=>shot.kind==='football'))assertFanBallBounces({...ball});
    }
    assert.equal(boss.special,null);
   }else{
@@ -612,11 +632,7 @@ for(const [index,pattern,specials] of cases){
    assert.ok(newShots.every(shot=>shot.kind===expected),'Boss '+index+' feuert '+expected);
    if(expected==='football'){
     const ball=newShots[0];
-    ball.y=ball.vy<0?62+ball.h/2:540-ball.h/2;
-    const beforeBounce=ball.vy;
-    game.moveHostileShot(ball,.01);
-    assert.equal(ball.vy,-beforeBounce);
-    assert.equal(ball.bounces,1);
+    assertFanBallBounces({...ball});
     vm.runInContext('PfertArt',sandbox).hostile(canvas,ball);
    }
   }

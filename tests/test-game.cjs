@@ -134,7 +134,7 @@ for(const type of [0,1]){
  assert.equal(encounter.y,encounter.encounter.toY);
  assert.ok(a.get().shots.length<=shotsBefore);
  defeatBoss();
- assert.ok(a.get().orbs.some(orb=>orb.value===10));
+ assert.ok(a.get().orbs.some(orb=>orb.value===20));
  a.setSpawn(0);
  a.update(.01);
  assert.equal(a.get().enemies.length,1);
@@ -180,7 +180,7 @@ for(const [key,index,x,signature,count] of [
  }else{
   assert.equal(a.get().state,'playing');
  }
- assert.ok(a.get().orbs.some(orb=>orb.value===10));
+ assert.ok(a.get().orbs.some(orb=>orb.value===20));
 }
 
 // The existing hit protection stays active while the wave clock runs.

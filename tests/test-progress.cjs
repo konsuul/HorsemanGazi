@@ -21,9 +21,9 @@ function finishTransition(){assert.equal(a.get().state,'transition');const befor
 
 
 // Orb-Werte, Einsammeln und Stufenfortschritt.
-for(let i=0;i<10;i++){reset();a.enemy(i);let e=a.get().enemies[0];e.x=500;e.y=270;e.hp=1;e.elite=false;a.get().bullets.push(bullet(500,270));a.update(.01);assert.equal(a.get().orbs.length,1);assert.equal(a.get().orbs[0].value,[1,1,1,2,2,2,3,3,3,4][i]);}
-reset();a.enemy(9);let elite=a.get().enemies[0];elite.x=500;elite.y=270;elite.hp=1;elite.elite=true;a.get().bullets.push(bullet(500,270));a.update(.01);assert.equal(a.get().orbs[0].value,8);
-reset();a.startBoss();defeatBoss();assert.equal(a.get().orbs.filter(o=>o.value===10).length,1);
+for(let i=0;i<10;i++){reset();a.enemy(i);let e=a.get().enemies[0];e.x=500;e.y=270;e.hp=1;e.elite=false;a.get().bullets.push(bullet(500,270));a.update(.01);assert.equal(a.get().orbs.length,1);assert.equal(a.get().orbs[0].value,[1,1,1,2,2,2,6,6,6,8][i]);}
+reset();a.enemy(9);let elite=a.get().enemies[0];elite.x=500;elite.y=270;elite.hp=1;elite.elite=true;a.get().bullets.push(bullet(500,270));a.update(.01);assert.equal(a.get().orbs[0].value,16);
+reset();a.startBoss();defeatBoss();assert.equal(a.get().orbs.filter(o=>o.value===20).length,1);
 reset();a.setRunTime(1000);a.update(.01);assert.equal(a.get().state,'playing','keine zeitgesteuerte Karte');a.get().orbs.push({x:135,y:270,w:16,h:16,value:32,age:0});a.update(.01);assert.equal(a.get().state,'upgrade');a.chooseCard(0);assert.equal(a.get().level,2);assert.equal(a.get().xp,50);assert.equal(a.get().xpNeeded,15);assert.equal(a.get().state,'upgrade');a.chooseCard(0);assert.equal(a.get().level,3);assert.equal(a.get().xp,35);assert.equal(a.get().xpNeeded,23);assert.equal(a.get().state,'upgrade');a.chooseCard(0);assert.equal(a.get().level,4);assert.equal(a.get().xp,12);assert.equal(a.get().xpNeeded,35);assert.equal(a.get().state,'playing');
 console.log('OK: Orbs und Stufenfortschritt.');
 reset();let previousNeed=10;for(let i=0;i<100;i++){a.setXp(a.get().xpNeeded);a.update(.01);assert.equal(a.get().state,'upgrade');a.chooseCard(0);const current=a.get().xpNeeded;assert.ok(Number.isFinite(current)&&current>=previousNeed&&current<=1500);if(a.get().level===10)assert.equal(current,Math.ceil(previousNeed*1.12));previousNeed=current}assert.equal(a.get().xpNeeded,1500,'Endlosfortschritt bleibt begrenzt');
@@ -43,7 +43,7 @@ a.update(.05);assert.equal(atCardRange.y,player.y+84);
 upgrades.magnet=1;
 a.update(.05);assert.ok(atCardRange.y<player.y+84,'Korkenzieher erweitert den Orb-Magnetradius');
 reset();a.get().orbs.push({x:190,y:270,w:16,h:16,value:1,speed:40,age:0});let near=a.get().orbs[0];a.update(.05);assert.ok(near.x<185,'Magnet zieht den wandernden Orb an');
-reset();a.startBoss();defeatBoss();assert.equal(a.get().orbs.find(o=>o.value===10).speed,32.5);
+reset();a.startBoss();defeatBoss();assert.equal(a.get().orbs.find(o=>o.value===20).speed,32.5);
 reset();a.startBoss();const survivingBoss=a.get().boss;for(let i=0;i<2;i++){a.enemy(i);let e=a.get().enemies.at(-1);e.x=500+i*80;e.y=200}a.get().shots.push({x:400,y:200,vx:0,vy:0,w:8,h:8,life:2});const savedOrb={x:350,y:200,w:16,h:16,value:3,speed:20,age:0},savedPickup={x:350,y:300,w:30,h:42,i:1};a.get().orbs.push(savedOrb);a.get().pickups.push(savedPickup);a.get().player.rage=100;assert.equal(a.activateRage(),true);assert.equal(a.get().enemies.length,0);assert.equal(a.get().shots.length,0);assert.equal(a.get().boss,survivingBoss);assert.equal(a.get().orbs.length,3);assert.ok(a.get().orbs.includes(savedOrb));assert.ok(a.get().pickups.includes(savedPickup));assert.ok(a.get().score>0);
 reset();a.enemy(0);a.get().enemies[0].x=500;a.get().player.rage=100;a.setTime(95);a.setSpawn(0);a.activateRage();a.update(.01);assert.equal(a.get().enemies.length,1,'regulärer Spawn-Timer bleibt aktiv');
 reset();a.hurt();a.get().player.inv=0;a.hurt();a.get().player.inv=0;a.hurt();a.get().player.rage=100;assert.ok(a.activateRage());assert.equal(a.get().hearts,4,'Käserausch heilt zwei Herzen');
