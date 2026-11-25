@@ -3,7 +3,7 @@
 ## Versionierung und Veröffentlichung
 
 - [x] Der Startbildschirm zeigt Version 1.0.0 als erste nummerierte Veröffentlichung.
-- [ ] Veröffentlichung auf GitHub Pages anhand der live ausgelieferten Versionsnummer bestätigen.
+- [x] GitHub Pages liefert den Startbildschirm von Pfert 1.0.0 mit HTTP 200 und passender CSS-Datei aus. Veröffentlichungen starten auf `main` und verwenden die Spieldateien des angegebenen Release-Tags.
 
 ## Kampflesbarkeit, Bedienung und Audio · 25.11.2026
 
