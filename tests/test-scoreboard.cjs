@@ -1,0 +1,13 @@
+'use strict';
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const source=fs.readFileSync(__dirname+'/../Pfert/game.js','utf8');
+const code=source.slice(source.indexOf("const scoreKey="),source.indexOf('let lastRoast='));
+let saved=null;const storage={getItem:()=>saved,setItem:(key,value)=>{saved=value}};
+const sandbox={window:{localStorage:storage},clock:s=>String(s)};vm.createContext(sandbox);vm.runInContext(code+';globalThis.api={saveScore,scoreTable}',sandbox);
+let result;for(let i=0;i<12;i++)result=sandbox.api.saveScore(i*10,i);
+assert.equal(JSON.parse(saved).length,10);assert.equal(JSON.parse(saved)[9].points,20);assert.equal(result.ranked[0].points,110);assert.equal(result.ranked[0].current,true);
+result=sandbox.api.saveScore(25,7);assert.equal(result.ranked.findIndex(e=>e.current),9);assert.match(sandbox.api.scoreTable(result),/PLATZ 10/);assert.match(sandbox.api.scoreTable(result),/score-current/);
+result=sandbox.api.saveScore(25,8);assert.ok(result.ranked.findIndex(e=>e.current)<result.ranked.findIndex(e=>e.points===25&&!e.current));
+sandbox.window.localStorage={getItem(){throw Error('blocked')},setItem(){throw Error('blocked')}};result=sandbox.api.saveScore(500,2);assert.equal(result.available,false);assert.equal(result.ranked[0].points,500);assert.match(sandbox.api.scoreTable(result),/Speicherung nicht verfügbar/);
+sandbox.window.localStorage=storage;sandbox.api.saveScore(30,1);saved='{';result=sandbox.api.saveScore(20,1);assert.equal(result.available,false);assert.ok(result.ranked.some(e=>e.current));
+console.log('OK: Scoreboard speichert zehn letzte Runden, sortiert Punkte, markiert Platzierung und behandelt Speicherfehler.');

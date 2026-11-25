@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="de">
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width,initial-scale=1">
+ <meta name="description" content="Ein derpy Pfert, magische Weinwaffen und eine endlose Reise durch den Pixel-Bosporus.">
+ <title>Pfert – Käse über dem Bosporus</title>
+ <link rel="stylesheet" href="style.css">
+</head>
+<body>
+ <main class="cabinet">
+  <div class="frame">
+   <canvas id="game" width="960" height="540" aria-label="Pfert, ein fliegendes Sidescroller-Spiel"></canvas>
+   <div id="overlay" class="overlay">
+    <div class="title-screen">
+     <div class="title-hero" aria-hidden="true"><i></i></div>
+     <div class="title-content">
+      <h1><img src="assets/pfert-wordmark.png" alt="PFERT" width="96" height="31"></h1>
+      <p class="subtitle">Käse über dem Bosporus</p>
+      <div class="title-actions">
+       <button id="start">Abenteuer starten <span class="start-arrow" aria-hidden="true">▶</span><kbd role="img" class="pad-key pad-only" data-pad-button="0"></kbd></button>
+       <button id="talents">Talentbaum <kbd>T</kbd> / Controller <kbd role="img" class="pad-key" data-pad-button="1">B</kbd></button>
+      </div>
+      <p class="title-hint">Basisskill wählen · Wein wechselt die Waffe · Orbs bringen Upgrade-Karten</p>
+     </div>
+     <div class="controls" aria-label="Spielsteuerung">
+      <span><kbd>WASD</kbd> / <kbd>↑ ← ↓ →</kbd> Bewegen</span>
+      <span><kbd>Leertaste</kbd><span class="pad-only"> / <kbd role="img" class="pad-key" data-pad-button="0"></kbd></span> Sonderangriff</span>
+      <span><kbd>Q</kbd><span class="pad-only"> / <kbd role="img" class="pad-key" data-pad-button="1"></kbd></span> Käserausch</span>
+      <span><kbd>M</kbd> Sound</span>
+      <span><kbd>N</kbd> Musik</span>
+      <span><kbd>Esc</kbd> Pause</span>
+     </div>
+    </div>
+   </div>
+  </div>
+ </main>
+ <script src="sound.js"></script>
+ <script src="assets.js"></script>
+ <script src="art.js"></script>
+ <script src="meta.js"></script>
+ <script src="meta-data.js"></script>
+ <script src="game.js"></script>
+</body>
+</html>
