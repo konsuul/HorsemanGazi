@@ -69,7 +69,7 @@ Das dauerhafte schwebende Objekt vor dem Pfert-Mund wurde entfernt. Ein automati
 
 Es gibt 46 Kartentypen einschließlich drei endlos wiederholbarer Verbesserungen. Doppelter Käse, Streuflug, Schlangenlinie, Spürnase und Käsebruch lassen sich beim Standardschuss und bei Wein-Sonderangriffen kombinieren. Spürnase lenkt auch das automatische Weinfeuer. Aktiver Wein übernimmt das Dauerfeuer bis zum Ablauf oder Verbrauch.
 
-- **Bumerangkäse** kehrt nach dem ersten Treffer oder nach einer Sekunde Freiflug um. Auf dem Rückweg verursacht er 55 % Schaden und kann Ziele erneut treffen.
+- **Bumerangkäse** verbraucht auf dem Hinflug zuerst die zusätzlichen Durchschläge von Harte Kruste. Er kehrt beim nächsten Treffer oder nach einer Sekunde Flug um. Auf dem Rückweg verursacht er 55 % Schaden und kann Ziele erneut treffen. Gezielter Test: `node tests/test-game.cjs --boomerang`.
 - **Käsekarussell** lässt Geschosse eine Viertelsekunde auf einer Kreisbahn mit 114 Pixeln Radius um das Pfert fliegen. Danach fliegen sie in ihrem jeweiligen Abschusswinkel los und können sich schlängeln oder Ziele suchen. Die Lichtlanze zieht in der gleichen Zeit einen vollen Kreis mit 114 Pixeln Reichweite und feuert anschließend nach vorn. Doppelter Käse, Streuflug und Echos können zusätzliche rotierende Strahlen erzeugen. Jeder Strahl trifft ein Ziel höchstens einmal pro Abschuss.
 - **Sprungkruste** gibt dem Schuss einen zusätzlichen Abpraller. Beim ersten Abpraller entsteht ein Splitter mit 30 % Schaden, der Spürnase und Schlangenlinie übernimmt. Der Hauptschuss kann zusätzlich Käsebruch auslösen.
 

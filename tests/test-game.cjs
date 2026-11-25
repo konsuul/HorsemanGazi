@@ -49,6 +49,31 @@ function testSeekingAfterHit(){
  console.log('OK: Zielsuche endet nach Treffer, Durchschlag und Splitterflug bleiben wirksam.');
 }
 testSeekingAfterHit();
+if(process.argv.includes('--boomerang')){
+ reset();
+ a.get().upgrades.boomerang=1;
+ a.get().upgrades.pierce=2;
+ shoot();
+ const [shot]=a.get().bullets;
+ const outbound=shot.damage;
+ const targets=[300,400,500].map(x=>placeTarget(x,268));
+ for(const [index,target] of targets.entries()){
+  shot.x=target.x;
+  a.update(.01);
+  assert.equal(target.hp,100-outbound);
+  assert.equal(shot.returning,undefined);
+  assert.equal(shot.returnContact,index===2?target:undefined);
+ }
+ a.update(.01);
+ assert.ok(shot.returning&&shot.vx<0);
+ assert.equal(shot.damage,outbound*.55);
+ assert.equal(targets[2].hp,100-outbound);
+ shot.x=targets[1].x;
+ a.update(.01);
+ assert.equal(targets[1].hp,100-outbound-shot.damage);
+ console.log('OK: Bumerang durchschlägt zwei Ziele vor der Umkehr und trifft auf dem Rückflug erneut.');
+ process.exit(0);
+}
 reset();shoot();
 assert.ok(Math.abs(a.get().bullets[0].damage-.75*1.15)<1e-9);
 reset();

@@ -51,7 +51,7 @@ const cardDefs = [
  {id:'snakeShot',icon:'∿',title:'Schlangenlinie',desc:'Standardgeschosse und Wein-Sonderangriffe schwingen.',max:3},
  {id:'seekShot',icon:'◎',title:'Spürnase',desc:'Standardgeschosse, Weinangriffe und Laser verfolgen Gegner.',max:3},
  {id:'breakShot',icon:'✣',title:'Käsebruch',desc:'Treffer erzeugen Splitter mit 12,6 % des auslösenden Schadens.',max:2},
- {id:'boomerang',icon:'↶',title:'Bumerangkäse',desc:'Standardschüsse kehren nach einer Sekunde Freiflug oder beim ersten Treffer um und können auf dem Rückweg erneut treffen.',max:1},
+ {id:'boomerang',icon:'↶',title:'Bumerangkäse',desc:'Standardschüsse kehren nach dem letzten möglichen Treffer oder nach einer Sekunde Flug um. Auf dem Rückweg können sie erneut treffen.',max:1},
  {id:'carousel',icon:'⟳',title:'Käsekarussell',desc:'Standardschüsse kreisen kurz um das Pfert. Die Lichtlanze dreht sich einmal und feuert dann nach vorn.',max:1},
  {id:'bounceCrust',icon:'↱',title:'Sprungkruste',desc:'Standardschüsse prallen einmal zusätzlich ab. Beim ersten Abpraller löst sich ein Splitter.',max:1},
  {id:'damage',icon:'✦',title:'Käsereifung',desc:'12 % MEHR Schaden je Rang, multipliziert mit anderen Effekten.',max:10},
@@ -1321,8 +1321,10 @@ function finishProjectileHit(b,target){
  b.homing=false;
  b.seekRank=0;
  b.target=null;
+ if(b.pierce)return false;
+ if(b.remaining>0){b.remaining--;return false}
  if(b.boomerangAt&&!b.returning){b.returnContact=target;return true}
- if(!b.pierce){if(b.remaining>0)b.remaining--;else b.dead=true}
+ b.dead=true;
  return b.dead;
 }
 function bounceCrustFragment(b){
@@ -2291,11 +2293,12 @@ function end(died=true){
 function setupSegments(b){
  const calibratedHp={0:.35,1:.39,6:.155};
  const baseHealth=b.max*12.5*.9*(calibratedHp[b.i]||1);
+ const healthMultiplier=bossHealthMultiplier*(b.i===5?.6:1);
  const layout=PfertArt.bossLayout(b.i),weight=layout.reduce((sum,p)=>sum+(p.weight||1),0);
  b.parts=layout.map(part=>{
   const xs=part.points.map(point=>point[0]),ys=part.points.map(point=>point[1]);
   const left=Math.min(...xs),right=Math.max(...xs),top=Math.min(...ys),bottom=Math.max(...ys);
-  const hp=Math.ceil(baseHealth*(part.weight||1)/weight)*bossHealthMultiplier;
+  const hp=Math.ceil(baseHealth*(part.weight||1)/weight)*healthMultiplier;
   return {...part,dx:(left+right)/2,dy:(top+bottom)/2,w:right-left,h:bottom-top,hp,max:hp,flash:0};
  });
  b.hp=b.parts.reduce((sum,p)=>sum+p.hp,0);b.max=b.hp;return b;

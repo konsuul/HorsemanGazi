@@ -319,11 +319,12 @@ for(const [index,id,baseHp] of [
  const weight=boss.parts.reduce((sum,part)=>sum+(part.weight||1),0);
  const oldHp=baseHp*11.25*({0:.35,1:.39,6:.155}[id]||1);
  for(const part of boss.parts){
-  assert.equal(part.hp,Math.ceil(oldHp*(part.weight||1)/weight)*1.2);
+  const previousHp=Math.ceil(oldHp*(part.weight||1)/weight)*1.2;
+  assert.ok(Math.abs(part.hp-previousHp*(id===5?.6:1))<1e-9);
  }
  assert.equal(boss.hp,boss.parts.reduce((sum,part)=>sum+part.hp,0));
 }
-console.log('OK: 20 % zusätzliche Segment-Lebenspunkte bei allen neun Bossen.');
+console.log('OK: Segment-Lebenspunkte aller neun Bosse, inklusive 40 % Reduktion beim Schalke-Fan.');
 if(process.argv.includes('--boss-attacks'))process.exit(0);
 
 setup(67.99);

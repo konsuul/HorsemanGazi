@@ -129,7 +129,7 @@ Diese Übersicht hält die geplanten Änderungen und ihren Fortschritt fest. Ein
 
 - [x] **Käse-Vortex und Rundenstart:** Anziehungsradius auf 120 Pixel im Dauerfeuer und 188 Pixel beim Sonderangriff verdoppelt. Startbanner und Orb-Hinweis entfernt. Reichweite und Einstieg sind mit `test-game.cjs` und `test-opening.cjs` geprüft.
 - [x] **Spürnase:** Die Lenkstärke aller Kartenränge zuerst um rund 14 %, dann um weitere 15 % gesenkt. Die Lenkungsprüfungen laufen durch. Der spätere Blocker-Test schlägt mit beiden Lenkstärken fehl.
-- [x] **Größere Flugbahnen:** Käsekarussell mit 114 Pixeln Radius und Bumerangkäse mit einer Sekunde Freiflug bis zur Umkehr. Kreisflug, Ausflug und frühere Umkehr beim Treffer sind mit `node test-game.cjs` geprüft.
+- [x] **Größere Flugbahnen:** Käsekarussell mit 114 Pixeln Radius und Bumerangkäse mit bis zu einer Sekunde Flug vor der Umkehr. Kreisflug und Ausflug wurden bereits geprüft. `node tests/test-game.cjs --boomerang` prüft Durchschläge vor der Umkehr und einen erneuten Treffer auf dem Rückflug.
 - [x] **Kartenangebote und Schussformen:** Garantierter Standardschussplatz bei verfügbaren Karten, Viertelgewicht für reine Sonderschusskarten und drei neue kombinierbare Formen. Angebot, Rückflug, kombinierte Flugbahnen, Splittergrenzen und Wechsel zwischen Käse und Wein sind geprüft.
 - [x] **Suchraketen, Schutzschild und Räumstrahl:** Drei Power-ups mit eigenem Drop-Zeitplan. Zielwahl, Verbrauch, Auffüllen, Bosssegmente, Abstecher, Schildtreffer und Schussbahn sind geprüft.
 - [x] **Gegnerkonter:** Die Basarlaterne dämpft Fronttreffer. Beim Großwesir schützen Vorwarnung und Vorstoß das Segment Arme & Gewand. Schaden aus unterschiedlichen Winkeln und außerhalb des Schutzfensters ist geprüft.
@@ -167,7 +167,7 @@ Diese Übersicht hält die geplanten Änderungen und ihren Fortschritt fest. Ein
 
 ## Neues Spieltest-Feedback · 18.11.2026
 
-1. [x] **Astra 6.2 · High – Schalke-Fan:** Der Fußball wechselt sich mit Zielnadeln und Splitterkugeln ab. Die Fußbälle des Fanbusses prallen an allen vier Feldgrenzen ab und verschwinden beim fünften Abpraller. Alle vier Wände und das Abpralllimit sind für den Standardangriff, Doppelpass und Freistoß gezielt geprüft.
+1. [x] **Astra 6.2 · High – Schalke-Fan:** Der Fußball wechselt sich mit Zielnadeln und Splitterkugeln ab. Die Fußbälle des Fanbusses prallen an allen vier Feldgrenzen ab und verschwinden beim fünften Abpraller. Alle vier Wände und das Abpralllimit sind für den Standardangriff, Doppelpass und Freistoß gezielt geprüft. Die Segment-Lebenspunkte wurden um 40 Prozent gesenkt und im Boss-Test geprüft.
 2. [x] **Astra 6.2 · High – Power-ups bei Bossen:** Noch nicht eingesammelte Flaschen behalten Position und Alter. Sie erscheinen nach dem Hauptboss oder beim Rückwechsel aus dem Ruhrpott wieder. Aufbewahrung und einmaliges Einsammeln sind geprüft.
 3. [x] **Astra 6.2 · High – Angriffe für alle Gegner:** Simit und der zweite Gegnertyp dürfen beim ersten Auftreten feuern. Heckfledermäuse schießen in Flugrichtung und Blocker feuern auf zwei Bahnen. Reguläre Typen, Sondergegner und Bossangriffe sind automatisiert geprüft.
 4. [x] **Astra 6.2 · High – Klarere Benutzeroberfläche:** Statusleiste mit getrennten Anzeigen für Leben, Käserausch, Talentpunkte, Karten und Rundenscore. Die technische Zeichenprüfung ist abgeschlossen. Lesbarkeit im Kampf prüft der Nutzer.
