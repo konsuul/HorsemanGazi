@@ -60,6 +60,25 @@ function finishTransition(){assert.equal(a.get().state,'transition');const befor
  sandbox.previewContext.fillText=label=>labels.push(label);
  vm.runInContext('PfertArt.background(previewContext,0,6,1)',sandbox);
  assert.ok(labels.includes('CURRYWURST'),'Bei fehlendem Budenbild greift die Ersatzkulisse');
+ const streets=[];
+ sandbox.PfertAssets=absent.assets;
+ sandbox.previewContext.drawImage=(tile,x,y)=>{
+  if(tile.width===1460)streets.push({tile,x,y});
+ };
+ const streetTiles=new Set();
+ for(const [type,layers] of [[1,[[304,23],[366,36]]],[2,[[322,21],[366,39]]]]){
+  vm.runInContext('PfertArt.background(previewContext,0,'+(1450/layers[1][1])+','+type+')',sandbox);
+  for(const [y,speed] of layers){
+   const [left,right]=streets.filter(layer=>layer.y===y);
+   const offset=Math.round(1450/layers[1][1]*speed);
+   assert.equal(left.x,-offset,'Gebäudereihe scrollt auch beim Panorama-Fallback');
+   assert.equal(right.x,left.x+left.tile.width,'Straßenkacheln schließen bündig an');
+   assert.equal(right.tile,left.tile);
+   streetTiles.add(left.tile);
+  }
+  streets.length=0;
+ }
+ assert.equal(streetTiles.size,4,'Beide Ruhrpott-Level haben eigene Gebäudeebenen');
  if(process.argv.includes('--ruhr')){console.log('OK: Ruhrpott-Kulissen, Parallaxen und Fallbacks.');return}
  delete sandbox.PfertAssets;
  assert.equal(success.assets.frames.length,16);assert.equal(success.assets.effectFrames.length,16);
