@@ -1,6 +1,6 @@
 'use strict';
 const fs=require('fs');
-const source=fs.readFileSync(__dirname+'/Meta progression.md','utf8');
+const source=fs.readFileSync(__dirname+'/../Entwicklung/Meta progression.md','utf8');
 const iconPaths=require('./assets/tabler-talent-icons.json');
 const descriptions={S1:'Erste Reifung: +3 % Schaden',S2:'Flinke Hufe: +3 % Bewegungsgeschwindigkeit',S3:'Käsefunke: +3 % Käserausch-Aufladung',S4:'Spürnase: +7,5 % Orb-Ansaugradius',S5:'Kellermeister: +4,5 % Waffen-Power-up-Dauer'};
 const titles=Object.fromEntries(Object.entries(descriptions).map(([id,text])=>[id,text.split(':')[0]]));

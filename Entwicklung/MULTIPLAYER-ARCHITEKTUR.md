@@ -137,7 +137,7 @@ Zunächst wird eine aktive Runde mit vier Teilnehmern als Lastziel geprüft. Meh
 
 Neue sinnvolle Prüffälle: test-multiplayer.cjs für Koopregeln; test-network.cjs für Verzögerungen, verlorene Antworten, doppelte Aktionen, alte Zustände und Verbindungsabbrüche; test-sites-api.cjs für Raumzugriff, gleichzeitige Beitritte, D1-Konsistenz und Datenbegrenzung. D1-Integration mit der unterstützten lokalen Laufzeit prüfen; reine Mocks reichen für konkurrierende Beitritte nicht.
 
-Nach übergreifenden Änderungen ist node test-all.cjs auszuführen und um die neuen relevanten Prüfungen zu erweitern. Vorhandene Tests für Kampf, Eingaben, Fortschritt, Sound, Assets, Balance und Talente bleiben maßgeblich. Praktische Vier-Spieler-Balance, Host-Tabwechsel und der Spielspaß unter realer Latenz bleiben Nutzerprüfungen. ROADMAP.md erst entsprechend tatsächlich umgesetzter und geprüfter Schritte abhaken.
+Aus der [Testanleitung](../tests/README.md) gezielte Prüfungen für betroffene Spielabläufe auswählen. Ein vollständiger Lauf erfolgt auf ausdrückliche Anforderung. Praktische Vier-Spieler-Balance, Host-Tabwechsel und der Spielspaß unter realer Latenz bleiben Nutzerprüfungen. In der [Roadmap](ROADMAP.md) tatsächlich umgesetzte und geprüfte Schritte dokumentieren.
 
 ## 11. Quellen und Prüfstand
 

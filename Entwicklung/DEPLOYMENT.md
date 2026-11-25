@@ -2,10 +2,18 @@
 
 Der Workflow [Publish Pfert](../.github/workflows/pages.yml) wird manuell auf `main` gestartet. Er lädt den angegebenen Release-Tag, prüft die Versionsanzeige in `Pfert/index.html` und veröffentlicht den Ordner `Pfert`.
 
+## Versionsnummer
+
+Die veröffentlichte Versionsnummer steht direkt auf dem Startbildschirm in `Pfert/index.html`. Das Format lautet `Hauptversion.Unterversion.Patchversion`.
+
+- **Hauptversion** für grundlegende oder inkompatible Änderungen. Aus 1.4.2 wird 2.0.0.
+- **Unterversion** für kompatible Erweiterungen. Aus 1.4.2 wird 1.5.0.
+- **Patchversion** für Fehlerbehebungen und Feinschliff. Aus 1.4.2 wird 1.4.3.
+
 ## Release vorbereiten und pushen
 
 1. Auf `main` mit `git status --short --branch` den Arbeitsstand prüfen und nach `git fetch origin` sicherstellen, dass alle Änderungen aus `origin/main` enthalten sind. Prüfen, dass die nächste Versionsnummer lokal und auf GitHub frei ist.
-2. In `Pfert/index.html` die sichtbare Versionsnummer aktualisieren. Die betroffenen Abläufe gezielt nach [README](README.md#prüfung) prüfen. Nur die zum Release gehörenden Dateien stagen und committen.
+2. In `Pfert/index.html` die sichtbare Versionsnummer aktualisieren. Die betroffenen Abläufe gezielt nach [Testanleitung](../tests/README.md#pr%C3%BCfung) prüfen. Nur die zum Release gehörenden Dateien stagen und committen.
 3. Den Release-Commit taggen und Branch und Tag atomar pushen. Hier steht `1.0.5` als Beispiel.
 
    ```powershell

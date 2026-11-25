@@ -1,5 +1,7 @@
 # Pfert – Testfeedback vom 11.11.2026
 
+[Spielarchitektur](ARCHITEKTUR.md) · [Testanleitung](../tests/README.md)
+
 ## Talent-Sicherung, Sternenpost und Schussvorwarnungen
 
 - [x] **Sternenpost-Orbs:** Pro Orb 50 % blau, 30 % grün, 15 % rot und 5 % golden. Rote und goldene Orbs geben doppelte XP, auch bei regulären Drops. Ziehgrenzen und XP-Werte gezielt geprüft.
@@ -43,7 +45,7 @@
 - [x] Waffenweine mit Sonderangriffen erscheinen 70 % seltener als vor der Anpassung. Die Chance je vorgesehenem Versuch sinkt von 40 % auf 12 %.
 
 - [x] **Cooldown-Anzeigen:** Festes 5×2-Patronenraster oben rechts. Jede Patrone hat einen eigenen Timerbalken, graue Slots bleiben sichtbar. Ein kurzer Impuls unterscheidet den tatsächlichen Abschuss von Schussbereitschaft. Rotation und Windschatten-Nachladung sind automatisiert geprüft.
-- [ ] **Gegnergrafiken und Stilrichtlinie:** Der Grafik- und Kampfpass setzt die [16-Bit-Richtlinie](assets/ARTWORK.md#verbindlicher-16-bit-retrostil) für alle Gegnertypen um. Einheitlichkeit und Lesbarkeit bei dichtem Feuer im Browser abnehmen.
+- [ ] **Gegnergrafiken und Stilrichtlinie:** Der Grafik- und Kampfpass setzt die [16-Bit-Richtlinie](ARTWORK.md#verbindlicher-16-bit-retrostil) für alle Gegnertypen um. Einheitlichkeit und Lesbarkeit bei dichtem Feuer im Browser abnehmen.
 - [ ] **Gebäude:** Grafikrichtlinie anhand vorhandener Bosporus- und Ruhrpott-Kulissen ergänzt. Maschinenhalle Zweckel mit Rundbogenfenstern, Lisenen und gestufter Fassade überarbeitet. Getränke Kopatz übernimmt Schriftzug und Kronkorkenmotiv aus der Anzeige des Geschäfts. Eindeutiges Fassadenfoto für den Abgleich von Dach, Eingängen und Fenstern fehlt. Beide Gebäude bei Spielgröße im Browser abnehmen.
 - [x] **Laser:** Lichtlanze und Sonnenlanze laden doppelt so lange und verursachen pro Schuss 60 % mehr Schaden. Die sichtbare Strahlbreite ist halbiert, die Trefferbreite bleibt gleich. Hauptstrahlen sind deckend, Kopien verwenden 80 % Deckkraft. Suchraketen, Schild und Räumstrahl mischen Rot, Grün und Blau. Der Räumstrahl behält seine eigene Pulsfrequenz. Zielwahl, Laserfarbe und Laserkreisel sind gezielt geprüft.
 - [x] **Sternenpost:** Drei Siegel lösen eine Belohnung aus. 30 % Itemchance über die vorhandene Beuteverteilung, sonst zehn einsammelbare Orbs à einem Basis-EP. Ist kein Item verfügbar, fallen Orbs. Beide Ausgänge und das Zeitfenster sind automatisiert geprüft.
@@ -55,7 +57,8 @@
 
 ## Versandordner · 25.11.2026
 
-- [x] Spiel und Laufzeit-Assets liegen in `Pfert/`. Tests, Dokumentation, Vorschauen und Quelldaten liegen in `tests/`.
+- [x] Spiel und Laufzeit-Assets liegen in `Pfert/`. Tests, Vorschauen und Quelldaten liegen in `tests/`. Anforderungen, Roadmap und Spielarchitektur liegen in `Entwicklung/`.
+- [x] Die [Spielarchitektur](ARCHITEKTUR.md) dokumentiert Rundenablauf, Schaden, Projektile, Boss-Segmente und Fortschritt mit Code-Einstiegen und Rechenbeispielen. Dokumentierte Beispielwerte und verschobene Generatorquelle wurden mit dem aktuellen Code abgeglichen.
 
 ## Kampfanzeigen und Rundenauswertung · 25.11.2026
 
@@ -99,7 +102,7 @@
 2. [x] Spurweber, Kieltaucher und Splitterbake erscheinen ab 1:40 in regulären Wellen. Die drei Maschinen haben eigene Silhouetten, Mündungswarnungen und Angriffsmuster.
 3. [x] Prisma-Observatorium und Gezeitenwerft erweitern die Hauptrotation. Beide haben vier Treffersegmente, einen Phasenwechsel und jeweils zwei angekündigte Sonderangriffe. Direkteinstieg über Umschalt + Num 2 oder Num 3.
 4. [x] Facetten, versetzte Spriteschatten, gestufte Flugneigung und zwei Mauerreihen mit Parallaxe ergänzen die Pixelgrafik. Himmel, Mauerstücke und Patronenbilder werden wiederverwendet. Kettentreffer wählen Nachbarn in einem Durchlauf.
-5. [x] Gezielte Prüfungen bestanden: `node test-encounters.cjs --caravan` und `node test-encounters.cjs --boss-attacks`. Geprüft wurden unter anderem Nachladung, Kartenrotation, Trefferwirkungen, drei Gegnermuster, Bossabschlüsse und die Warnungen aller 18 Boss-Sonderangriffe.
+5. [x] Gezielte Prüfungen bestanden: `node tests/test-encounters.cjs --caravan` und `node tests/test-encounters.cjs --boss-attacks`. Geprüft wurden unter anderem Nachladung, Kartenrotation, Trefferwirkungen, drei Gegnermuster, Bossabschlüsse und die Warnungen aller 18 Boss-Sonderangriffe.
 6. [ ] Im Browser offen: Tiefenwirkung und Lesbarkeit bei dichtem Feuer, Schwierigkeit der neuen Begegnungen sowie Bildrate und Gleichmäßigkeit auf dem Zielgerät.
 
 Diese Übersicht hält die geplanten Änderungen und ihren Fortschritt fest. Ein Punkt wird erst nach Umsetzung und Prüfung abgehakt. Teilfortschritt und offene Entscheidungen stehen direkt beim jeweiligen Punkt. Die Modell- und Reasoning-Empfehlungen sind Ausgangspunkte und können je nach Verfügbarkeit und tatsächlicher Schwierigkeit angepasst werden.
@@ -107,7 +110,7 @@ Diese Übersicht hält die geplanten Änderungen und ihren Fortschritt fest. Ein
 ## Ausrüstung im Run · 20.11.2026
 
 - [x] **50 Items und garantierte Beute:** Alle sieben Bosse und zehn seltenen Sondergegnertypen lassen je ein Item fallen. Geprüft sind Ziehung, Ablauf, Nachbrennen, Käserausch und die Beute nach beiden Ruhrpott-Rückwegen.
-- [x] **Ausrüstung und Rucksack:** Fünf Ausrüstungsplätze, vier Reserveplätze, Tausch in der Pause und Auswahl bei vollem Rucksack. `node test-items.cjs` prüft Maus, Tastatur und Controller, Reihenfolge von Kartenwahl und Beute sowie den Verlust der Items beim Tod. Geprüft sind außerdem Werte aus mehreren Slots, Zusatzherzen und laufende Effekte beim Wechsel.
+- [x] **Ausrüstung und Rucksack:** Fünf Ausrüstungsplätze, vier Reserveplätze, Tausch in der Pause und Auswahl bei vollem Rucksack. `node tests/test-items.cjs` prüft Maus, Tastatur und Controller, Reihenfolge von Kartenwahl und Beute sowie den Verlust der Items beim Tod. Geprüft sind außerdem Werte aus mehreren Slots, Zusatzherzen und laufende Effekte beim Wechsel.
 - [ ] **Browser-Spieltest:** Lesbarkeit der Beutesymbole und Vergleichsansicht, Drop-Takt sowie Stärke und Zusammenspiel der Itemwerte im Kampf beurteilen.
 
 ## XP-Orbs · 20.11.2026
@@ -118,11 +121,11 @@ Diese Übersicht hält die geplanten Änderungen und ihren Fortschritt fest. Ein
 
 - [x] **Zielsuche um 70 % abgeschwächt:** Spürnase für Geschosse und Laser sowie die Eigenlenkung von Suchraketen und Rosé behalten 30 % ihrer bisherigen Lenkstärke. Gezielte Tests für Suchverhalten und Raketentreffer sind bestanden.
 
-- [x] **Suchraketen:** Das Power-up füllt auf fünf Ladungen auf. Der Schaden pro Rakete ist verdoppelt. `node test-game.cjs --rockets` prüft Aufsammeln, Verbrauch, Nachladen und Trefferschaden.
+- [x] **Suchraketen:** Das Power-up füllt auf fünf Ladungen auf. Der Schaden pro Rakete ist verdoppelt. `node tests/test-game.cjs --rockets` prüft Aufsammeln, Verbrauch, Nachladen und Trefferschaden.
 
 - [x] **Weniger Zusatzgeschosse, 15 % mehr Basisschaden:** Doppelter Käse, Streuflug und Käsebruch enden bei Rang 2. Der Standardschuss steigt von 0,75 auf 0,8625 Schaden. Gezielte Tests prüfen Grundschaden, Geschosszahl, Splitterflug und Schadensboni im Talentbaum.
 
-- [x] **Zielsuche endet beim ersten Treffer:** Durchschlagende Geschosse und Treffersplitter nehmen kein neues Ziel auf. `node test-game.cjs --seek-hit` prüft Zielsuche vor dem Treffer, Durchschlag, Splitterflug und Treffer auf Bosssegmente.
+- [x] **Zielsuche endet beim ersten Treffer:** Durchschlagende Geschosse und Treffersplitter nehmen kein neues Ziel auf. `node tests/test-game.cjs --seek-hit` prüft Zielsuche vor dem Treffer, Durchschlag, Splitterflug und Treffer auf Bosssegmente.
 
 - [x] **Pixelart für Elementartreffer:** Flammen, Blitz-Zacken, Eiskristalle und Gesteinsbrocken treten direkt aus Gegnern und Bosssegmenten aus. Alle vier Motive, Nachbrennen, Kettenblitze und kombinierte Bosstreffer sind im Kampftest geprüft. Die spätere Blocker-Prüfung schlägt weiterhin fehl.
 - [ ] **Sichtprüfung der Elementartreffer:** Erkennbarkeit der vier Motive bei gemischten Treffern und dichtem Gegnerfeuer im Browser beurteilen.
@@ -145,10 +148,10 @@ Diese Übersicht hält die geplanten Änderungen und ihren Fortschritt fest. Ein
 - [x] **Darstellung bei hoher Geschossdichte:** Ab Version 1.0.5 bleiben Geschossformen, Laserbreiten, Glüheffekte und Leuchtspuren bei hoher Projektilzahl erhalten. `node tests/test-readability.cjs` prüft Zeichenpfade und Spuraufzeichnung mit 360 Spieler- und 216 Feindgeschossen. Die Bildrate bei hoher Dichte bleibt im Browser zu prüfen.
 - [ ] **Bildrate bei hoher Geschossdichte:** FPS und Lesbarkeit der vereinfachten Darstellung im tatsächlichen Browser-Gefecht prüfen.
 
-- [x] **Talentbaum-Bonusübersicht:** Rechts stehen alle gekauften Talente mit ihrem aktuellen Bonus. Leerer Stand, Kauf, Rangsteigerung und Rückgabe sind mit `node test-meta-game.cjs` geprüft.
+- [x] **Talentbaum-Bonusübersicht:** Rechts stehen alle gekauften Talente mit ihrem aktuellen Bonus. Leerer Stand, Kauf, Rangsteigerung und Rückgabe sind mit `node tests/test-meta-game.cjs` geprüft.
 
 - [x] **Pfert im Talentbaum aufdecken:** Knoten liegen auf dem großen Pfert-Sprite. Der Weg beginnt an der Brust und verzweigt zu Kopf, Flügeln, Schweif und Hufen. Kauf und erreichbare Nachbarn vergrößern den sichtbaren Bereich. Sprite und Freilegungsmaske verwenden dieselben Kartenkoordinaten. Platzierung, Maskenstruktur und vollständige Freilegung sind automatisiert geprüft. Der visuelle Browser-Spieltest steht aus.
-- [x] **Debug-Talentpunkte und Boss-Sprünge:** Numpad 1 gibt 360 Punkte für einen separaten Teststand. Numpad 2–8 starten die sieben Bosskämpfe direkt im Debug-Modus, Numpad 9 die Basar-Variante des Großwesirs. Direktstart aus dem Hauptmenü, Wechsel aus einer regulären Runde und Trennung vom Spielstand sind mit `node test-meta-game.cjs` geprüft.
+- [x] **Debug-Talentpunkte und Boss-Sprünge:** Numpad 1 gibt 360 Punkte für einen separaten Teststand. Numpad 2–8 starten die sieben Bosskämpfe direkt im Debug-Modus, Numpad 9 die Basar-Variante des Großwesirs. Direktstart aus dem Hauptmenü, Wechsel aus einer regulären Runde und Trennung vom Spielstand sind mit `node tests/test-meta-game.cjs` geprüft.
 
 - [x] Suchraketen, Schutzschild und Räumstrahl haben eigene Pixelsymbole und Sammelklänge. Die Rakete hat einen animierten Abgasstrahl und ein Startgeräusch. Die Säge ist um 25 % größer gezeichnet. XP-Orbs haben Glanzkanten, Boss-Orbs eine Goldpalette.
 - [x] Magnetboni werden pro Objektgruppe berechnet. Bei entfernten Lichtquellen entfällt die Wurzelberechnung. Fünf volle HUD-Herzen benötigen 75 statt 275 Rechtecke. `test-progress.cjs`, `test-readability.cjs` und `test-sound.cjs` prüfen Fortschritt, Zeichenpfade und Soundereignisse. Bildrate und Klangeindruck im Browser sind offen.
@@ -161,7 +164,7 @@ Diese Übersicht hält die geplanten Änderungen und ihren Fortschritt fest. Ein
 - [x] **Startbildschirm und Menüs:** Neuer Pixel-Schriftzug, animiertes Pfert vor dem Bosporus-Panorama, größerer 16:9-Spielrahmen und neu gestaltete Karten und Pause.
 - [x] **Darstellung im Spiel:** Eigene Lichtstimmung pro Schauplatz, dezente Pixelpartikel hinter der Spielebene, Flugspur am Pfert, Boss-Funken und neu gefasste Statusanzeigen. Bestehende Zeichenreihenfolge für Gefahren bleibt erhalten.
 - [x] **Technische Prüfung:** Asset- und Fallback-Pfade, HUD und Geschossmerkmale, Gegner- und Boss-Zeichenpfade, Eingaben sowie Pause und Kartenwahl gezielt geprüft. Die Startseite verweist auf vorhandene lokale Assets und eindeutige Bedienelemente.
-- [x] **Detaillierte Bosporus-Parallax:** Transparente Uferhäuser und Basar-Terrassen scrollen in getrennten Ebenen vor dem Panorama. Asset-Laden, Scrollversatz, Kachelanschluss und unabhängige Ersatzgrafiken sind mit `node test-assets.cjs` geprüft.
+- [x] **Detaillierte Bosporus-Parallax:** Transparente Uferhäuser und Basar-Terrassen scrollen in getrennten Ebenen vor dem Panorama. Asset-Laden, Scrollversatz, Kachelanschluss und unabhängige Ersatzgrafiken sind mit `node tests/test-assets.cjs` geprüft.
 - [x] **Talentbaum im Arcade-Look:** Bosporus-Karte mit Pfert-Motiv, farbigen Talentabzeichen sowie goldenen und gestrichelten Pfaden. Detailtafel zeigt Effekt, Rang und Kaufstatus. Zoom, Kauf, Rückkehr zum Menü und Controller geprüft.
 - [ ] **Browser-Spieltest:** Übergänge und Kontrast der neuen Parallax-Ebenen, Startbildschirm und Talentbaum bei unterschiedlichen Fenstergrößen und die Lesbarkeit im dichten Kampf beurteilen.
 
@@ -179,27 +182,27 @@ Diese Übersicht hält die geplanten Änderungen und ihren Fortschritt fest. Ein
 10. [x] **Astra 6.2 · High – Fehler beim Zeichnen eines Gegners:** Seltenen Gegnern fehlte die Bewegungsphase. Die Höhe wurde dadurch ungültig und die Aufladegrafik des Impulsstrahls brach beim Radialgradienten ab. Initialisierung und Zeichenprüfung mit endlichen Koordinaten sind umgesetzt.
 11. [x] **Astra 6.2 · High – Talentpunkte während des Runs speichern:** Zeit- und Bosspunkte werden bei Vergabe gespeichert. Das Rundenende verbucht die verbleibende Spielzeit. Geprüft sind Laden, Rundenzähler, doppelte Vergabe und die unveränderte Behandlung von Debug-Runden.
 
-Alle 15 Testsuiten in `node test-all.cjs` bestanden. Browser-Spieltest und praktische Balanceprüfung stehen aus.
+Alle 15 Testsuiten in `node tests/test-all.cjs` bestanden. Browser-Spieltest und praktische Balanceprüfung stehen aus.
 
 ## Nächste Überarbeitung der Gegnerangriffe
 
 - [x] **Sultan der Kaffeekessel:** 50 % mehr Basis-Lebenspunkte vor Rundung der einzelnen Segmente. Der gezielte Boss-Test läuft weiterhin durch.
 
-- [x] **Sultan der Kaffeekessel:** Die Wartezeit bis zum ersten Angriff und die regulären Angriffspausen in beiden Phasen sind um ein Drittel kürzer. `node test-encounters.cjs --boss-attacks` prüft den 1,5-fachen Angriffstakt außerhalb der Angriffsanimationen.
+- [x] **Sultan der Kaffeekessel:** Die Wartezeit bis zum ersten Angriff und die regulären Angriffspausen in beiden Phasen sind um ein Drittel kürzer. `node tests/test-encounters.cjs --boss-attacks` prüft den 1,5-fachen Angriffstakt außerhalb der Angriffsanimationen.
 
-- [x] **20 % mehr bewegliche Feindgeschosse:** Jeder fünfte Schuss von Gegnern und Bossen erhält ein versetztes Zusatzgeschoss. Das Limit aktiver Feindgeschosse steigt von 180 auf 216. `node test-encounters.cjs --boss-attacks` prüft die Schusszahl und die Boss-Angriffsmuster.
+- [x] **20 % mehr bewegliche Feindgeschosse:** Jeder fünfte Schuss von Gegnern und Bossen erhält ein versetztes Zusatzgeschoss. Das Limit aktiver Feindgeschosse steigt von 180 auf 216. `node tests/test-encounters.cjs --boss-attacks` prüft die Schusszahl und die Boss-Angriffsmuster.
 
-- [x] **Zwei zusätzliche Sonderangriffe für jeden der sieben Bosse.** Die neuen Muster nutzen versetzte Wellen, Angriffe von den Spielfeldrändern und wechselnde Ausweichspuren. Der Warnhinweis zeigt Name und Abschussrichtung oder die betroffenen Strahlspuren. Angriffsfolge, Vorwarnzeit, Wellen und Warnsignal sind mit `node test-encounters.cjs --boss-attacks` und `node test-sound.cjs` geprüft.
+- [x] **Zwei zusätzliche Sonderangriffe für jeden der sieben Bosse.** Die neuen Muster nutzen versetzte Wellen, Angriffe von den Spielfeldrändern und wechselnde Ausweichspuren. Der Warnhinweis zeigt Name und Abschussrichtung oder die betroffenen Strahlspuren. Angriffsfolge, Vorwarnzeit, Wellen und Warnsignal sind mit `node tests/test-encounters.cjs --boss-attacks` und `node tests/test-sound.cjs` geprüft.
 - [ ] **Boss-Balance im Browser.** Ausweichfenster und Schwierigkeit der 14 neuen Muster im Spiel beurteilen.
 
-- [x] **Fliegender Teppich und drei weitere Blocker:** Der bisherige Blocker hat eine gewellte Pixelgrafik mit gewebtem Muster und Fransen. Die Basarlaterne kommt von rechts und sinkt, der Messingvogel kommt von links und steigt, die Gewürzbarke kommt von rechts und zieht nach unten und wieder hoch. Die drei neuen Blocker wiederholen sich in gemischter Reihenfolge. Nach ihrem ersten Zeitfenster von 95 bis 120 Sekunden wird nach jedem Auftritt eine Pause von 65 bis 95 Sekunden gezogen. Blocker erscheinen einzeln im Hauptspiel außerhalb von Bosskämpfen. `node test-encounters.cjs` prüft Zeichnen, Eintritt, Höhenwechsel, Kontakt, Treffer und Abflug.
+- [x] **Fliegender Teppich und drei weitere Blocker:** Der bisherige Blocker hat eine gewellte Pixelgrafik mit gewebtem Muster und Fransen. Die Basarlaterne kommt von rechts und sinkt, der Messingvogel kommt von links und steigt, die Gewürzbarke kommt von rechts und zieht nach unten und wieder hoch. Die drei neuen Blocker wiederholen sich in gemischter Reihenfolge. Nach ihrem ersten Zeitfenster von 95 bis 120 Sekunden wird nach jedem Auftritt eine Pause von 65 bis 95 Sekunden gezogen. Blocker erscheinen einzeln im Hauptspiel außerhalb von Bosskämpfen. `node tests/test-encounters.cjs` prüft Zeichnen, Eintritt, Höhenwechsel, Kontakt, Treffer und Abflug.
 - [ ] **Blocker im Browser spielen:** Lesbarkeit der Pixelgrafiken und Ausweichbarkeit bei dichtem Gegneraufkommen prüfen.
 
 - [x] **Zwei Angriffe pro Boss.** Alle sieben Bosse wechseln zwischen zwei Angriffstypen. Vorstoßwarnung und versetzte Salven der zweiten Phase bleiben Teil der jeweiligen Angriffe. Der Wechsel wurde automatisiert geprüft.
 
 - [x] **Zehn seltene Gegner:** Eigene Pixelgrafiken und je ein angekündigter Angriff. Im Hauptspiel ersetzt nach 120 bis 145 Sekunden ein Sondergegner einen regulären Spawn. Nach jedem Auftritt wird der Cooldown neu gezogen. Pro Runde wird die Reihenfolge gemischt. Alle zehn Typen erscheinen einmal pro Durchgang durch die Liste, danach wird neu gemischt. Reihenfolge, Cooldown, Spawns, Angriffe und Sprite-Zeichenpfade sind automatisiert geprüft. Der visuelle Browser-Spieltest steht aus.
 
-- [x] **Eigene Grafiken für Pfert-Geschosse.** Der transparente Atlas `assets/player-projectiles-v1.png` enthält 16 Motive für Standard-, Waffen- und Zusatzgeschosse. Der aufgeladene Standardschuss nutzt sein Motiv aus dem bisherigen Effektatlas. Port-Laser und Gewitterkanone erhalten unterschiedliche Grafiken am Strahlausgang. Atlas-Laden, Zuschnitte und Canvas-Fallback sind automatisiert geprüft. Die Lesbarkeit im laufenden Spiel bleibt praktisch zu beurteilen.
+- [x] **Eigene Grafiken für Pfert-Geschosse.** Der transparente Atlas `tests/assets/player-projectiles-v1.png` enthält 16 Motive für Standard-, Waffen- und Zusatzgeschosse. Der aufgeladene Standardschuss nutzt sein Motiv aus dem bisherigen Effektatlas. Port-Laser und Gewitterkanone erhalten unterschiedliche Grafiken am Strahlausgang. Atlas-Laden, Zuschnitte und Canvas-Fallback sind automatisiert geprüft. Die Lesbarkeit im laufenden Spiel bleibt praktisch zu beurteilen.
 
 - [x] **Kleinste Gegnergeschosse vergrößert.** Zielnadeln und Splitter mit 8 Pixeln Trefferbreite werden 50 % größer gezeichnet.
 
@@ -229,7 +232,7 @@ Alle 15 Testsuiten in `node test-all.cjs` bestanden. Browser-Spieltest und prakt
 | Treibmine | Driftet langsam und gibt nach kurzer Zeit einen kleinen Ring ab | Dschinn der Gewürzmühle |
 | Impulsstrahl | Kurzer Strahl mit Aufladeeffekt an der Quelle | Großmeister der Basarkarawane |
 
-Der Schalke-Fan wechselt von Zielnadeln zu Splitterkugeln. Heckgruppen erscheinen im achtminütigen Zyklus bei 1:53, 4:28 und 6:37, sofern gerade weder ein Bosskampf noch ein Abstecher läuft. Die beiden Gegner starten mit Höhenabstand zum Pfert. Alle neun Testsuiten in `node test-all.cjs` bestehen. Geprüft sind wiederkehrende Heckgruppen, Kartenschaden, Zielbindung, die sechs Schusstypen und die Bossübergänge. Lesbarkeit und Schwierigkeit bleiben im Browser zu beurteilen.
+Der Schalke-Fan wechselt von Zielnadeln zu Splitterkugeln. Heckgruppen erscheinen im achtminütigen Zyklus bei 1:53, 4:28 und 6:37, sofern gerade weder ein Bosskampf noch ein Abstecher läuft. Die beiden Gegner starten mit Höhenabstand zum Pfert. Alle neun Testsuiten in `node tests/test-all.cjs` bestehen. Geprüft sind wiederkehrende Heckgruppen, Kartenschaden, Zielbindung, die sechs Schusstypen und die Bossübergänge. Lesbarkeit und Schwierigkeit bleiben im Browser zu beurteilen.
 
 ## Heckwelle, Schussvorschau und Blocker · 18.11.2026
 
@@ -248,7 +251,7 @@ Dieser Abschnitt dokumentiert den früheren Stand. Die neue Überarbeitung erset
 - [x] **Vorstoß des Großwesirs:** Die Warnlinie während der gesamten Vorwarnzeit sichtbar halten. Die Zeichenreihenfolge und den Kontrast so abstimmen, dass die Linie auch bei vielen Geschossen, Treffereffekten und auf hellen Hintergründen erkennbar bleibt.
 - [x] **Bossleben:** Die Lebenspunkte regulärer und geheimer Bosse gegenüber dem aktuellen Stand um etwa 10 % senken. Den Faktor auf die Segmentlebenspunkte anwenden und das Gesamtleben aus deren Summe ableiten.
 
-Umgesetzt und mit allen neun Testsuiten in node test-all.cjs geprüft. Die Gegnerklassen folgen den bisherigen Basis-XP (1 blau, 2 grün, ab 3 rot). Boss-Orbs sind rot. Die Erkennbarkeit der Warnlinie und der Orb-Farben prüft der Nutzer im Browser.
+Umgesetzt und mit allen neun Testsuiten in node tests/test-all.cjs geprüft. Die Gegnerklassen folgen den bisherigen Basis-XP (1 blau, 2 grün, ab 3 rot). Boss-Orbs sind rot. Die Erkennbarkeit der Warnlinie und der Orb-Farben prüft der Nutzer im Browser.
 
 ## Spieltest-Feedback vom 18.11.2026
 
@@ -258,32 +261,32 @@ Diese neuen Anforderungen ändern die bisherigen Vorgaben zu Waffen und Darstell
 
 - [x] **Sol 6.2 – High:** Bewegungsgeschwindigkeit des Pferdes um 15 % erhöhen, einschließlich bestehender Boni und Steuerungsarten. Angriffe des Pferdes um 50 % schneller machen. Als Ausgangspunkt die Feuerrate mit Faktor 1,5 umsetzen, also die Intervalle durch 1,5 teilen. Normale und automatische Waffenangriffe sowie relevante Sonderangriffe prüfen. Schaden pro Treffer bei allen Angriffen des Pferdes um 50 % gegenüber dem bisherigen Stand reduzieren, einschließlich automatischer Waffen und Sonderangriffe. Vorhandene Schadensboni und Kombinationen entsprechend berücksichtigen. Rechnerisch ergeben 1,5-fache Feuerrate und halber Trefferschaden bei gleichbleibender Trefferquote 75 % des bisherigen Schadens pro Sekunde.
 - [x] **Sol 6.2 – High:** Gegnerische Angriffe um 30 % beschleunigen. Als Ausgangspunkt die Fluggeschwindigkeit gegnerischer Geschosse mit Faktor 1,3 multiplizieren und dabei Gegner- und Bossangriffe einschließlich gezielter, gebogener und fallender Geschosse berücksichtigen. Feuerrate und Gegnerleben erhalten. Prüfen, ob Beschleunigung und Lebensdauer der Geschosse zu ihrem Verhalten passen.
-- **Prüfung:** Bewegung, Feuerrate und Geschwindigkeiten mit und ohne Boni sowie Boss- und Gegnerangriffe mit `node test-game.cjs` prüfen. Spielgefühl und Ausweichbarkeit beurteilt der Nutzer.
+- **Prüfung:** Bewegung, Feuerrate und Geschwindigkeiten mit und ohne Boni sowie Boss- und Gegnerangriffe mit `node tests/test-game.cjs` prüfen. Spielgefühl und Ausweichbarkeit beurteilt der Nutzer.
 
 ### 2. Power-up-Übersicht
 
 - [x] **Astra 6.2 – High:** Rechts in der oberen Statusleiste gesammelte Power-up-Karten mit eindeutiger, stabiler Kurzkennung und Rang anzeigen. Möglichst je ein Buchstabe, bei mehr Karten als verfügbaren Buchstaben eindeutige kurze Kombinationen verwenden. Eine im Spiel zugängliche Zuordnung zu den Kartennamen vorsehen, damit sich Builds nachstellen lassen. Wiederholbare Karten und Platzbedarf bei vielen unterschiedlichen Karten berücksichtigen; bestehende Anzeigen lesbar halten.
-- **Prüfung:** Auswahl, wiederholte Ränge, Neustart und umfangreiche Kombinationen mit `node test-game.cjs` und `node test-progress.cjs` prüfen. Lesbarkeit im Browser prüft der Nutzer.
+- **Prüfung:** Auswahl, wiederholte Ränge, Neustart und umfangreiche Kombinationen mit `node tests/test-game.cjs` und `node tests/test-progress.cjs` prüfen. Lesbarkeit im Browser prüft der Nutzer.
 
 ### 3. Kälte und Zielverfolgung
 
 - [x] **Astra 6.2 – High:** Wiederholte Kältetreffer verstärken die Verlangsamung zusätzlich. Stapelung, sinnvolle Obergrenze und Ablauf so festlegen, dass Gegner nicht dauerhaft bewegungsunfähig werden. Bestehende Kältequellen, Kombinationen und Bosssegmente berücksichtigen. Die Stapelung wirkt auf das verbleibende Tempo und bremst höchstens um 65 %. Ein Kältetreffer verlängert die Wirkung auf mindestens 1,8 Sekunden, zuzüglich Dauerboni.
 - [x] **Sol 6.2 – High:** Die Lenkstärke der eigenen Zielverfolgung durch das Power-up Spürnase gegenüber dem bisherigen Wert um etwa 30 % reduzieren. Bestehende Ränge und Kombinationen einschließlich automatischer Geschosse und Laser berücksichtigen.
 - [x] **Astra 6.2 – High:** Suchende eigene Angriffe sollen lebende Bosssegmente anvisieren, wenn die Mitte zerstört ist. Geeignete Trefferpunkte der verbleibenden Segmente verwenden, bei Zerstörung ein anderes lebendes Segment wählen und bestehende Trefferregeln berücksichtigen. Geschosse und zielverfolgende Laser prüfen.
-- **Prüfung:** Mehrere Kältetreffer, Obergrenze und Ablauf sowie Zielwechsel bei zerstörten Segmenten mit `node test-game.cjs` und `node test-meta-game.cjs` prüfen. Praktische Stärke beurteilt der Nutzer.
+- **Prüfung:** Mehrere Kältetreffer, Obergrenze und Ablauf sowie Zielwechsel bei zerstörten Segmenten mit `node tests/test-game.cjs` und `node tests/test-meta-game.cjs` prüfen. Praktische Stärke beurteilt der Nutzer.
 
 ### 4. Parallax-Hintergründe
 
 - [x] **Sol 6.2 – High:** Die Parallax-Ebenen sichtbar und deckend zeichnen. Einen grauen Nebel über den fertig gezeichneten Hintergrund legen, um ihn gegenüber Spielfiguren und Gefahren zurückzunehmen. Versetzte Bewegung, vorhandene Assets und prozedurale Fallbacks für die betroffenen Hintergründe erhalten; Nebel hinter Spielfiguren und Geschossen platzieren.
-- **Prüfung:** Asset- und Fallback-Abläufe mit `node test-assets.cjs` und `node test-game.cjs` prüfen. Deckung, Nebelstärke und Kontrast beurteilt der Nutzer im Browser.
+- **Prüfung:** Asset- und Fallback-Abläufe mit `node tests/test-assets.cjs` und `node tests/test-game.cjs` prüfen. Deckung, Nebelstärke und Kontrast beurteilt der Nutzer im Browser.
 
 ### 5. Großwesir und Gegnerdichte
 
 - [x] **Astra 6.2 – High:** Beim angekündigten Vorstoß des Großwesirs einen Bewegungsbereich ermöglichen, der 75 % der Spielfeldbreite umfasst. Ausgangsposition, Bewegungsgrenzen und Rückkehr festlegen; Angriff früh erkennbar und ausweichbar gestalten. Bestehende Bosssegmente und Phasen berücksichtigen.
 - [x] **Gegnerdichte:** Die Spawnrate startet bei 50 % des bisherigen Werts und steigt linear mit der Hauptspielzeit. Nach 15 Minuten liegt sie bei 75 %, nach 30 Minuten bei 100 %. Der Basar nutzt dieselbe Kurve und behält alle vier Wellengruppen. Abstecher übernehmen die erreichte Dichte.
-- **Prüfung:** Vorwarnung, Vorstoß und Rückkehr sowie reduzierte Spawnrate am Anfang und den Anstieg während der Runde mit `node test-game.cjs` prüfen. Den tatsächlichen Schwierigkeitsgrad beurteilt der Nutzer.
+- **Prüfung:** Vorwarnung, Vorstoß und Rückkehr sowie reduzierte Spawnrate am Anfang und den Anstieg während der Runde mit `node tests/test-game.cjs` prüfen. Den tatsächlichen Schwierigkeitsgrad beurteilt der Nutzer.
 
-Nach Umsetzung der übergreifenden Änderungen `node test-all.cjs` ausführen. Browser-Spieltests übernimmt der Nutzer. Teilweise erledigte Aufgaben offen lassen und Ergebnisse dokumentieren.
+Nach Umsetzung gezielte Prüfungen aus der [Testanleitung](../tests/README.md) auswählen. Der vollständige Testlauf erfolgt auf ausdrückliche Anforderung. Browser-Spieltests übernimmt der Nutzer. Teilweise erledigte Aufgaben offen lassen und Ergebnisse dokumentieren.
 
 ## Entwicklungsziele: 16-Bit-Shoot-'em-up
 
@@ -305,40 +308,40 @@ Die Vorlage setzt eine feste Stage voraus; Pfert besitzt derzeit ein zeitbasiert
 - [x] **Sol 6.2 · High** nach Ziel 1: Zeichenreihenfolge im gewählten Abschnitt so anpassen, dass gegnerische Geschosse vor Explosionseffekten sichtbar bleiben. Vorhandenes Trefferaufblitzen oder vorhandenen Ton nutzen; nur erkennbare Lücken schließen. Darstellung von Waffen und Schildfunktion unverändert lassen.
   - Umgesetzt: Feindgeschosse werden nach Explosionen, Partikeln und Trefferblitzen gezeichnet. Bestehende Trefferblitze für Gegner und Bosssegmente sind automatisiert geprüft. Offen: Lesbarkeit im dichten Kampf.
 - **Akzeptanz:** Feindgeschosse werden nach Explosionseffekten gezeichnet; getroffene Gegner geben ein kurzes Signal. Vorhandenes Bosssegment-Trefferfeedback bleibt erhalten.
-- **Prüfung:** Relevante Zeichen- und Trefferabläufe sowie `node test-game.cjs`, bei Soundänderungen auch `node test-sound.cjs`. Lesbarkeit im dichten Kampf durch Nutzer offen.
+- **Prüfung:** Relevante Zeichen- und Trefferabläufe sowie `node tests/test-game.cjs`, bei Soundänderungen auch `node tests/test-sound.cjs`. Lesbarkeit im dichten Kampf durch Nutzer offen.
 
 ### Ziel 3 – Gegnerrollen und Wellenfolge
 
 - [x] **Astra 6.2 · High** nach Ziel 1: Bestehende Gegner und Angriffe für gezielten Schützen, kreuzenden Gegner und Flächensperrer prüfen und geeignet einsetzen. Rollen zunächst einzeln, anschließend kombiniert im ausgewählten Abschnitt auftreten lassen; vorhandene Zeitsteuerung und Wechsel berücksichtigen. Scrolltempo nur anpassen, wenn der Bestand dies für die gewählte Folge erfordert.
   - Umgesetzt: Messingkanne (gezielter Schütze), Säbelteppich (kreuzender Angreifer) und Janitscharen-Kessel (Flächensperrer) treten einzeln und anschließend gemischt auf. Die festen Spawn-Zeiten, der natürliche Bossstart und die Rückkehr zur regulären Gegnererzeugung sind automatisiert geprüft. Offen: Rhythmus und Ausweichbarkeit.
 - **Akzeptanz:** Die Abfolge ist nachvollziehbar im Code definiert, die Rollen nutzen vorhandene Mechaniken und der übrige Spielablauf bleibt funktionsfähig. Keine Änderungen an Spielerwaffen oder Eingaben.
-- **Prüfung:** Start, Reihenfolge, Übergang und Rückkehr des betroffenen Abschnitts mit passenden bestehenden Tests, insbesondere `node test-game.cjs`; Ausweichbarkeit und Rhythmus im Spiel durch Nutzer prüfen.
+- **Prüfung:** Start, Reihenfolge, Übergang und Rückkehr des betroffenen Abschnitts mit passenden bestehenden Tests, insbesondere `node tests/test-game.cjs`; Ausweichbarkeit und Rhythmus im Spiel durch Nutzer prüfen.
 
 ### Ziel 4 – Erholung nach einem Fehler
 
 - [x] **Sol 6.2 · High** nach Ziel 3: Vorhandene Abläufe nach Treffer, Schutzzeit und gegebenenfalls Wiedereinstieg prüfen. Nur falls die Wellenfolge unmittelbar danach überfordert, deren Platzierung oder Abfolge anpassen. Keine neue Wiederaufnahme und keine Änderung des Schildsystems einführen.
   - Geprüft: Nach einem nicht tödlichen Treffer schützt die bestehende Unverwundbarkeit; Wellen und Runde laufen weiter. Die Abstände zwischen den Gruppen und vor dem Boss geben Zeit zur Neuorientierung. Offen: praktische Erholung im Kampf.
 - **Akzeptanz:** Spiel kann nach einem nicht tödlichen Treffer regulär fortgesetzt werden; vorhandene Schutz- und Lebensregeln bleiben bestehen. Falls keine Änderung nötig ist, Befund und Prüfung dokumentieren.
-- **Prüfung:** Treffer, Schutzzeit und Fortsetzung mit `node test-game.cjs`; tatsächliche Erholungsmöglichkeit durch Nutzer beurteilen.
+- **Prüfung:** Treffer, Schutzzeit und Fortsetzung mit `node tests/test-game.cjs`; tatsächliche Erholungsmöglichkeit durch Nutzer beurteilen.
 
 ### Ziel 5 – Boss mit zwei lesbaren Phasen
 
 - [x] **Astra 6.2 · High** nach Zielen 1 und 3: Vorhandenen Boss des gewählten Abschnitts verwenden. Phase eins greift ein bekanntes Angriffsmuster auf; Phase zwei kündigt einen Positionswechsel an und bietet ein erkennbares Gegenangriffsfenster. Bestehende Segment- und Schadensmechanik erhalten.
   - Umgesetzt: Der Großwesir startet mit seiner bestehenden Salve. Bei halben Gesamtlebenspunkten kündigt ein Richtungspfeil den Positionswechsel an. Danach hält er seine Position rund 2,75 Sekunden ohne neue Salve. Segmenttreffer, Phasenwechsel, Bossende und Rückkehr zum regulären Spiel sind automatisiert geprüft. Offen: Verständlichkeit und praktische Besiegbarkeit.
 - **Akzeptanz:** Phasenwechsel und angekündigter Positionswechsel sind im Ablauf erkennbar; Boss ist mit vorhandener Bewaffnung besiegbar und der anschließende Spielablauf wird erreicht.
-- **Prüfung:** Phasenübergang, Segmenttreffer, Bossende und anschließenden Übergang mit `node test-game.cjs`; Verständlichkeit und praktische Besiegbarkeit durch Nutzer prüfen.
+- **Prüfung:** Phasenübergang, Segmenttreffer, Bossende und anschließenden Übergang mit `node tests/test-game.cjs`; Verständlichkeit und praktische Besiegbarkeit durch Nutzer prüfen.
 
 ### Ziel 6 – 16-Bit-Präsentation
 
 - [x] **Sol 6.2 · High** nach Zielen 2 und 3: Gewählten Abschnitt mit klarer Farbgestaltung, unterscheidbaren Silhouetten und versetzt scrollenden Hintergrundebenen gestalten. Vordergrund und Gefahren deutlich absetzen; vorhandene Assets und ihre Fallbacks berücksichtigen. Gelände bleibt nicht kollidierende Kulisse.
   - Umgesetzt: Der Basar kombiniert langsam scrollende Stadtkulisse und schnellere Silhouetten sowie Marktmarkisen. Die Zeichenprüfung deckt die versetzten Ebenen mit geladenem Panorama und mit prozeduralem Fallback ab. Offen: visuelle Wirkung und Kontrast im Browser.
 - **Akzeptanz:** Mindestens zwei erkennbare Hintergrundebenen bewegen sich versetzt; Spielfiguren und Gefahren bleiben von der Kulisse abgesetzt. Bestehender Spielstart und Asset-Fallback funktionieren.
-- **Prüfung:** Asset-Laden und Fallback mit `node test-assets.cjs`, betroffene Abläufe mit `node test-game.cjs`; visuelle Wirkung und Lesbarkeit durch Nutzer prüfen.
+- **Prüfung:** Asset-Laden und Fallback mit `node tests/test-assets.cjs`, betroffene Abläufe mit `node tests/test-game.cjs`; visuelle Wirkung und Lesbarkeit durch Nutzer prüfen.
 
 ### Ziel 7 – Zusammenspiel und Abnahme
 
 - [ ] **Astra 6.2 · High** nach Zielen 2–6: Änderungen gemeinsam auf Wechselwirkungen mit Hauptspiel, Abstechern, Boss, Fortschritt und Speicherung prüfen; festgestellte Fehler gezielt beheben. Keine zusätzliche Spielmechanik ergänzen.
-  - Automatisierte Abnahme mit `node test-all.cjs` umfasst Basar, Boss, Abstecher, Fortschritt und Speicherung. Offen bis zur Rückmeldung aus dem Browser-Spieltest zu Lesbarkeit, Wellen, Erholung, Boss und Präsentation.
+  - Automatisierte Abnahme mit `node tests/test-all.cjs` umfasst Basar, Boss, Abstecher, Fortschritt und Speicherung. Offen bis zur Rückmeldung aus dem Browser-Spieltest zu Lesbarkeit, Wellen, Erholung, Boss und Präsentation.
 - **Akzeptanz:** Automatisierte Prüfungen bestehen; Einschränkungen und offene praktische Bewertungen sind dokumentiert. Nutzer kann den ausgewählten Abschnitt bis zum Bossende spielen und Lesbarkeit, Angriffe, Erholung und Präsentation beurteilen.
 - **Prüfung:** Betroffene Abläufe gezielt prüfen. Den Gesamttest auf ausdrückliche Anforderung ausführen. Das Ziel bis zur visuellen und spielerischen Abnahme durch den Nutzer offen lassen.
 
@@ -357,8 +360,8 @@ Die Vorlage setzt eine feste Stage voraus; Pfert besitzt derzeit ein zeitbasiert
 ### Soundeffekte
 
 - [ ] **Sound verfeinern:** Kräftigeres klassisches Arcade-Retro-Sounddesign mit eigenem Klangcharakter für Waffen und Ereignisse; wichtige Ereignisse wie Schaden, Bossauftritte und Käserausch sollen im Kampf hervorstechen. Ton weiterhin mit M ein- und ausschaltbar.
-  - Teilfortschritt: Waffen um eine tiefere Klangschicht ergänzt, mehrere Ereignisse eigenständiger gestaltet und vier Stimmen für wichtige Ereignisse reserviert. Soundeffekte werden weiterhin synthetisch erzeugt. Automatisiert: Soundausgabe, Stummschaltung, Stimmenbegrenzung und Schadenssignal bei hoher Auslastung sowie bestehende Spielabläufe geprüft (`node test-game.cjs`).
-  - Überarbeitung vom 13.11.2026: Alle Waffen mit eigenen mehrschichtigen Texturen, kurzen Impulsen, Körper und Nachklang versehen; Sonderangriffe mit eigenem Bassimpuls. Dynamische Filterverläufe, artikulierte Lautstärkehüllen, variierendes Rauschen und eine leise frühe Raumreflexion ergänzen die Synthese. Wichtige Signale senken Kampfklänge kurz ab; Tonumschaltung blendet weich. Geprüft mit `node test-sound.cjs`, `node test-game.cjs` und `node test-progress.cjs`.
+  - Teilfortschritt: Waffen um eine tiefere Klangschicht ergänzt, mehrere Ereignisse eigenständiger gestaltet und vier Stimmen für wichtige Ereignisse reserviert. Soundeffekte werden weiterhin synthetisch erzeugt. Automatisiert: Soundausgabe, Stummschaltung, Stimmenbegrenzung und Schadenssignal bei hoher Auslastung sowie bestehende Spielabläufe geprüft (`node tests/test-game.cjs`).
+  - Überarbeitung vom 13.11.2026: Alle Waffen mit eigenen mehrschichtigen Texturen, kurzen Impulsen, Körper und Nachklang versehen; Sonderangriffe mit eigenem Bassimpuls. Dynamische Filterverläufe, artikulierte Lautstärkehüllen, variierendes Rauschen und eine leise frühe Raumreflexion ergänzen die Synthese. Wichtige Signale senken Kampfklänge kurz ab; Tonumschaltung blendet weich. Geprüft mit `node tests/test-sound.cjs`, `node tests/test-game.cjs` und `node tests/test-progress.cjs`.
   - Offen: Hörprobe im tatsächlichen Spiel durch den Nutzer; Klangcharakter, Unterschiede aller Waffen und Ereignisse, Lautstärke und Verständlichkeit bei dichten Kämpfen anhand des Feedbacks abstimmen.
 - [x] **Hintergrundmusik:** Neun Titel inklusive Balrog werden beim Rundenstart gemischt. Nach jedem vollständigen Durchlauf wird neu gemischt. N pausiert die Musik, M schaltet die Effekte separat stumm. Die Musiklautstärke lässt sich im Pausemenü einstellen. Die Konfliktmarkierungen, die das Laden von `sound.js` verhinderten, sind entfernt. Der gezielte Playlist-Test deckt Start, Titelwechsel, Stummschaltung, Stopp und Neustart ab.
 
@@ -366,7 +369,7 @@ Die Vorlage setzt eine feste Stage voraus; Pfert besitzt derzeit ein zeitbasiert
 
 **GPT-6.1 Terra · High**
 
-- [ ] **Bossleben, Weinanziehung und Sonderangriffe:** Bossleben um weitere 150 % erhöht und Weinanziehung begrenzt; Sonderangriffe verbrauchen den Weinbalken. `node test-game.cjs` und `node test-meta-game.cjs` nach Anpassung bestanden. Talentbeschreibungen an den Weinbalken angepasst. Offen ist die praktische Prüfung der Mechanik.
+- [ ] **Bossleben, Weinanziehung und Sonderangriffe:** Bossleben um weitere 150 % erhöht und Weinanziehung begrenzt; Sonderangriffe verbrauchen den Weinbalken. `node tests/test-game.cjs` und `node tests/test-meta-game.cjs` nach Anpassung bestanden. Talentbeschreibungen an den Weinbalken angepasst. Offen ist die praktische Prüfung der Mechanik.
 
 - [ ] **Gesamtbalance und Endlosphase:** Waffen-DPS automatisiert verglichen. Erfahrungsschwelle ab Stufe 10 auf 12 % Wachstum und höchstens 1500 begrenzt; Langzeitwirkung muss praktisch überprüft werden. Schadenspfade, Bosszielzeit von 45–90 Sekunden einschließlich geheimer Bosse, Käserausch-Häufigkeit, Gegner, Builds und Heilung bis Minute 30 sowie längere Endlosläufe bleiben praktisch zu erproben und abzustimmen.
 
@@ -484,7 +487,7 @@ Die Vorlage setzt eine feste Stage voraus; Pfert besitzt derzeit ein zeitbasiert
 ### Grafiküberarbeitung · 12.11.2026
 
 - [x] **Pferd:** Freigegebenen Entwurf als separate transparente Grafik mit zwei ausgerichteten Flügelstellungen eingebaut; klarere Silhouette, ausgearbeitete Federn, kräftigere Schatten und größerer Auftritt. Weißen Dauerschein entfernt; Lade-, Schuss-, Schutz- und Käserausch-Effekte bleiben erhalten. Alte Rastergrafik und gezeichnetes Pferd dienen weiter als Ladefehler-Fallback.
-  - Geprüft: `node test-game.cjs`, `node render-preview.cjs`; beide Flügelstellungen, Lade-/Schusseffekte, Käserausch, Trefferschutz und beide Fallbacks mit echtem Canvas. Spielvorschau: `previews/horse-v2-in-game.png`. Browser-Spieltest offen: lokaler Server im Browser nicht erreichbar, Datei-URLs durch Browserrichtlinie gesperrt.
+  - Geprüft: `node tests/test-game.cjs`, `node tests/render-preview.cjs`; beide Flügelstellungen, Lade-/Schusseffekte, Käserausch, Trefferschutz und beide Fallbacks mit echtem Canvas. Spielvorschau: `tests/previews/horse-v2-in-game.png`. Browser-Spieltest offen: lokaler Server im Browser nicht erreichbar, Datei-URLs durch Browserrichtlinie gesperrt.
 
 - [x] **Standardschuss:** Darstellung der normalen Käseschüsse um 30 % verkleinert; Trefferfläche und Schaden bleiben erhalten. Automatisiert geprüft; Browser-Spieltest offen.
 
@@ -498,4 +501,4 @@ Die Vorlage setzt eine feste Stage voraus; Pfert besitzt derzeit ein zeitbasiert
 
 - [x] Balrog's Theme läuft ab Rundenstart in Endlosschleife. N schaltet Musik, M separat die Soundeffekte.
 
-- [x] **Musiklautstärke im Pausemenü:** Esc öffnet den Regler für 0 bis 100 %. Änderungen wirken sofort und bleiben beim erneuten Öffnen des Menüs erhalten. Automatisiert geprüft mit `node test-pause-cards.cjs`, `node test-input.cjs` und `node test-sound.cjs`.
+- [x] **Musiklautstärke im Pausemenü:** Esc öffnet den Regler für 0 bis 100 %. Änderungen wirken sofort und bleiben beim erneuten Öffnen des Menüs erhalten. Automatisiert geprüft mit `node tests/test-pause-cards.cjs`, `node tests/test-input.cjs` und `node tests/test-sound.cjs`.

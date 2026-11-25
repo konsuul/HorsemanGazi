@@ -2,6 +2,8 @@
 
 ## Status und Grundlagen
 
+Die [Spielarchitektur](ARCHITEKTUR.md#dauerhafte-talente-und-punktetafel) beschreibt die aktuelle Vergabe und Speicherung. Aus den Talenttexten dieses Entwurfs erzeugt `node tests/build-meta-data.cjs` die Texte in `Pfert/meta-data.js`. Die Talentwirkungen stehen in `Pfert/game.js`.
+
 Dies ist ein **noch nicht vollständig geprüfter Balanceentwurf** für den implementierten Talentbaum. Werte, Kombinationen, Punktevergabe und Spielzeit müssen praktisch getestet und gemeinsam abgestimmt werden. Die offene Waffen- und Gesamtbalance der Roadmap berücksichtigen: Insbesondere multiplizieren sich Feuerrate und Schaden in ihrer Gesamtwirkung. Die positiven Zahlenwerte des ursprünglichen Entwurfs wurden grundsätzlich um 50 % angehoben; Nachteile bleiben unverändert. Feste Mengen und Einmaleffekte bleiben, soweit unten nicht ausdrücklich geändert, erhalten und sind gezielt zu prüfen. Dezimalwerte dürfen intern ungerundet verarbeitet und verständlich angezeigt werden.
 
 Der ursprüngliche Entwurf hat **360 einzelne Käufe**, jeder kostet einen Talentpunkt: fünf Startknoten, 15 Spezialisierungen mit je 23 Knoten und zehn Querverbindungsknoten. Die Querverbindungen ersetzen die frühere Aufteilung in je 71 Knoten pro Hauptbereich.
@@ -208,4 +210,4 @@ Jeder Q-Knoten verbindet die beiden genannten Knoten beidseitig; er ist von jede
 
 ## Prüfung bei Umsetzung
 
-Knotenzahl, Voraussetzungen und Verbindungen prüfen; alle Effekte einzeln und in Kombination testen, insbesondere Extremtalente, Lebenspunkte, Aufladung, Waffen, Bosse, Erfahrung und Projektilgrenze. Vergabe, einmalige Verbuchung, Speicherfehler, Browserneustart und beide Rücksetzarten prüfen. `node test-game.cjs` ausführen und nach Möglichkeit Maus, Tastatur, Controller sowie Spielabläufe im Browser erproben. Ergebnisse und offene Balancefragen in der Roadmap dokumentieren.
+Knotenzahl, Voraussetzungen und Verbindungen prüfen; alle Effekte einzeln und in Kombination testen, insbesondere Extremtalente, Lebenspunkte, Aufladung, Waffen, Bosse, Erfahrung und Projektilgrenze. Vergabe, einmalige Verbuchung, Speicherfehler, Browserneustart und beide Rücksetzarten prüfen. `node tests/test-game.cjs` ausführen und nach Möglichkeit Maus, Tastatur, Controller sowie Spielabläufe im Browser erproben. Ergebnisse und offene Balancefragen in der Roadmap dokumentieren.
