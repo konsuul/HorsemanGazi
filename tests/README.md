@@ -145,6 +145,14 @@ Das **Prisma-Observatorium** und die **Gezeitenwerft** folgen als sechster und s
 
 ## Prüfung
 
+Die veröffentlichte Versionsnummer steht direkt auf dem Startbildschirm in `Pfert/index.html`. Das Format lautet `Hauptversion.Unterversion.Patchversion`.
+
+- **Hauptversion** für grundlegende oder inkompatible Änderungen. Aus 1.4.2 wird 2.0.0.
+- **Unterversion** für kompatible Erweiterungen. Aus 1.4.2 wird 1.5.0.
+- **Patchversion** für Fehlerbehebungen und Feinschliff. Aus 1.4.2 wird 1.4.3.
+
+Bei einem Release die Anzeige aktualisieren und den Release-Commit mit dem passenden Git-Tag markieren, zum Beispiel `v1.0.0`.
+
 Die folgenden Befehle laufen vom Projektstamm aus.
 
 Tests passend zur Änderung auswählen; mehrere Bereiche bei Wechselwirkungen gemeinsam prüfen:

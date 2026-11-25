@@ -1,5 +1,10 @@
 # Pfert – Testfeedback vom 11.11.2026
 
+## Versionierung und Veröffentlichung
+
+- [x] Der Startbildschirm zeigt Version 1.0.0 als erste nummerierte Veröffentlichung.
+- [ ] Veröffentlichung auf GitHub Pages anhand der live ausgelieferten Versionsnummer bestätigen.
+
 ## Kampflesbarkeit, Bedienung und Audio · 25.11.2026
 
 - [x] Der große Teppich markiert die beiden Schusslinien vor seiner Salve. Impulsangriffe zeigen die Breite und Reichweite des Strahls. Gerade Boss-Sonderangriffe zeichnen ihre Flugspur bis zum Spielfeldrand. Warnungen und Sternenpost-Siegel bleiben vor dekorativen Effekten sichtbar. Aktive Feindgeschosse liegen weiterhin darüber.
