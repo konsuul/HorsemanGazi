@@ -7,11 +7,12 @@ const element=()=>({classList:{add:noop,remove:noop},addEventListener:noop,inner
 const elements={game:{getContext:()=>({})},overlay:element(),start:element(),talents:element()};
 const stored=new Map(),localStorage={getItem:key=>stored.get(key)??null,setItem:(key,value)=>stored.set(key,value)};
 const events={};
-const sandbox={PfertMeta,window:{localStorage,addEventListener:(name,fn)=>events[name]=fn},document:{getElementById:id=>elements[id]||(elements[id]=element()),createElement:element},navigator:{},requestAnimationFrame:noop,Math,Set,console};
+let backup,download;
+const sandbox={PfertMeta,Blob,URL:{createObjectURL:file=>{backup=file;return "blob:backup"},revokeObjectURL:noop},setTimeout:fn=>fn(),window:{localStorage,confirm:()=>true,addEventListener:(name,fn)=>events[name]=fn},document:{getElementById:id=>elements[id]||(elements[id]=element()),createElement:tag=>tag==="a"?{click(){download=this.download}}:element()},navigator:{},requestAnimationFrame:noop,Math,Set,console};
 elements.overlay.appendChild=noop;
 vm.createContext(sandbox);
 for(const file of ['meta-data.js','art.js'])vm.runInContext(fs.readFileSync(__dirname+'/../Pfert/'+file,'utf8'),sandbox);
-const src=fs.readFileSync(__dirname+'/../Pfert/game.js','utf8').replace('})();','globalThis.check={talentWheelZoom,layoutTalentNodes,talentVisibility,renderTalents,talentTitle,talentIcon,reset,activateRage,fireCharge,fireSpecial,update,hurt,damage,modifyDirectHit,onHit,keys,startBoss,damagePart,end,startDebugRun,goToStartMenu,get:()=>({player,bullets,enemies,shots,pickups,hearts,orbs,xp,boss,secretType,runTime,metaTimePoints,metaBosses,metaData}),setData:d=>metaData=d};})();');
+const src=fs.readFileSync(__dirname+'/../Pfert/game.js','utf8').replace('})();','globalThis.check={talentWheelZoom,layoutTalentNodes,talentVisibility,renderTalents,showTalents,exportTalents,importTalents,talentTitle,talentIcon,reset,activateRage,fireCharge,fireSpecial,update,hurt,damage,modifyDirectHit,onHit,keys,startBoss,damagePart,end,startDebugRun,goToStartMenu,get:()=>({player,bullets,enemies,shots,pickups,hearts,orbs,xp,boss,secretType,runTime,metaTimePoints,metaBosses,metaData}),setData:d=>metaData=d};})();');
 vm.runInContext(src,sandbox);
 const a=sandbox.check;
 for(const id of PfertMeta.nodes){
@@ -269,3 +270,19 @@ while(progress){progress=false;for(const id of PfertMeta.nodes){const next=Pfert
 assert.equal(data.purchased.length,360,'gesamter Baum erreichbar');assert.equal(data.points,0);
 a.setData(data);a.reset();a.get().player.rage=100;a.activateRage();for(let i=0;i<30;i++){a.fireCharge();a.update(.05)}assert.ok(Number.isFinite(a.get().player.x));assert.ok(a.get().bullets.every(b=>Number.isFinite(b.damage)));
 console.log('Meta-Spieltest: vollständiger Baum und Kombinationen OK');
+
+(async()=>{
+ const original={...PfertMeta.fresh(),points:4,seconds:123,purchased:['S1','A1-1']};
+ a.goToStartMenu();
+ a.setData(original);
+ a.showTalents();
+ a.exportTalents();
+ assert.equal(download,'pfert-talente.json');
+ stored.clear();
+ a.setData(PfertMeta.fresh());
+ await a.importTalents(backup);
+ assert.deepEqual(PfertMeta.load(localStorage).data,original);
+ await a.importTalents(new Blob(['{"version":1,"points":-1}']));
+ assert.deepEqual(PfertMeta.load(localStorage).data,original);
+ console.log('Meta-Spieltest: Wiederherstellung nach Löschen der Browserdaten und Dateiprüfung OK');
+})().catch(error=>{console.error(error);process.exitCode=1});

@@ -12,7 +12,7 @@ const rageBaseDuration=12, orbXpMultiplier=1.5, snakeAmplitude=.85, comboWindow=
 const damageFrameTime=.18;
 const breakShotDamage=.126,bounceCrustDamage=.21,hitFragmentDamage=.21;
 const doubleCheeseDamage=.48;
-const starOrbRadius=128,starOrbFlightTime=.36,starOrbCollectMovement=32;
+const starOrbRadius=128,starOrbFlightTime=.36,starOrbPickupDelay=.25;
 const laserDamageScale=1.6,laserIntervalScale=2;
 const bossHealthMultiplier=1.2;
 function enemyDensity(time){
@@ -392,7 +392,30 @@ let debugTalents=null,regularTalents=null;
 if(metaAvailable){try{const loaded=PfertMeta.load(window.localStorage);metaData=loaded.data;metaWarning=loaded.error||'';}catch(e){metaWarning='Fortschritt kann nicht dauerhaft gespeichert werden.'}}
 function metaSave(){
  if(regularTalents){debugTalents=metaData;return}
- try{if(!PfertMeta.save(window.localStorage,metaData))metaWarning='Fortschritt kann nicht dauerhaft gespeichert werden.'}catch(e){metaWarning='Fortschritt kann nicht dauerhaft gespeichert werden.'}
+ try{if(PfertMeta.save(window.localStorage,metaData)){metaWarning='';return}}catch(e){}
+ metaWarning='Fortschritt konnte im Browser nicht gespeichert werden. Sichere ihn als Datei.';
+}
+
+function exportTalents(){
+ const file=new Blob([JSON.stringify(PfertMeta.validate(metaData),null,2)],{type:'application/json'});
+ const url=URL.createObjectURL(file);
+ const link=document.createElement('a');
+ link.href=url;
+ link.download='pfert-talente.json';
+ link.click();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+async function importTalents(file){
+ if(!file||state!=='talents'||regularTalents)return;
+ let imported;
+ try{imported=PfertMeta.validate(JSON.parse(await file.text()))}catch(error){
+  if(state==='talents'&&!regularTalents)overlay.querySelector('.meta-message').textContent='Ungültige Talent-Sicherung.';
+  return;
+ }
+ if(state!=='talents'||regularTalents||!window.confirm('Aktuellen Talentstand durch die Sicherung ersetzen?'))return;
+ metaData=imported;
+ metaSave();
+ renderTalents();
 }
 function useDebugTalents(){
  if(!metaAvailable||regularTalents)return;
@@ -600,6 +623,9 @@ function renderTalents(){
     '<div class="meta-management">'+
      '<button id="meta-refund">Neu verteilen</button>'+
      '<button id="meta-reset">Fortschritt löschen</button>'+
+     (regularTalents?'':'<button id="meta-export">Sicherung herunterladen</button>'+
+      '<button id="meta-import">Sicherung laden</button>'+
+      '<input id="meta-backup-file" type="file" accept=".json,application/json" hidden>')+
     '</div>'+
     '<section class="meta-bonuses" aria-labelledby="meta-bonuses-title">'+
      '<h3 id="meta-bonuses-title">Freigeschaltete Boni</h3>'+talentBonuses(owned)+
@@ -728,6 +754,16 @@ function renderTalents(){
  document.getElementById('meta-plus').addEventListener('click',()=>zoomSelected(-180));
  document.getElementById('meta-refund').addEventListener('click',()=>{metaData=PfertMeta.refund(metaData);metaSave();renderTalents()});
  document.getElementById('meta-reset').addEventListener('click',()=>{if(window.confirm('Gesamten Talentfortschritt unwiderruflich löschen?')){metaData=PfertMeta.fresh();metaSave();renderTalents()}});
+ if(!regularTalents){
+  const backup=document.getElementById('meta-backup-file');
+  document.getElementById('meta-export').addEventListener('click',exportTalents);
+  document.getElementById('meta-import').addEventListener('click',()=>backup.click());
+  backup.addEventListener('change',()=>{
+   const file=backup.files[0];
+   backup.value='';
+   importTalents(file);
+  });
+ }
  document.getElementById('meta-back').addEventListener('click',()=>{
   leaveDebugTalents();
   state=metaReturn;
@@ -1743,7 +1779,7 @@ function spawnLaterMainWaves(previousTime){
 function enemy(i,y){
  const elite=t>120&&Math.random()<Math.min(.22,.06+t/4500), hp=Math.round([2,3,4,5,4,6,6,9,9,14][i]*(1+threat*.6)*(elite?1.4:1))*(elite?1:.9);
  const sizes=[[42,42],[56,46],[54,34],[46,54],[58,34],[46,58],[60,44],[52,54],[60,48],[78,62]][i];
- const unit={i,x:W+sizes[0]/2+8,y:y??270,w:sizes[0],h:sizes[1],hp,max:hp,age:0,fire:rand(1,2.8),speed:rand(65,100)+Math.min(t/20,90),phase:rand(0,6),warning:false,flash:0,elite,slow:0,slowTime:0,burnLife:0,burnDps:0};
+ const unit={i,x:W+sizes[0]/2+8,y:y??270,w:sizes[0],h:sizes[1],hp,max:hp,age:0,fire:rand(1,2.8),speed:rand(65,100)+Math.min(t/20,90),phase:rand(0,6),flash:0,elite,slow:0,slowTime:0,burnLife:0,burnDps:0};
  enemies.push(unit);
  return unit;
 }
@@ -1853,20 +1889,18 @@ function updateStarRoute(dt){
  if(++route.index<route.gates.length)return;
  flightStats.deliveries++;
  const deliveredItem=Math.random()<.3&&dropGear(player.x,player.y);
- if(!deliveredItem){
-  const burst={x:player.x,y:player.y,moved:false};
-  const centerX=clamp(burst.x,22+starOrbRadius,W-22-starOrbRadius);
-  const centerY=clamp(burst.y,85+starOrbRadius,H-22-starOrbRadius);
-  for(let i=0;i<10;i++){
-   const angle=i*Math.PI/5;
-   const orb=dropOrb(burst.x,burst.y,1);
-   orb.starBurst=burst;
-   orb.starX=centerX+Math.cos(angle)*starOrbRadius;
-   orb.starY=centerY+Math.sin(angle)*starOrbRadius;
-  }
-  ring(centerX,centerY,'#a9edd3',starOrbRadius);
+ const burst={x:player.x,y:player.y};
+ const centerX=clamp(burst.x,22+starOrbRadius,W-22-starOrbRadius);
+ const centerY=clamp(burst.y,85+starOrbRadius,H-22-starOrbRadius);
+ for(let i=0;i<10;i++){
+  const angle=i*Math.PI/5;
+  const orb=dropOrb(burst.x,burst.y,1);
+  orb.starBurst=burst;
+  orb.starX=centerX+Math.cos(angle)*starOrbRadius;
+  orb.starY=centerY+Math.sin(angle)*starOrbRadius;
  }
- notice=2;noticeText='STERNENPOST ZUGESTELLT · '+(deliveredItem?'ITEM':'10 EP-ORBS');
+ ring(centerX,centerY,'#a9edd3',starOrbRadius);
+ notice=2;noticeText='STERNENPOST · 10 EP-ORBS'+(deliveredItem?' + ITEM':'');
  starRoute=null;
 }
 function spawnRegularEnemy(){
@@ -1995,7 +2029,6 @@ function nextBossAttack(b){
  return attacks[index]??bossSpecials[b.i][index-attacks.length];
 }
 function enemyAim(e){return e.fireAlongLane?{x:0,y:e.y}:e.aimTarget||player}
-function enemyPulseDirection(e,x){return e.rareEnemy||enemyAim(e).x<x?-1:1}
 function hostileVolley(type,x,y,target,strong){
  const direction=target.x<x?-1:1;
  switch(type){
@@ -2779,7 +2812,6 @@ function updateGameplay(dt){
   orb.age+=dt;
   if(orb.starBurst){
    const burst=orb.starBurst;
-   if(!burst.moved)burst.moved=Math.hypot(player.x-burst.x,player.y-burst.y)>=starOrbCollectMovement;
    const progress=Math.min(1,orb.age/starOrbFlightTime);
    const ease=1-(1-progress)**2;
    orb.x=burst.x+(orb.starX-burst.x)*ease;
@@ -2813,16 +2845,13 @@ function updateGameplay(dt){
     const wave=[0,30,45,0,55,20,0,0,42,12][e.i];
     const verticalSpeed=e.entryDrift??Math.cos(e.age*(e.i===4?6:2)+e.phase)*wave;
     e.y=clamp(e.y+verticalSpeed*(1-(e.slow||0))*dt,95,495);
-    if(e.i===6&&!e.formation){const phase=e.age%3;e.warning=phase>.7&&phase<=1.1}
    }
   }
   if(!e.patrol&&e.x-e.w/2<W&&e.x+e.w/2>0){
    e.fire-=dt*(1-(e.slow||0)*.4);
    if(e.fire<=.55&&!e.aimTarget)e.aimTarget={x:player.x,y:player.y};
-   e.pulseCharging=e.fire<=.55&&!e.formation&&!e.machine&&!e.rear&&!e.blocker&&
-    (e.rareEnemy?e.rareEnemy.attack==='pulse':enemyShotTypes[e.i]==='pulse');
    if(e.fire<=0){
-    enemyAttack(e);e.aimTarget=null;e.pulseCharging=false;
+    enemyAttack(e);e.aimTarget=null;
     if(e.formation)e.fire=e.formationVolleys>0?1.25:Infinity;
     else e.fire=e.blocker?4:e.rear?3.4:e.rareEnemy?4.8:e.introSimit?4:rand(1.8,3.1)/(1+threat*.16)/(e.elite?1.12:1);
    }
@@ -2883,7 +2912,7 @@ function updateGameplay(dt){
  if(power.shieldTime===0)power.shield=0;
  power.beamTime=Math.max(0,power.beamTime-dt);
  if(state!=='playing')return;
- for(const orb of orbs)if((!orb.starBurst||orb.starBurst.moved&&orb.age>=starOrbFlightTime)&&hit(player,orb)){const elite=orb.kind==='elite',bossOrb=orb.kind==='boss';const bonus=.015*(metaCount('B1',[5,10,11,12,14,15,17,18,19])+2*Number(owns('B1-21')))+(owns('B1-16')&&elite?.15:0)+(owns('B1-23')?.30:0)+(owns('Q5')&&player.overdrive>0?.075:0)+(elite?.015*metaCount('B3',[1,2,3,4,6,7,8,9]):0)+(bossOrb?.015*(metaCount('B3',[11,12,14,15,17,18,19])+2*Number(owns('B3-21'))):0)+(bossOrb&&owns('B3-13')?.225:0)+(owns('B3-23')?(elite||bossOrb?.45:-.10):0);xp+=orb.value*(1+bonus)*1.25*orbXpMultiplier*gearFactor('orbXp');orb.collected=true;player.metaOrbs=(player.metaOrbs||0)+1;const wave=(owns('B1-20')&&player.metaOrbs%25===0)||(bossOrb&&owns('B3-22'));if(wave){const radius=112.5+(owns('B1-22')?37.5:0),amount=damage(1.5+(owns('B1-22')?.75:0));ring(player.x,player.y,'#80faff',radius);for(const e of enemies)if(e.hp>0&&Math.hypot(e.x-player.x,e.y-player.y)<radius)damageEnemy(e,amount,e.x,e.y)}}
+ for(const orb of orbs)if((!orb.starBurst||orb.age>=starOrbFlightTime+starOrbPickupDelay)&&hit(player,orb)){const elite=orb.kind==='elite',bossOrb=orb.kind==='boss';const bonus=.015*(metaCount('B1',[5,10,11,12,14,15,17,18,19])+2*Number(owns('B1-21')))+(owns('B1-16')&&elite?.15:0)+(owns('B1-23')?.30:0)+(owns('Q5')&&player.overdrive>0?.075:0)+(elite?.015*metaCount('B3',[1,2,3,4,6,7,8,9]):0)+(bossOrb?.015*(metaCount('B3',[11,12,14,15,17,18,19])+2*Number(owns('B3-21'))):0)+(bossOrb&&owns('B3-13')?.225:0)+(owns('B3-23')?(elite||bossOrb?.45:-.10):0);xp+=orb.value*(1+bonus)*1.25*orbXpMultiplier*gearFactor('orbXp');orb.collected=true;player.metaOrbs=(player.metaOrbs||0)+1;const wave=(owns('B1-20')&&player.metaOrbs%25===0)||(bossOrb&&owns('B3-22'));if(wave){const radius=112.5+(owns('B1-22')?37.5:0),amount=damage(1.5+(owns('B1-22')?.75:0));ring(player.x,player.y,'#80faff',radius);for(const e of enemies)if(e.hp>0&&Math.hypot(e.x-player.x,e.y-player.y)<radius)damageEnemy(e,amount,e.x,e.y)}}
  orbs=orbs.filter(orb=>!orb.collected&&orb.x+orb.w/2>=0);if(xp>=xpNeeded){offerCards();return}
  for(const p of pickups)if(!p.dead&&hit(player,p)){
   if(fieldPowerups[p.i]){collectFieldPowerup(p);continue}
@@ -2986,60 +3015,6 @@ function drawFormationWarning(){
  }
  c.restore();
 }
-function drawWarningTrack(fromX,fromY,toX,toY,color){
- c.save();
- c.setLineDash([8,7]);
- c.beginPath();
- c.moveTo(Math.round(fromX),Math.round(fromY));
- c.lineTo(Math.round(toX),Math.round(toY));
- c.strokeStyle='#171a2d';c.lineWidth=6;c.stroke();
- c.strokeStyle=color;c.lineWidth=2;c.stroke();
- c.restore();
-}
-function drawPulseWarning(fromX,toX,y,width,color){
- drawWarningTrack(fromX,y-width/2,toX,y-width/2,color);
- drawWarningTrack(fromX,y+width/2,toX,y+width/2,color);
-}
-function drawEnemyWarnings(){
- for(const e of enemies){
-  if(!e.aimTarget)continue;
-  if(e.blocker&&!e.patrol){
-   for(const offset of carpetLanes)drawWarningTrack(e.x-e.w/2,e.y+offset,0,e.y+offset,'#ffcd86');
-  }else if(e.pulseCharging){
-   const x=e.x-(e.rareEnemy?25:22);
-   drawPulseWarning(x,x+enemyPulseDirection(e,x)*normalPulse.reach,e.y,normalPulse.width,'#ffb382');
-  }
- }
- if(boss?.aimTarget&&nextBossAttack(boss)==='pulse'){
-  const part=bossFiringPart(boss);
-  if(part){
-   const x=boss.x+part.aim[0],y=boss.y+part.aim[1];
-   drawPulseWarning(x,x+(boss.aimTarget.x<x?-1:1)*bossPulse.reach,y,bossPulse.width,'#ffb382');
-   PfertArt.pulseCharge(c,x,y);
-  }
- }
-}
-function drawBossSpecial(special){
- const {color,waves,index}=special;
- c.save();
- for(const [x,y,vx,vy,kind,options] of waves[index]){
-  if(kind==='pulse'){
-   const width=options?.w??specialPulseWidth;
-   drawPulseWarning(x-width/2,x+width/2,y,specialPulseWidth,color);
-   continue;
-  }
-  if(kind==='needle'&&(!vx||!vy)){
-   drawWarningTrack(x,y,vx?vx<0?0:W:x,vy?vy<0?62:H:y,color);
-  }
-  c.save();c.translate(x,y);c.rotate(Math.atan2(vy,vx));
-  c.beginPath();c.moveTo(8,0);c.lineTo(34,0);
-  c.moveTo(27,-6);c.lineTo(34,0);c.lineTo(27,6);
-  c.strokeStyle='#171a2d';c.lineWidth=5;c.strokeRect(-7,-7,14,14);c.stroke();
-  c.strokeStyle=color;c.lineWidth=2;c.strokeRect(-7,-7,14,14);c.stroke();
-  c.restore();
- }
- c.restore();
-}
 function drawGearDrop(drop){
  const {x,y,life,item}=drop;
  const color=gearRarities[item.rarity].color;
@@ -3106,11 +3081,6 @@ function render(){
    if(amount>strength){strength=amount;color=source.color}
   }
   PfertArt.enemy(c,e,levelIndex,secret?secretType:0,strength?{strength,color}:null);
-  if(e.formation&&e.aimTarget){
-   const x=Math.round(e.x+(e.rear?1:-1)*e.w/2),y=Math.round(e.y);
-   c.fillStyle='#2d253a';c.fillRect(x-5,y-4,10,8);
-   c.fillStyle='#ffcb86';c.fillRect(x-3,y-2,6,4);
-  }
   if(e.patrol?.sprite==='lantern')drawLanternArmor(e);
  }
  if(boss){
@@ -3130,9 +3100,7 @@ function render(){
  for(const r of rings)PfertArt.ring(c,r);
  for(const p of particles)PfertArt.spark(c,p);c.globalAlpha=1;
  drawFormationWarning();
- drawEnemyWarnings();
  if(boss)PfertArt.bossStrikeWarning(c,boss);
- if(boss?.special)drawBossSpecial(boss.special);
  if(starRoute)for(let i=starRoute.index;i<starRoute.gates.length;i++){
   const gate=starRoute.gates[i];
   if(gate.x<=W+28){

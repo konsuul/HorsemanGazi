@@ -74,29 +74,20 @@ if(process.argv.includes('--telegraphs')){
   game.render();
   return dangerTracks.slice();
  }
- function assertPulseRails(tracks,shot){
-  const start=shot.originX,end=2*shot.x-start;
-  const snap=value=>Math.round(value);
-  assert.deepEqual(tracks,[-1,1].map(side=>{
-   const y=snap(shot.y+side*shot.h/2);
-   return ['#ffb382',snap(start),y,snap(end),y];
-  }));
- }
  setup(67.99);
  game.update(.02);
  const carpet=game.state().enemies.find(unit=>unit.blocker);
  const starts=[];
- let sawWarning=false;
+ let checkedBeforeShot=false;
  for(let i=0;i<100&&!starts.length;i++){
   game.update(.05);
   starts.push(...game.state().shots.filter(s=>s.age===0&&!s.bonus&&s.kind==='needle'&&s.vy===0));
   if(!starts.length&&carpet.aimTarget){
-   assert.deepEqual(drawTracks().filter(([color])=>color==='#ffcd86'),
-    [-48,48].map(offset=>['#ffcd86',Math.round(carpet.x-carpet.w/2),carpet.y+offset,0,carpet.y+offset]));
-   sawWarning=true;
+   assert.deepEqual(drawTracks(),[]);
+   checkedBeforeShot=true;
   }
  }
- assert.ok(sawWarning);
+ assert.ok(checkedBeforeShot);
  assert.equal(starts.length,2);
  assert.equal(starts[0].x,carpet.x-carpet.w/2);
  assert.deepEqual(starts.map(s=>s.y-carpet.y),[-48,48]);
@@ -112,7 +103,7 @@ if(process.argv.includes('--telegraphs')){
   advance(.4);
   const shot=game.state().shots.find(s=>s.kind==='pulse');
   assert.equal(shot.w,175);
-  assertPulseRails(tracks,shot);
+  assert.deepEqual(tracks,[]);
  }
  setup(905,4);
  game.startBoss();
@@ -123,10 +114,8 @@ if(process.argv.includes('--telegraphs')){
  game.update(.05);
  const shot=game.state().shots.find(s=>s.kind==='pulse');
  assert.equal(shot.w,420);
- const span=tracks.map(([,x1,y1,x2,y2])=>[x2-x1,y2-y1]);
- assert.deepEqual(span,[[-420,0],[-420,0]]);
- assert.equal(tracks[1][2]-tracks[0][2],shot.h);
- console.log('OK: Teppich-Linien und Impulsgrenzen zeigen die Schussbahnen.');
+ assert.deepEqual(tracks,[]);
+ console.log('OK: Teppich, Standardgegner und Boss schießen ohne Warnspuren.');
  process.exit(0);
 }
 
@@ -214,16 +203,23 @@ if(process.argv.includes('--wind')){
   }
   assert.equal(game.route(),null);
   assert.equal(game.state().score,0);
-  assert.equal(game.orbs().length,expectItem?0:10);
+  assert.equal(game.orbs().length,10);
   assert.equal(Object.keys(game.worn()).length,expectItem?1:0);
-  if(!expectItem){
-   advance(.7);
-   assert.equal(game.xp(),0,'Im Stand landet kein Sternenpost-Orb im Magneten');
+  {
+   const first=game.orbs()[0];
+   fly.x=first.x;fly.y=first.y;
+   game.update(.01);
+   assert.equal(game.xp(),0,'Während der Explosion sind Orbs gesperrt');
+   advance(.4);
+   fly.x=first.x;fly.y=first.y;
+   game.update(.1);
+   assert.equal(game.xp(),0,'Nach dem Flug bleiben Orbs kurz gesperrt');
+   assert.equal(game.xp(),0);
    const orbs=game.orbs();
    const center={x:orbs.reduce((sum,orb)=>sum+orb.x,0)/10,y:orbs.reduce((sum,orb)=>sum+orb.y,0)/10};
    assert.ok(orbs.every(orb=>Math.abs(Math.hypot(orb.x-center.x,orb.y-center.y)-128)<1e-8));
    fly.x=orbs[0].x;fly.y=orbs[0].y;
-   game.update(.01);
+   game.update(.11);
    assert.equal(game.orbs().length,9);
    assert.ok(game.xp()>0,'Beim Anfliegen wird der Orb eingesammelt');
   }

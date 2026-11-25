@@ -132,7 +132,7 @@ Kampflicht reagiert lokal auf geladene Geschosse und Treffer. Die Bosskörper be
 ## Flugmanöver und Sternenpost
 
 - **Windschatten** — Innerhalb von 2,5 Sekunden drei verschiedene Feindgeschosse knapp passieren. Das bringt zusätzlich zu den Streifpunkten 125 Punkte und zieht bei jeder nachladenden Patrone bis zu 1,5 Sekunden ab. Ein Herzverlust unterbricht die Serie. Im HUD zeigen drei Rauten den Stand.
-- **Sternenpost** — Frühestens ab 1:40 erscheinen im Hauptspiel drei offene goldgrüne Siegel. Wer alle drei der Reihe nach durchfliegt, erhält mit 30 % Wahrscheinlichkeit ein Item. Sonst bilden zehn XP-Orbs einen Kreis um das Pfert, den du zum Einsammeln abfliegen musst. Die nächste Gelegenheit kommt frühestens 110 Sekunden später. Ein verpasstes Siegel beendet nur die Lieferung.
+- **Sternenpost** — Frühestens ab 1:40 erscheinen im Hauptspiel drei offene goldgrüne Siegel. Wer alle drei der Reihe nach durchfliegt, löst eine Explosion mit zehn XP-Orbs aus. Nach dem Auseinanderfliegen bleiben sie 0,25 Sekunden gesperrt. Zusätzlich besteht eine Chance von 30 % auf ein Item. Die nächste Gelegenheit kommt frühestens 110 Sekunden später. Ein verpasstes Siegel beendet nur die Lieferung.
 - Beim Standardschuss zeigt das mittlere HUD-Feld die nächste Patrone und ihren Ladefortschritt.
 
 ## Die mechanische Karawane
@@ -142,6 +142,10 @@ Die Karten AK–AT laden beim Spielen alle 2,4 bis 4,8 Sekunden eine eigene Patr
 Ab 1:40 tauchen in den regulären Wellen drei Maschinen auf. Beim **Spurweber** kreuzen sich zwei Nadeln vor seinem Bug. Der **Kieltaucher** schießt eine an den Feldrändern abprallende Kugel. Die **Splitterbake** legt zwei zeitversetzt zum Abschuss aufplatzende Ladungen.
 
 Das **Prisma-Observatorium** und die **Gezeitenwerft** folgen als sechster und siebter Hauptboss. Zum direkten Anspielen im Debuglauf dienen **Umschalt + Num 2** und **Umschalt + Num 3**.
+
+## Talentfortschritt sichern
+
+Pfert speichert Talentpunkte, gekaufte Ränge und angefangene Spielzeit automatisch in den Websitedaten. Im Talentbaum lädt **Sicherung herunterladen** den aktuellen Stand als JSON-Datei herunter. **Sicherung laden** stellt diesen Stand auch nach dem Löschen der Websitedaten oder in einem anderen Browser wieder her.
 
 ## Prüfung
 
@@ -161,7 +165,7 @@ Tests passend zur Änderung auswählen; mehrere Bereiche bei Wechselwirkungen ge
 - `node tests/test-scoreboard.cjs`: Punktetafel, Sortierung und Speicherung.
 - `node tests/test-game.cjs`: Kampf, Waffen, Karten, Gegner, Bosssegmente und Geheimlevel.
 - `node tests/test-encounters.cjs --boss-attacks`: Angriffsfolgen aller neun Bosse inklusive Warnungen und Wellen der 18 Sonderangriffe.
-- `node tests/test-encounters.cjs --telegraphs` prüft beim Teppich und bei Impulsangriffen die sichtbaren Warnlinien gegen die ausgesandten Geschosse.
+- `node tests/test-encounters.cjs --telegraphs` prüft beim Teppich und bei Impulsangriffen dass die Geschosse ohne sichtbare Warnlinien abgefeuert werden.
 - `node tests/test-encounters.cjs --formation`: Fünf Formationen, Vorwarnung, Einflugspuren, Salven, Pause und Ausschluss bei Bossen und im Ruhrpott.
 - `node tests/test-encounters.cjs --caravan`: Munitionskarten, Nachladung, Maschinen und Abschluss der neuen Hauptbosse.
 - `node tests/test-encounters.cjs --wind`: Windschatten, Nachladeschub, Pausen und Sternenpost.

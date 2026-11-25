@@ -1055,11 +1055,6 @@ const PfertArt = (() => {
   if(e.elite){g=ctx;poly([[e.x-8,e.y-e.h/2-13],[e.x,e.y-e.h/2-22],[e.x+8,e.y-e.h/2-13],[e.x,e.y-e.h/2-9]],'#ffdf9a',2)}
   if(e.slowTime>0){ctx.save();ctx.strokeStyle='#8ce7ff';ctx.lineWidth=1;ctx.beginPath();ctx.arc(e.x,e.y,e.w*.48,.2,4.9);ctx.stroke();ctx.restore()}
   if(e.hp<e.max){ctx.fillStyle='#302c3a';ctx.fillRect(e.x-16,e.y-e.h/2-10,32,3);ctx.fillStyle='#f0bd7d';ctx.fillRect(e.x-16,e.y-e.h/2-10,32*Math.max(0,e.hp/e.max),2)}
-  if(e.warning){label(ctx,'!',e.x-38,e.y-13,19,'#ffe7a0');ctx.save();ctx.strokeStyle='#ffd18a88';ctx.setLineDash([5,5]);ctx.beginPath();ctx.moveTo(e.x-110,e.y);ctx.lineTo(e.x-34,e.y);ctx.stroke();ctx.restore()}
-  if(e.rareEnemy&&e.aimTarget){
-   g=ctx;glint(Math.round(e.x-25),Math.round(e.y),e.rareEnemy.color);
-  }
-  if(e.pulseCharging)pulseCharge(ctx,e.x-(e.rareEnemy?25:22),e.y);
  }
  function horse(ctx,p,time,limit){
   g=ctx;const frame=Math.floor(time*9)%4;const blink=p.inv>0&&Math.floor(p.inv*12)%2;
@@ -1311,12 +1306,7 @@ const PfertArt = (() => {
   label(ctx,'VORSTOSS',b.x-85,b.y-15,11,'#fff0c5','right');
   ctx.restore();
  }
- function pulseCharge(ctx,x,y){
-  if(!Number.isFinite(x)||!Number.isFinite(y))return;
-  g=ctx;
-  glow(ctx,x,y,26,'#ff864b70');
-  poly([[x,y-8],[x+8,y],[x,y+8],[x-8,y]],'#ffe4ac',2);
- }
+
  // Only 8 three-segment and 16 four-segment combinations are possible.
  const shieldDials=new Map();
  function shieldDial(ctx,player,mask,segments){
@@ -1936,5 +1926,5 @@ const PfertArt = (() => {
   }
   ctx.restore();
  }
- return {background,enemy,horse,boss,bossStrikeWarning,pulseCharge,shieldDial,hitCue,starGate,experienceOrb,bullet,beam,focusBeam,hostile,ring,bottle,golden,death,hud,arc,flash,elementalBurst,trail,spark,bossLayout};
+ return {background,enemy,horse,boss,bossStrikeWarning,shieldDial,hitCue,starGate,experienceOrb,bullet,beam,focusBeam,hostile,ring,bottle,golden,death,hud,arc,flash,elementalBurst,trail,spark,bossLayout};
 })();
