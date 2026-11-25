@@ -2,7 +2,7 @@
 
 ## Talent-Sicherung, Sternenpost und Schussvorwarnungen
 
-- [ ] **Talentstand für GitHub Pages:** Automatische Speicherung für Zeit- und Bosspunkte sowie Download und Wiederherstellung der Talent-Sicherung sind mit simuliertem Browser-Speicher geprüft. Release und Browserprüfung stehen aus.
+- [ ] **Talentstand für GitHub Pages:** Automatische Speicherung für Zeit- und Bosspunkte sowie Download und Wiederherstellung der Talent-Sicherung sind mit simuliertem Browser-Speicher geprüft. GitHub Pages liefert Version 1.0.1 mit aktualisiertem Spielskript aus. Die praktische Browserprüfung steht aus.
 - [x] **Sternenpost:** Jeder vollständige Flug durch drei Siegel erzeugt zehn XP-Orbs. Sie fliegen 0,36 Sekunden auseinander und bleiben danach weitere 0,25 Sekunden gesperrt. Ein Item kann zusätzlich fallen. Beide Belohnungsfälle und die Abholsperre sind gezielt geprüft.
 - [x] **Schussrichtungen:** Teppiche, Standardgegner und Bosse zeichnen keine Vorschau ihrer Schussbahnen. Teppichsalve, Impulsangriffe und Boss-Angriffsfolgen sind gezielt geprüft.
 
