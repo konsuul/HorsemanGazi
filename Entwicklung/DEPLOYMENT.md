@@ -4,7 +4,7 @@ Der Workflow [Pfert CI/CD](../.github/workflows/pages.yml) prüft Branch-Pushes 
 
 ## Automatische Prüfungen
 
-Die CI führt mit Node.js 24 den Sammelrunner `node tests/test-all.cjs` aus. Er findet alle `test-*.cjs`-Suiten und startet zusätzlich die Fälle, die nur mit einem eigenen Schalter laufen. Ein Fehler blockiert das Deployment. Gezielte lokale Prüfungen stehen in der [Testanleitung](../tests/README.md).
+Die CI führt mit Node.js 24 den Sammelrunner `node tests/test-all.cjs` aus. Danach startet Playwright Pfert in Chromium über einen lokalen HTTP-Server des GitHub-Runners. Der Test wählt einen Basisskill, startet eine Runde, öffnet das Pausenmenü und setzt die Runde fort. JavaScript-Fehler und fehlgeschlagene HTTP-Anfragen schlagen im Test fehl. Beide Prüfungen müssen für das Deployment und für GitHub Releases bestehen. Gezielte lokale Prüfungen stehen in der [Testanleitung](../tests/README.md).
 
 ## Versionsnummer
 
@@ -14,10 +14,19 @@ Die veröffentlichte Versionsnummer steht direkt auf dem Startbildschirm in `Pfe
 - **Unterversion** für kompatible Erweiterungen. Aus 1.4.2 wird 1.5.0.
 - **Patchversion** für Fehlerbehebungen und Feinschliff. Aus 1.4.2 wird 1.4.3.
 
-Die Anzeige bei einem Release vor dem Commit aktualisieren. Tags können Releases markieren.
+## GitHub Release mit Offline-ZIP
+
+Die Versionsanzeige bei einem Release vor dem Commit aktualisieren. Branch und passenden Versions-Tag gemeinsam pushen. Beispiel für 1.0.7:
+
+```powershell
+git tag v1.0.7
+git push --atomic origin main refs/tags/v1.0.7
+```
+
+Der Tag startet einen eigenen Lauf. Nach bestandenen Tests prüft der Release-Job, ob Tag und Versionsanzeige übereinstimmen. Anschließend erstellt er ein GitHub Release mit generierten Release-Notizen und dem ZIP `Pfert-v1.0.7.zip`. Zum Offline-Spielen das ZIP entpacken und `Pfert/index.html` öffnen. GitHub Pages wird durch den Branch-Push aktualisiert.
 
 ## Veröffentlichung prüfen
 
-Unter **Actions → Pfert CI/CD** den Lauf für den Push auf `main` öffnen. Nach erfolgreichem **Deploy Pages** die [Spielseite](https://konsuul.github.io/HorsemanGazi/) öffnen und die erwartete Versionsnummer prüfen. Bei einer alten Anzeige die Seite mit einem frischen Query-Parameter erneut laden.
+Nach **Deploy Pages** prüft **Verify the public game** die öffentliche Spielseite. Der Schritt vergleicht HTTP-Status, Versionsanzeige, das beim Packen gesetzte Commit-Kennzeichen und den Inhalt zentraler Spieldateien. Während die neue Version im CDN ankommt, wiederholt der Schritt den Abruf bis zu zwei Minuten. Das Ergebnis steht unter **Actions → Pfert CI/CD** beim Push auf `main`. [Öffentliche Spielseite](https://konsuul.github.io/HorsemanGazi/)
 
 Mit **Run workflow** auf `main` lässt sich der Workflow für den aktuellen Commit manuell starten. Bei **Re-run jobs** verwendet der Deployment-Job für jeden Versuch einen eigenen Artefaktnamen.

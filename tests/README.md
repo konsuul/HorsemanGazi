@@ -25,4 +25,6 @@ Tests passend zur Änderung auswählen; mehrere Bereiche bei Wechselwirkungen ge
 - `node tests/test-meta.cjs` und `node tests/test-meta-game.cjs`: Talentbaum, Speicherung und Talentwirkungen.
 - `node tests/test-all.cjs`: vollständiger Testlauf in GitHub Actions und lokal auf ausdrückliche Anforderung. Er findet alle `test-*.cjs`-Suiten und führt auch die separaten Prüfungen für Bumerang, Warnspuren, Formationen, Windschatten und Basarkarawane aus.
 
+GitHub Actions prüft zusätzlich den Spielstart, die Pause und das Fortsetzen in Chromium. Die dafür nötigen Browser-Abhängigkeiten installiert der Workflow auf dem Runner.
+
 `node tests/render-preview.cjs` rendert echte Canvas-Vorschaubilder und eine kurze Renderlast. Dafür muss optional `@napi-rs/canvas` installiert oder im vorhandenen Node-Runtime gebündelt sein; das Spiel selbst benötigt es nicht. Ein Browser-Spieltest und eine Audio-Hörprobe werden dadurch nicht ersetzt.
