@@ -2,7 +2,7 @@
 const PfertSound=(()=>{
  let ctx=null,master=null,combat=null,noiseBuffer=null,muted=false,voices=0,sequence=0,duckUntil=0;
  const last={};const LIMIT=16, RESERVE=4;let priority=false;
- const tracks=['ken','zangief','vega','blanka','cammy','chun-li','ryu','guile','balrog'];
+ const tracks=['ken','zangief','vega','blanka','cammy','chun-li','ryu','guile','balrog','Choasman_gazi_128'];
  const musicVolumeKey='pfert-music-volume';
  let music=null,playlist=[],previousTrack=null,musicActive=false,musicEnabled=true,musicHidden=false;
  let musicVolume=.32;
