@@ -46,6 +46,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
+      actions: read
       contents: read
       pages: write
       id-token: write
@@ -66,6 +67,20 @@ jobs:
         with:
           name: github-pages-${{ github.run_attempt }}
           path: Pfert
+      - name: Wait for the Pages artifact to be listed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          artifact="github-pages-$GITHUB_RUN_ATTEMPT"
+          for attempt in {1..12}; do
+            sleep 5
+            if count=$(gh api --method GET "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts" \
+              -f name="$artifact" --jq .total_count) && [[ "$count" == 1 ]]; then
+              exit 0
+            fi
+          done
+          echo "::error::Pages artifact $artifact is not visible in the workflow run"
+          exit 1
       - name: Deploy Pages
         uses: actions/deploy-pages@v4
         id: deployment
