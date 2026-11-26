@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - '**'
-    tags:
-      - 'v[0-9]*'
   workflow_dispatch:
 
 permissions:
@@ -13,7 +11,7 @@ permissions:
 
 concurrency:
   group: pfert-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   test:
@@ -92,8 +90,7 @@ jobs:
         run: node tests/verify-pages.cjs "$PAGE_URL" "$GITHUB_SHA"
 
   release:
-    if: github.ref_type == 'tag'
-    needs: test
+    needs: deploy
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -102,30 +99,37 @@ jobs:
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
-      - name: Validate the tag and package the game
+      - name: Package the deployed commit
+        id: package
         run: |
           version=$(sed -n 's/.*class="title-version">Version \([0-9]*\.[0-9]*\.[0-9]*\)<.*/\1/p' Pfert/index.html)
-          if [[ ! "$GITHUB_REF_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ || "$GITHUB_REF_NAME" != "v$version" ]]; then
-            echo "::error::Release tag $GITHUB_REF_NAME does not match the game version $version"
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Invalid game version in Pfert/index.html"
             exit 1
           fi
-          git archive --format=zip --output="$RUNNER_TEMP/Pfert-$GITHUB_REF_NAME.zip" HEAD Pfert/
+          tag="v$version-build.$GITHUB_RUN_NUMBER"
+          git archive --format=zip --output="$RUNNER_TEMP/Pfert-$tag.zip" HEAD Pfert/
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
       - name: Publish the ZIP and generated release notes
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ steps.package.outputs.tag }}
+          GAME_VERSION: ${{ steps.package.outputs.version }}
         run: |
-          filename="Pfert-$GITHUB_REF_NAME.zip"
-          if gh release view "$GITHUB_REF_NAME" --json assets,isDraft > "$RUNNER_TEMP/pfert-release.json"; then
+          filename="Pfert-$RELEASE_TAG.zip"
+          if gh release view "$RELEASE_TAG" --json assets,isDraft > "$RUNNER_TEMP/pfert-release.json"; then
             if jq -e '.isDraft == false' "$RUNNER_TEMP/pfert-release.json" >/dev/null; then
               jq -e --arg filename "$filename" '.assets | any(.name == $filename)' "$RUNNER_TEMP/pfert-release.json" >/dev/null
-              echo "Release $GITHUB_REF_NAME is already published."
+              echo "Release $RELEASE_TAG is already published."
               exit 0
             fi
             if ! jq -e --arg filename "$filename" '.assets | any(.name == $filename)' "$RUNNER_TEMP/pfert-release.json" >/dev/null; then
-              gh release upload "$GITHUB_REF_NAME" "$RUNNER_TEMP/$filename"
+              gh release upload "$RELEASE_TAG" "$RUNNER_TEMP/$filename"
             fi
-            gh release edit "$GITHUB_REF_NAME" --draft=false
+            gh release edit "$RELEASE_TAG" --draft=false --latest
           else
-            gh release create "$GITHUB_REF_NAME" "$RUNNER_TEMP/$filename" --verify-tag --generate-notes --title "Pfert $GITHUB_REF_NAME"
+            gh release create "$RELEASE_TAG" "$RUNNER_TEMP/$filename" --target "$GITHUB_SHA" \
+              --generate-notes --latest --title "Pfert $GAME_VERSION (Build $GITHUB_RUN_NUMBER)"
           fi
