@@ -9,7 +9,7 @@ Die folgenden Befehle laufen vom Projektstamm aus.
 Tests passend zur Änderung auswählen; mehrere Bereiche bei Wechselwirkungen gemeinsam prüfen:
 
 - `node tests/test-scoreboard.cjs`: Punktetafel, Sortierung und Speicherung.
-- `node tests/test-game.cjs`: Kampf, Waffen, Karten, Gegner, Bosssegmente und Geheimlevel.
+- `node tests/test-game.cjs`: Kampf, Waffen, Karten, Gegner, Bosssegmente und Geheimlevel sowie Musikrotation (alle MP3-Dateien, neu gemischte Durchläufe und keine direkte Wiederholung am Rundenwechsel).
 - `node tests/test-game.cjs --boomerang` prüft Durchschläge vor der Umkehr und erneute Treffer auf dem Rückflug.
 - `node tests/test-encounters.cjs --boss-attacks`: Angriffsfolgen aller neun Bosse inklusive Warnungen und Wellen der 18 Sonderangriffe.
 - `node tests/test-encounters.cjs --telegraphs` prüft beim Teppich und bei Impulsangriffen dass die Geschosse ohne sichtbare Warnlinien abgefeuert werden.
