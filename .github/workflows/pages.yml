@@ -98,6 +98,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
+          fetch-depth: 0
           persist-credentials: false
       - name: Package the deployed commit
         id: package
@@ -119,17 +120,39 @@ jobs:
           GAME_VERSION: ${{ steps.package.outputs.version }}
         run: |
           filename="Pfert-$RELEASE_TAG.zip"
+          previous=$(gh release list --limit 100 --json tagName,isDraft --jq +            '[.[] | select(.isDraft == false)] | .[].tagName' | while read -r candidate; do
+            if [[ "$candidate" != "$RELEASE_TAG" ]] && git merge-base --is-ancestor "$candidate" "$GITHUB_SHA"; then
+              echo "$candidate"
+              break
+            fi
+          done)
+          range="$GITHUB_SHA"
+          if [[ -n "$previous" ]]; then
+            range="$previous..$GITHUB_SHA"
+          fi
+          notes="$RUNNER_TEMP/pfert-release-notes.md"
+          {
+            printf 'Pfert %s · Build %s\n\n' "$GAME_VERSION" "$GITHUB_RUN_NUMBER"
+            printf 'Änderungen in dieser Veröffentlichung\n\n'
+            git log --reverse --no-merges --format='- %s (%h)' "$range"
+            printf '\nTests, Chromium-Spielstart, Pages-Deployment und Live-Prüfung wurden erfolgreich abgeschlossen.\n\n'
+            printf 'Das Offline-ZIP unter Assets entpacken und Pfert/index.html öffnen.\n'
+            if [[ -n "$previous" ]]; then
+              printf '\n[Vollständiger Vergleich](https://github.com/%s/compare/%s...%s)\n' "$GH_REPO" "$previous" "$RELEASE_TAG"
+            fi
+          } > "$notes"
           if gh release view "$RELEASE_TAG" --json assets,isDraft > "$RUNNER_TEMP/pfert-release.json"; then
             if jq -e '.isDraft == false' "$RUNNER_TEMP/pfert-release.json" >/dev/null; then
               jq -e --arg filename "$filename" '.assets | any(.name == $filename)' "$RUNNER_TEMP/pfert-release.json" >/dev/null
+              gh release edit "$RELEASE_TAG" --notes-file "$notes"
               echo "Release $RELEASE_TAG is already published."
               exit 0
             fi
             if ! jq -e --arg filename "$filename" '.assets | any(.name == $filename)' "$RUNNER_TEMP/pfert-release.json" >/dev/null; then
               gh release upload "$RELEASE_TAG" "$RUNNER_TEMP/$filename"
             fi
-            gh release edit "$RELEASE_TAG" --draft=false --latest
+            gh release edit "$RELEASE_TAG" --draft=false --latest --notes-file "$notes"
           else
             gh release create "$RELEASE_TAG" "$RUNNER_TEMP/$filename" --target "$GITHUB_SHA" \
-              --generate-notes --latest --title "Pfert $GAME_VERSION (Build $GITHUB_RUN_NUMBER)"
+              --notes-file "$notes" --latest --title "Pfert $GAME_VERSION (Build $GITHUB_RUN_NUMBER)"
           fi
