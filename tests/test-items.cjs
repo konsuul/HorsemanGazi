@@ -138,17 +138,18 @@ scene().enemies.at(-1).x=500;scene().player.rage=100;
 a.activateRage();
 assert.equal(scene().gearDrops.length,2,'Käserausch');
 
-for(let index=0;index<7;index++){
+for(let index=0;index<9;index++){
  reset();
- if(index<5)a.mainBoss(index);
- else a.secretBoss(index-4);
+ const returning=index>=7;
+ if(returning)a.secretBoss(index-6);
+ else a.mainBoss(index);
  const {parts}=scene().boss;
  for(const part of parts.slice(0,-1))a.defeatSegment(part);
  assert.equal(scene().gearDrops.length,0,'Kein Fund nach Teilzerstörung');
  a.defeatSegment(parts.at(-1));
  assert.equal(scene().gearDrops.length,1);
  const [loot]=scene().gearDrops;
- if(index>=5){
+ if(returning){
   assert.equal(scene().state,'transition');
   assert.equal(loot.returning,true);
   a.update(1.5);
@@ -159,7 +160,7 @@ for(let index=0;index<7;index++){
  }
  Object.assign(scene().player,{x:loot.x,y:loot.y});
  a.update(.01);
- if(scene().state==='upgrade'){a.chooseCard(0);a.update(.01)}
+ while(scene().state==='upgrade'){a.chooseCard(0);a.update(.01)}
  assert.equal(scene().gearDrops.length,0);
  assert.equal(scene().wornGear[loot.item.slot],loot.item);
 }

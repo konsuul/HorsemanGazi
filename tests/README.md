@@ -23,6 +23,6 @@ Tests passend zur Änderung auswählen; mehrere Bereiche bei Wechselwirkungen ge
 - `node tests/test-assets.cjs`: Asset-Laden, Fallbacks und Bildausschnitte. Mit `--ruhr` nur die Ruhrpott-Kulissen prüfen.
 - `node tests/test-balance.cjs`: Waffen-DPS-Vergleich.
 - `node tests/test-meta.cjs` und `node tests/test-meta-game.cjs`: Talentbaum, Speicherung und Talentwirkungen.
-- `node tests/test-all.cjs`: vollständiger Testlauf auf ausdrückliche Anforderung.
+- `node tests/test-all.cjs`: vollständiger Testlauf in GitHub Actions und lokal auf ausdrückliche Anforderung. Er findet alle `test-*.cjs`-Suiten und führt auch die separaten Prüfungen für Bumerang, Warnspuren, Formationen, Windschatten und Basarkarawane aus.
 
 `node tests/render-preview.cjs` rendert echte Canvas-Vorschaubilder und eine kurze Renderlast. Dafür muss optional `@napi-rs/canvas` installiert oder im vorhandenen Node-Runtime gebündelt sein; das Spiel selbst benötigt es nicht. Ein Browser-Spieltest und eine Audio-Hörprobe werden dadurch nicht ersetzt.

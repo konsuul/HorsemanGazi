@@ -166,10 +166,10 @@ for(const type of [0,1]){
 }
 
 // Each of the other three selectable bosses has a distinct second-phase attack.
-for(const [key,index,x,signature,count] of [
- ['Numpad3',1,755,s=>s.kind==='needle',3],
- ['Numpad7',5,710,s=>s.kind==='splitter',1],
- ['Numpad8',6,775,s=>s.kind==='sickle',2]
+for(const [key,index,x,signature] of [
+ ['Numpad3',1,755,s=>s.kind==='needle'],
+ ['Numpad7',5,710,s=>s.kind==='splitter'],
+ ['Numpad8',6,775,s=>s.kind==='sickle']
 ]){
  debugReset();
  events.keydown({code:key,repeat:false,preventDefault:noop});
@@ -194,10 +194,12 @@ for(const [key,index,x,signature,count] of [
  for(let i=0;i<45;i++)a.update(.05);
  assert.equal(current.encounter.cue,'opening');
  assert.equal(a.get().shots.length,0);
- for(let i=0;i<40;i++)a.update(.05);
+ const volleyBefore=current.volleyIndex;
+ for(let i=0;i<40&&current.volleyIndex===volleyBefore;i++)a.update(.05);
  assert.equal(current.encounter.phase,2);
  assert.equal(current.encounter.cue,null);
- assert.equal(a.get().shots.filter(signature).length,count);
+ assert.equal(current.volleyIndex,volleyBefore+1);
+ assert.ok(a.get().shots.some(signature),'Erste Salve nach dem Phasenwechsel hat den erwarteten Geschosstyp');
  defeatBoss();
  if(index>=5){
   finishTransition();
@@ -349,10 +351,11 @@ for(const [special,radius] of [[0,120],[1,188]]){
 {
  reset();const {upgrades,player}=a.get();
  Object.assign(upgrades,{carousel:1,boomerang:1,bounceCrust:1,fanShot:1,snakeShot:1,seekShot:1});
- shoot();const [wing,main]=a.get().bullets;
+ shoot();const [main,wing]=a.get().bullets;
  const direction=wing.vy;
  a.update(.1);
  assert.ok(Math.abs(Math.hypot(main.x-player.x-22,main.y-player.y)-114)<1e-9,'Kreisflug mit 114 Pixeln Radius');
+ assert.ok(Math.abs(Math.hypot(wing.x-player.x-22,wing.y-player.y+3)-114)<1e-9,'Fächerschuss umkreist den versetzten Ursprung');
  assert.equal(wing.vy,direction);
  a.update(.16);
  assert.ok(main.x>player.x+136&&Math.abs(main.y-player.y)<3,'Ausflug auf der gespeicherten Bahn');
@@ -511,7 +514,7 @@ reset();a.get().upgrades.ember=1;e=placeTarget(400,268);shoot();a.get().bullets[
 reset();a.get().upgrades.echo=1;for(let i=0;i<6;i++)shoot();assert.equal(a.get().bullets.length,8,'Sechster Angriff erzeugt Echo');
 reset();a.get().upgrades.rear=1;shoot();assert.ok(a.get().bullets.some(b=>b.vx<0));
 reset();a.get().upgrades.guard=1;pl=a.get().player;a.get().shots.push({x:pl.x+25,y:pl.y,vx:0,vy:0,w:10,h:10,life:1});a.update(.01);assert.ok(pl.podCooldown<2.5);
-reset();a.get().upgrades.execute=1;e=placeTarget(400,268);e.hp=30;shoot();a.get().bullets[0].x=400;a.update(.01);assert.ok(Math.abs(e.hp-(30-.8625*1.06))<1e-9,'Letzter Bissen wirkt');
+reset();a.get().upgrades.execute=1;e=placeTarget(400,268);e.hp=30;shoot();a.get().bullets[0].x=400;a.update(.01);assert.ok(Math.abs(e.hp-(30-.8625*1.10))<1e-9,'Letzter Bissen wirkt');
 // An aimed shot keeps its locked direction even if the player moves before it fires.
 {
  reset();const shooter=a.enemy(3,220);
@@ -700,8 +703,8 @@ for(const weapon of [-1,3]){
  boss.fire=0;
  const layout=a.art.bossLayout(boss.i);
  const totalWeight=layout.reduce((sum,part)=>sum+(part.weight||1),0);
- const oldHp=layout.reduce((sum,part)=>sum+Math.ceil(90*12.5*(part.weight||1)/totalWeight),0);
- assert.ok(Math.abs(boss.max/oldHp-.9*.35)<.005,'Kalibrierte Segmentlebenspunkte');
+ const expected=layout.map(part=>Math.ceil(90*12.5*.9*.35*(part.weight||1)/totalWeight)*1.2);
+ assert.deepEqual(Array.from(boss.parts,part=>part.max),Array.from(expected),'Kalibrierte Segmentlebenspunkte');
  assert.equal(boss.max,boss.parts.reduce((sum,part)=>sum+part.hp,0));
  a.update(.01);
  assert.equal(boss.strike,undefined);
@@ -741,7 +744,7 @@ for(const weapon of [-1,3]){
 // The current enemy rewards encode the three difficulty tiers.
 {
  reset();
- for(const [type,tier,value] of [[0,1,1],[3,2,2],[9,3,4]]){
+ for(const [type,tier,value] of [[0,1,1],[3,2,2],[9,3,8]]){
   a.enemy(type);
   const target=a.get().enemies.at(-1);
   Object.assign(target,{x:500,y:270,hp:1,speed:0,fire:999});
@@ -840,8 +843,9 @@ for(const [kind,index,bossIndex,weakCount,strongCount] of [
  assert.equal(weak.length,weakCount);
  a.render();
  if(kind==='mine'||kind==='splitter'){
+  assert.equal(weak[0].burstCount,kind==='mine'?4:3);
   for(let i=0;i<25;i++)a.update(.05);
-  assert.equal(a.get().shots.filter(s=>s.kind==='needle').length,kind==='mine'?4:3);
+  assert.equal(a.get().shots.filter(s=>s.kind==='needle'&&!s.bonus).length,kind==='mine'?3:2,'Splitter unterliegen dem Gegnergeschoss-Budget');
  }
  reset();
  if(bossIndex===6){a.startDebugRun();events.keydown({code:'Numpad8',repeat:false,preventDefault:noop})}

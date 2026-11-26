@@ -4,7 +4,7 @@ Der Workflow [Pfert CI/CD](../.github/workflows/pages.yml) prüft Branch-Pushes 
 
 ## Automatische Prüfungen
 
-Die CI prüft Punktetafel, Eingabe, Spielfortschritt, Sound, Assets, Bumerang und Bossangriffe mit Node.js 24. Ein Fehler blockiert das Deployment. Weitere lokale Prüfungen stehen in der [Testanleitung](../tests/README.md). Die vollständigen Aufrufe von `test-game.cjs` und `test-items.cjs` haben derzeit bekannte fehlgeschlagene Assertions und gehören nicht zur Freigabeprüfung.
+Die CI führt mit Node.js 24 den Sammelrunner `node tests/test-all.cjs` aus. Er findet alle `test-*.cjs`-Suiten und startet zusätzlich die Fälle, die nur mit einem eigenen Schalter laufen. Ein Fehler blockiert das Deployment. Gezielte lokale Prüfungen stehen in der [Testanleitung](../tests/README.md).
 
 ## Versionsnummer
 

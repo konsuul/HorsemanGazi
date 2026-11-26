@@ -1,11 +1,22 @@
 'use strict';
 const {execFileSync}=require('node:child_process');
-const suites=[
- 'test-scoreboard.cjs','test-game.cjs','test-input.cjs','test-progress.cjs','test-sound.cjs',
- 'test-assets.cjs','test-balance.cjs','test-meta.cjs','test-meta-game.cjs','test-controller-meta.cjs',
- 'test-opening.cjs','test-encounters.cjs','test-pause-cards.cjs','test-readability.cjs','test-balance-profile.cjs'
+const {readdirSync}=require('node:fs');
+const {join}=require('node:path');
+
+const suites=readdirSync(__dirname)
+ .filter(file=>/^test-.*\.cjs$/.test(file)&&file!=='test-all.cjs')
+ .sort()
+ .map(file=>[file]);
+
+// These cases run only when their suite is called with the corresponding option.
+const targetedCases=[
+ ['test-game.cjs','--boomerang'],
+ ['test-encounters.cjs','--telegraphs'],
+ ['test-encounters.cjs','--formation'],
+ ['test-encounters.cjs','--wind'],
+ ['test-encounters.cjs','--caravan']
 ];
-for(const file of suites){
- console.log('\n'+file);
- execFileSync(process.execPath,[require('node:path').join(__dirname,file)],{stdio:'inherit'});
+for(const [file,...args] of [...suites,...targetedCases]){
+ console.log('\n'+[file,...args].join(' '));
+ execFileSync(process.execPath,[join(__dirname,file),...args],{stdio:'inherit'});
 }

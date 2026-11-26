@@ -23,16 +23,8 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: '24'
-      - name: Run Pfert smoke tests
-        shell: bash
-        run: |
-          node tests/test-scoreboard.cjs
-          node tests/test-input.cjs
-          node tests/test-progress.cjs
-          node tests/test-sound.cjs
-          node tests/test-assets.cjs
-          node tests/test-game.cjs --boomerang
-          node tests/test-encounters.cjs --boss-attacks
+      - name: Run all Pfert tests
+        run: node tests/test-all.cjs
 
   deploy:
     if: github.ref == 'refs/heads/main'

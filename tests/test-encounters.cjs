@@ -52,6 +52,7 @@ globalThis.encounters = {
  skipTo: (clock, bosses = 0) => { t = clock; bossCount = bosses; nextBoss = (bosses + 1) * 300; },
  prepare: () => { spawn = 999; drop = 999; xpNeeded = Infinity; player.autoCooldown = Infinity; player.inv = Infinity; },
  setSpawn: value => { spawn = value; },
+ setShotBudget: value => { enemyShotBudget = value; },
  setPatrolDelay: value => { blockerPatrolDelay = value; },
  allowContact: () => { player.inv = 0; },
  setRuhr: (type = 2) => { secret = true; secretType = type; },
@@ -351,7 +352,8 @@ setup(125);
 assert.ok(game.state().blockerPatrolDelay>=95&&game.state().blockerPatrolDelay<=120);
 const seenPatrols=new Set();
 for(let i=0;i<3;i++){
- game.skipTo(125);
+ game.skipTo(110);
+ game.prepare();
  game.setPatrolDelay(.12);
  advance(.1);
  assert.ok(!game.state().enemies.some(unit=>unit.patrol),'Der Cooldown läuft vor dem Auftritt ab');
@@ -377,7 +379,7 @@ for(let i=0;i<3;i++){
   advance(4.25);
  }else advance(4.3);
  assert.ok(Math.abs(unit.y-patrolEnds[kind])<.01);
- assert.equal(game.state().shots.length,0,'Zusätzliche Blocker versperren den Weg durch ihre Körper');
+ assert.equal(game.state().shots.length,0,'Die isolierte Blockerpatrouille feuert keine Geschosse');
  advance(1.95);
  assert.ok(kind==='bird'?unit.x+unit.w/2<0:unit.x-unit.w/2>960,'Ausflug endet außerhalb des Bilds');
  advance(.1);
@@ -484,13 +486,14 @@ assert.equal(shots.length, 2);
 assert.equal(shots[0].curve, -shots[1].curve, 'Versetzte Sichel biegt in Gegenrichtung');
 
 secondPhase(6);
-assert.equal(game.state().shots.filter(shot => shot.kind === 'mortar').length, 2);
+const baseMortars = () => game.state().shots.filter(shot => shot.kind === 'mortar' && !shot.bonus);
+assert.equal(baseMortars().length, 2);
 advance(.3);
-assert.equal(game.state().shots.filter(shot => shot.kind === 'mortar').length, 2);
+assert.equal(baseMortars().length, 2);
 advance(.15);
-assert.equal(game.state().shots.filter(shot => shot.kind === 'mortar').length, 4);
+assert.equal(baseMortars().length, 4);
 for (let i = 0; i < 45; i++) {
- for (const shot of game.state().shots.filter(shot => shot.kind === 'mortar')) {
+ for (const shot of baseMortars()) {
   assert.ok(shot.y + shot.h / 2 < 245 || shot.y - shot.h / 2 > 295, 'Mörser lassen mittleres Höhenband frei');
  }
  game.update(.05);
@@ -524,8 +527,9 @@ function rareSequence(seed, count, checkAttacks=false) {
    if(checkAttacks&&i<10){
     game.drawEnemy(unit);
     const start=shots.length;
+    game.setShotBudget(4);
     game.enemyAttack(unit);
-    const volley=shots.slice(start);
+    const volley=shots.slice(start).filter(shot=>!shot.bonus);
     assert.ok(volley.length>0&&volley.length<=3);
     assert.ok(volley.every(shot=>Number.isFinite(shot.vx)&&Number.isFinite(shot.vy)));
     patterns.add(JSON.stringify(volley.map(shot=>[shot.kind,shot.x-unit.x,shot.y-unit.y,shot.vx,shot.vy,shot.curve])));
@@ -553,8 +557,10 @@ game.update(.05);
 assert.ok(enteringRare.aimTarget,'Angriff wird vor dem Schuss angekündigt');
 assert.ok(Number.isFinite(enteringRare.y),'Höhe bleibt ab dem ersten Bewegungsschritt endlich');
 enteringRare.rareEnemy={...enteringRare.rareEnemy,attack:'pulse'};
-game.update(.05);
-assert.equal(enteringRare.pulseCharging,true);
+assert.equal(game.state().shots.some(shot=>shot.kind==='pulse'),false);
+game.setShotBudget(4);
+advance(.3);
+assert.ok(game.state().shots.some(shot=>shot.kind==='pulse'));
 game.drawEnemy(enteringRare);
 setup(300);
 game.setSpawn(0);
