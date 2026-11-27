@@ -10,4 +10,4 @@
 
 - [ ] **Patronen, Rückendeckung und Standardgegner.** Implementiert: Patronen-Nachladezeiten halbiert (Basis / 2,60), Rückwärtsschaden +500 % (1,2 × Rang), normale Feuertimer ×0,7 für 30 % weniger Projektile bei gleichen Salven. Gezielte Tests in `test-encounters.cjs --caravan` und `test-game.cjs` angepasst/ergänzt; GitHub-Ergebnis noch ausstehend.
 - [ ] **Pause, Unsterblichkeit und Suchraketen.** Power-ups direkt sichtbar; Numpad 0 schaltet im Hauptmenü Unsterblichkeit für neue Runden; Suchraketen doppelt breit/hoch mit Rumpf, Spitze und Flossen. Regressionen in `test-pause-cards.cjs` und `test-game.cjs` ergänzt. GitHub-Ergebnis und visuelle Abnahme durch den Nutzer noch ausstehend.
-`n- [ ] **Erdbolzen und Glutkern.** Erdbolzen-Faktor 1,18 → 1,77 (+50 %); Glutkern-Brand maximal drei Stapel mit erneuerter gemeinsamer Dauer, Reset nach Ablauf. GitHub-Tests ausstehend.
+- [ ] **Erdbolzen und Glutkern.** Erdbolzen-Faktor 1,18 → 1,77 (+50 %); Glutkern-Brand maximal drei Stapel mit erneuerter gemeinsamer Dauer, Reset nach Ablauf. GitHub-Tests ausstehend.

@@ -10,7 +10,7 @@ const sandbox={navigator:{getGamepads:()=>gamepad?[gamepad]:[]},console,Math,Set
 vm.createContext(sandbox);vm.runInContext(fs.readFileSync(__dirname+'/../Pfert/art.js','utf8'),sandbox);
 const source=fs.readFileSync(__dirname+'/../Pfert/game.js','utf8').replace('})();',
  'globalThis.testApi={reset,update,render,renderTransition,pollGamepad,offerCards,enemy,enemyAttack,startBoss,partHit,activateRage,hurt,keys,chooseCard,cardDefs,fireCharge,get:()=>({selectedCard,lastRare,t,runTime,level,xp,xpNeeded,orbs,choices,upgrades,hearts,score,player,enemies,bullets,beams,shots,pickups,boss,nextBoss,bossCount,state,transition,levelIndex,secret,secretTime,golden,goldenAppeared,secondAppeared,secretType,particles,deaths,arcs,flashes,threat}),setXp:v=>xp=v,setTime:v=>t=v,setFirstSeen:v=>goldenAppeared=v,setRunTime:v=>runTime=v,setNextBoss:v=>nextBoss=v,setSecretTime:v=>secretTime=v,setSpawn:v=>spawn=v,setDrop:v=>drop=v};})();');
-vm.runInContext(source.replace('globalThis.testApi={','globalThis.testApi={goToStartMenu,shouldSpawnPickup,damagePart,art:PfertArt,startDebugRun,modifyDirectHit,updateFieldPowerupSpawns,getElementalBursts:()=>elementalBursts,'),sandbox);const a=sandbox.testApi;
+vm.runInContext(source.replace('globalThis.testApi={','globalThis.testApi={applyAilment,goToStartMenu,shouldSpawnPickup,damagePart,art:PfertArt,startDebugRun,modifyDirectHit,updateFieldPowerupSpawns,getElementalBursts:()=>elementalBursts,'),sandbox);const a=sandbox.testApi;
 for(let i=0;i<17;i++){const count=Array.from({length:100},(_,n)=>a.shouldSpawnPickup(i,(n+.5)/100)).filter(Boolean).length;assert.equal(count,i===5||i===16?100:12,'Dropchance Flasche '+i)}
 function reset(){a.reset();a.setSpawn(999);a.setDrop(999);a.get().player.autoCooldown=Infinity}
 function debugReset(){a.startDebugRun();a.setSpawn(999);a.setDrop(999);a.get().player.autoCooldown=Infinity}
@@ -928,3 +928,21 @@ for(const [kind,index,bossIndex,weakCount,strongCount] of [
 }
 
 console.log('OK: Gegnerwellen, sechs Schusstypen, Kartenschaden, Zielbindung und Bossabläufe.');
+
+reset();
+for(const target of [{hp:100},{hp:100,aim:[0,0]}]){
+ const shot={skillElement:'element',damage:10,bossFactor:1,elements:{fire:.3,frost:0}};
+ for(const stacks of [1,2,3,3]){
+  a.applyAilment(shot,target);
+  assert.equal(target.burnDps,3*stacks);
+  assert.equal(target.glutStacks,stacks);
+ }
+ target.burnLife=0;a.applyAilment(shot,target);
+ assert.equal(target.burnDps,3,'Brandablauf setzt Stapel zurück');
+}
+reset();
+for(const target of [{hp:100},{hp:100,aim:[0,0]}]){
+ const shot={skillElement:'element',damage:10,bossFactor:1,elements:{fire:.3,frost:0}};
+ for(const stacks of [1,2,3,3]){a.applyAilment(shot,target);assert.equal(target.burnDps,3*stacks)}
+ target.burnLife=0;a.applyAilment(shot,target);assert.equal(target.burnDps,3);
+}

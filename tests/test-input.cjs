@@ -108,7 +108,7 @@ reset();a.setXp(a.get().xpNeeded);a.update(.01);events.keydown({code:'KeyD',repe
  key('Enter',true);assert.equal(a.get().state,'skill','Gehaltenes Enter überspringt die Auswahl nicht');
  key('ArrowRight');key('Enter');assert.equal(a.get().player.skill.id,'precision');
  a.fireCharge();const bolt=a.get().bullets[0];
- assert.ok(bolt.vx<470&&bolt.damage>1);assert.equal(bolt.skillElement,'precision');assert.equal(a.get().bullets.length,1);
+ assert.ok(bolt.vx<470&&Math.abs(bolt.damage-.8625*1.77)<1e-9);assert.equal(bolt.skillElement,'precision');assert.equal(a.get().bullets.length,1);
  a.offerCards();assert.ok(a.get().choices.some(card=>a.get().player.skill.cards.includes(card.id)));
  a.reset(a.baseSkills[2]);a.fireCharge();
  assert.ok(a.get().bullets[0].elements.fire>0);assert.equal(a.get().bullets[0].skillElement,'element');
