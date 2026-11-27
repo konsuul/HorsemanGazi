@@ -33,16 +33,17 @@ vm.runInContext(read('game.js').replace('})();',`globalThis.check={
 };})();`),sandbox);
 const a=sandbox.check;
 
-const pickupShapes=new Set();
+const pickupSprites=[];
+context.drawImage=(sprite)=>pickupSprites.push(sprite);
 for(const i of ['rockets','shield','sweeper']){
  context.calls.length=0;
  a.drawFieldPickup({i,x:200,y:150,age:1});
- const boxes=context.calls.filter(call=>call[0]==='box');
- assert.ok(boxes.length>0);
- pickupShapes.add(JSON.stringify(boxes.map(call=>call.slice(2))));
- assert.ok(!context.calls.some(call=>call[0]==='text'),'Power-up-Symbole sind Pixelgrafiken');
+ a.drawFieldPickup({i,x:210,y:150,age:2});
+ assert.equal(pickupSprites.at(-1),pickupSprites.at(-2),'Feld-Power-ups zeichnen denselben Sprite erneut');
+ assert.ok(!context.calls.some(call=>call[0]==='text'),'Feld-Power-ups bleiben ohne Text lesbar');
 }
-assert.equal(pickupShapes.size,3,'Jedes Feld-Power-up hat eine eigene Silhouette');
+assert.equal(new Set(pickupSprites).size,3,'Jedes Feld-Power-up hat eine eigene Silhouette');
+delete context.drawImage;
 
 // Both hostile zones share their exact boundaries with collision, including reduced motion.
 {

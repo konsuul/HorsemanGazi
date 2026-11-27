@@ -1503,6 +1503,34 @@ const PfertArt = (() => {
   ctx.restore();
  }
 
+ function fieldPickup(ctx,x,y,kind,color){
+  const sprite=makeSprite('field-'+kind,()=>{
+   poly([[0,-14],[10,-10],[14,0],[10,10],[0,14],[-10,10],[-14,0],[-10,-10]],'#201d2f');
+   poly([[0,-12],[9,-9],[12,0],[9,9],[0,12],[-9,9],[-12,0],[-9,-9]],'#876558');
+   poly([[0,-10],[8,-7],[10,0],[7,8],[0,10],[-7,8],[-10,0],[-7,-8]],'#2b364c');
+   poly([[0,-13],[9,-9],[7,-8],[0,-11],[-8,-7],[-10,0],[-12,0],[-9,-9]],color);
+   box(9,-2,2,3,'#fff4d0');
+   box(-3,10,6,1,'#422c42');
+   if(kind==='rockets'){
+    poly([[-7,-3],[-4,-1],[-1,-5],[3,-7],[8,-7],[7,-2],[2,3],[-1,3],[0,6],[-4,6],[-6,2]],'#a26151',1);
+    poly([[-4,1],[0,-4],[4,-6],[7,-6],[5,-2],[0,2]],'#ffcb76');
+    poly([[-1,0],[3,-5],[6,-5],[3,-2]],'#fff2b8');
+    box(1,-2,2,2,'#4c717f');box(-7,4,3,2,'#f9ae70');
+   }else if(kind==='shield'){
+    poly([[-7,-6],[0,-8],[7,-6],[6,2],[3,6],[0,8],[-4,5],[-6,1]],color,1);
+    poly([[0,-6],[5,-5],[4,2],[0,6],[-1,0]],'#448b89');
+    poly([[-5,-5],[0,-7],[0,-2],[-4,0]],'#dcfff2');
+    box(-1,-1,2,3,'#fff5d8');
+   }else{
+    poly([[-7,-5],[-2,-6],[1,-3],[4,-4],[7,-1],[7,2],[2,4],[-2,3],[-5,6],[-7,3]],'#7963a0',1);
+    poly([[-5,-4],[-2,-4],[0,-1],[6,-2],[8,0],[4,2],[0,1],[-4,4],[-5,2]],color);
+    box(-1,-1,8,2,'#fff3ff');
+    box(-5,-4,2,2,'#f2d9ff');
+   }
+  },38);
+  placeSprite(ctx,sprite,x,y);
+ }
+
  // Only 8 three-segment and 16 four-segment combinations are possible.
  const shieldDials=new Map();
  function shieldDial(ctx,player,mask,segments){
@@ -2121,5 +2149,5 @@ const PfertArt = (() => {
   }
   ctx.restore();
  }
- return {background,enemy,horse,boss,bossStrikeWarning,arcadeField,arcadeRails,segmentFracture,gearMedallion,shieldDial,hitCue,starGate,experienceOrb,bullet,beam,focusBeam,hostile,ring,bottle,golden,death,hud,arc,flash,elementalBurst,trail,spark,bossLayout};
+ return {background,enemy,horse,boss,bossStrikeWarning,arcadeField,arcadeRails,segmentFracture,gearMedallion,fieldPickup,shieldDial,hitCue,starGate,experienceOrb,bullet,beam,focusBeam,hostile,ring,bottle,golden,death,hud,arc,flash,elementalBurst,trail,spark,bossLayout};
 })();

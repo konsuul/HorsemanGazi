@@ -72,7 +72,7 @@ Beide transparenten Streifen stammen aus einem gemeinsamen Pixelgrafik-Entwurf. 
 
 Arkadenfeuer verwendet gestrichelte Ränder, schraffierte Gefahrenzonen und Pfeile zur freien Flugspur. Die sichtbaren Kanten liegen an derselben y-Grenze wie der Trefferbereich. Die aktive Welle wechselt auf Kupferrot mit hellen Kanten. Das Flimmern unterbleibt bei reduzierter Bewegung. Über den Warnungen bleiben Pfert und Feindgeschosse sichtbar.
 
-Beim Zerstören eines Bosssegments springen kantige Bruchstücke vom Zielpunkt aus. Ausrüstung erscheint in gefassten Medaillons mit fünf silhouettenstarken Motiven für Kopf, Hufe, Sattel, Geschirr und Talisman. Der untere Balken zeigt die verbleibende Abholzeit. Die Medaillons werden pro Motiv und Seltenheitsfarbe zwischengespeichert.
+Beim Zerstören eines Bosssegments springen kantige Bruchstücke vom Zielpunkt aus. Ausrüstung erscheint in gefassten Medaillons mit fünf silhouettenstarken Motiven für Kopf, Hufe, Sattel, Geschirr und Talisman. Der untere Balken zeigt die verbleibende Abholzeit. Die Medaillons werden pro Motiv und Seltenheitsfarbe zwischengespeichert. Feld-Power-ups zeigen eine Suchrakete, einen gewölbten Schild oder eine Räumstrahl-Optik in achteckigen Metallfassungen. Ihre Abzeichen werden einmal pro Typ gezeichnet und als Sprite wiederverwendet.
 
 ## Ruhrpott-Buden
 

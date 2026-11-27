@@ -3006,22 +3006,8 @@ function updateGameplay(dt){
  collectGear();
 }
 function drawFieldPickup(p){
- const color=fieldPowerups[p.i].color;
- c.save();c.translate(Math.round(p.x),Math.round(p.y+Math.sin(p.age*4)*3));
- c.fillStyle='#172135';c.fillRect(-13,-13,26,26);c.fillRect(-16,-9,32,18);c.fillRect(-9,-16,18,32);
- c.fillStyle='#47526a';c.fillRect(-12,-11,24,22);
- c.fillStyle='#202f45';c.fillRect(-11,-10,22,20);
- c.fillStyle=color;c.fillRect(-8,-14,16,2);c.fillRect(-14,-8,2,10);c.fillRect(12,3,2,5);
- if(p.i==='rockets'){
-  drawRocket(0,0,0,false);
- }else if(p.i==='shield'){
-  c.fillRect(-7,-7,14,9);c.fillRect(-5,2,10,3);c.fillRect(-2,5,4,3);
-  c.fillStyle='#478b98';c.fillRect(0,-5,5,7);c.fillRect(0,2,3,3);
- }else{
-  c.fillRect(-8,-5,4,10);c.fillRect(-4,-2,13,4);c.fillRect(2,-7,6,2);c.fillRect(2,5,6,2);
-  c.fillStyle='#fff1ff';c.fillRect(-3,-1,12,2);
- }
- c.fillStyle='#fff5d9';c.fillRect(-10,-12,4,2);c.restore();
+ const bob=reducedMotion?.matches?0:Math.sin(p.age*4)*3;
+ PfertArt.fieldPickup(c,p.x,p.y+bob,p.i,fieldPowerups[p.i].color);
 }
 function drawRocket(x,y,angle,launched){
  c.save();c.translate(Math.round(x),Math.round(y));c.rotate(angle);

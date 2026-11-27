@@ -6,4 +6,4 @@
 
 ## Grafik und Lesbarkeit
 
-- [ ] Die 16-Bit-Grafikvorgabe um verbindliche Abnahmekriterien für Sprites, Symbole, Kulissen und Effekte ergänzen. Das Arkadenfeuer, Bosssegmentbrüche und Ausrüstungsbeute im Gameplay-Test auf Kontrast, Lesbarkeit und Stil prüfen. Vorgabe und Grafiken sind überarbeitet. Der Sichttest steht aus.
+- [ ] Die 16-Bit-Grafikvorgabe um verbindliche Abnahmekriterien für Sprites, Symbole, Kulissen und Effekte ergänzen. Das Arkadenfeuer, Bosssegmentbrüche, Ausrüstungsbeute und Feld-Power-ups im Gameplay-Test auf Kontrast, Lesbarkeit und Stil prüfen. Vorgabe und Grafiken sind überarbeitet. Der Sichttest steht aus.
