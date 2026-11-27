@@ -16,13 +16,13 @@ Jeder offene Punkt hat eine feste ID direkt über seinem Kästchen. IDs beim Erg
 
 - [ ] **Basarwachen ohne Texte intuitiv erkennbar machen.** „Wache 1/2“ nicht durch Ziffern, Striche oder andere Zählzeichen ersetzen. Wachen und Anführer durch sichtbares Verhalten und ihre Beziehung zueinander unterscheiden, etwa durch ein am Gegner befestigtes Eskortenband, das beim Abschuss einer Wache sichtbar nachgibt. Die Darstellung darf keine Unverwundbarkeit vortäuschen. In einem kurzen Spieltest prüfen, ob jemand ohne Erklärung erkennt, dass beide Wachen vor dem Anführer fallen sollen. Keine eingeblendeten Texte im Spielfeld; die Regel in den Entwicklungsvorgaben festhalten.
 
-### Stage 2 · Pfreferanch
+### Stage 2 · Pferteranch
 
 Stage 1 bleibt als manueller Pfert-Run spielbar. Stage 2 baut darauf auf: **Eier finden → Pfohlen aufziehen → Anatolien-Missionen → Berufe meistern → Fame sammeln**. Die folgende Reihenfolge ist verbindlich für die Umsetzung. Zahlen außerhalb der Brutzeiten sind Startwerte für Spieltests.
 
 #### 2.1
 
-- [ ] **Ranch-Grundlage und Speicherstand.** Die Pfreferanch als eigenen Menübereich mit Brutübersicht und Pfohlen-Liste anlegen. Einen separaten, versionierten lokalen Save für Eier, Pfohlen und aktive Spielzeit einführen; bestehende Talente und Bestzeiten nicht verändern. IDs und Speicherpfad so anlegen, dass Schlüpfen und spätere Belohnungen auch nach Neustart nicht doppelt verbucht werden.
+- [ ] **Ranch-Grundlage und Speicherstand.** Die Pferteranch als eigenen Menübereich mit Brutübersicht und Pfohlen-Liste anlegen. Einen separaten, versionierten lokalen Save für Eier, Pfohlen und aktive Spielzeit einführen; bestehende Talente und Bestzeiten nicht verändern. IDs und Speicherpfad so anlegen, dass Schlüpfen und spätere Belohnungen auch nach Neustart nicht doppelt verbucht werden.
 
 #### 2.2
 
@@ -38,7 +38,7 @@ Stage 1 bleibt als manueller Pfert-Run spielbar. Stage 2 baut darauf auf: **Eier
 
 #### 2.4
 
-- [ ] **Aufzucht, Level und Berufsskills.** Pfohlen auf der Pfreferanch aufziehen, trainieren und in vier Berufe entwickeln: Voltigierhengst, Bauarbeiterhengst, Bauerhengst und Currywurststandhengst. Konkrete Level- und Skillwerte stehen unten bei den Dot-Systementwürfen.
+- [ ] **Aufzucht, Level und Berufsskills.** Pfohlen auf der Pferteranch aufziehen, trainieren und in vier Berufe entwickeln: Voltigierhengst, Bauarbeiterhengst, Bauerhengst und Currywurststandhengst. Konkrete Level- und Skillwerte stehen unten bei den Dot-Systementwürfen.
 
 #### 2.5
 
@@ -50,7 +50,7 @@ Stage 1 bleibt als manueller Pfert-Run spielbar. Stage 2 baut darauf auf: **Eier
 
 ## Vorschläge vom Dot
 
-### Stage 2 · Systementwürfe zur Pfreferanch
+### Stage 2 · Systementwürfe zur Pferteranch
 
 - **Missionen:** Als erste Ziele einen Weinberg (Wein) und einen Dorfmarkt (Käse) nutzen. Zum Start eine Ausfahrt pro Ranch. Ausgesandte Pfohlen können währenddessen nicht trainieren. Handspiel bietet Kontrolle und einen Leistungsbonus; Aussenden liefert verlässliche Grundbeute.
 - **Level und Skills:** Stufen 1–10, steigender EP-Bedarf und ein Skillpunkt pro Stufe; Berufswahl ab Stufe 3. Käse bezahlt Training und gibt EP, Wein schaltet ausgewählte Skillränge frei. Seltenheit gibt Startneigungen, sperrt Berufe aber nicht.
