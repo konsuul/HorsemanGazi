@@ -1,8 +1,12 @@
 # Pfert – Roadmap
 
-## Offene Vorschläge
+Die Einträge nennen die Urheberschaft. Vorschläge sind keine Zusage zur Umsetzung.
 
-Die Einträge sind Ideen oder Prüfaufträge, keine zugesagten Funktionen. Bereits umgesetzte Punkte bleiben in der Git-Historie.
+## Vorschläge von Konsuul
+
+- [ ] **Unterschiedliche Gegner-Flugprofile.** Standardgegner kommen nicht alle gerade vom Bildschirmrand. Einige fliegen diagonal ein; andere preschen vor, halten kurz an, erfassen die Position des Pferts und stoßen dann gezielt vor. Das Pfert soll in Bewegung bleiben und auf unterschiedliche Muster reagieren. Anstürme gut ankündigen und im frühen Spiel sparsam einsetzen. Bestehende Boss-, Formations- und Spezialabläufe bewahren.
+
+## Vorschläge vom Dot
 
 ### P1 · Schwierigkeit und Lesbarkeit
 
