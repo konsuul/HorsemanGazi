@@ -203,11 +203,11 @@ function buildDetails(){
  return '<details class="build-details"><summary>Gesammelte Power-ups</summary><ul>'+entries+'</ul></details>';
 }
 const gearSlots={
- head:{label:'Kopf',pixels:['.###.','#####','##.##','##...']},
- hooves:{label:'Hufe',pixels:['#...#','#...#','#...#','#####','.###.']},
- saddle:{label:'Sattel',pixels:['#...#','#####','.###.','.###.','.#.#.']},
- harness:{label:'Geschirr',pixels:['#...#','.#.#.','..#..','.#.#.','#...#']},
- charm:{label:'Talisman',pixels:['..#..','.#.#.','#####','.###.','..#..']}
+ head:{label:'Kopf'},
+ hooves:{label:'Hufe'},
+ saddle:{label:'Sattel'},
+ harness:{label:'Geschirr'},
+ charm:{label:'Talisman'}
 };
 const gearRarities=[
  {label:'Gewöhnlich',color:'#a8dccb',rareWeight:75,bossWeight:20},
@@ -804,10 +804,10 @@ function clock(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(Mat
 function sound(kind,strong=false){if(typeof PfertSound!=='undefined')PfertSound.play(kind,strong)}
 function reset(skill=baseSkills[0]){startRun('regular',skill)}
 let starRoute=null,nextStarRoute=100,starRouteIndex=0;
-let formation=null;
+let formation=null, arcadeFire=null;
 let flightStats;
 function startRun(mode,skill=baseSkills[0]){
- starRoute=null;nextStarRoute=100;starRouteIndex=0;formation=null;
+ starRoute=null;nextStarRoute=100;starRouteIndex=0;formation=null;arcadeFire=null;
  flightStats={enemies:0,bosses:0,bestCombo:0,slipstreams:0,deliveries:0};
  if(mode==='regular')leaveDebugTalents();
  runMode=mode;
@@ -1806,7 +1806,7 @@ function updateFormation(previousTime){
  if(!formation){
   const [offset,name,units]=formationSchedule[levelIndex];
   const start=Math.floor(t/districtDuration)*districtDuration+offset;
-  if(previousTime>=start||t<start||t+12>=nextBoss||starRoute)return;
+  if(previousTime>=start||t<start||t+12>=nextBoss||starRoute||arcadeFire)return;
   formation={units,releaseAt:start+formationWarning};
   notice=formationWarning;noticeText=name+' · SPUREN MEIDEN';
   sound('formation');
@@ -1818,6 +1818,52 @@ function updateFormation(previousTime){
   if(rear)unit.x=-unit.w/2-8;
  }
  formation=null;
+}
+// One encounter per district. Later batteries cover more of the flight ceiling.
+const arcadeOffsets=[169,16,92,70,110];
+const arcadeFirstWarning=1.45, arcadeRepeatWarning=1.05, arcadePulseTime=.32;
+function updateArcadeFire(previousTime){
+ if(secret||boss||golden){arcadeFire=null;return}
+ if(!arcadeFire){
+  const start=Math.floor(t/districtDuration)*districtDuration+arcadeOffsets[levelIndex];
+  if(t<start||previousTime>=start||t+5>=nextBoss||starRoute||formation||
+   enemies.some(e=>e.formation&&e.hp>0))return;
+  arcadeFire={
+   center:player.y<270?324:216, halfGap:72-levelIndex*6,
+   remaining:levelIndex<2?2:3, clean:true, firing:false, touched:false,
+   phaseStart:start, phaseEnd:start+arcadeFirstWarning
+  };
+ }
+ const fire=arcadeFire;
+ if(t>=fire.phaseEnd){
+  fire.phaseStart=fire.phaseEnd;
+  if(!fire.firing){
+   fire.firing=true;
+   fire.phaseEnd+=arcadePulseTime;
+  }else if(--fire.remaining>0){
+   fire.center=540-fire.center;
+   fire.firing=false;
+   fire.touched=false;
+   fire.phaseEnd+=arcadeRepeatWarning;
+  }else{
+   arcadeFire=null;
+   if(fire.clean){
+    const points=levelIndex<2?350:450;
+    score+=points;
+    player.arcadeReward={points,until:runTime+2};
+    ring(player.x,player.y,'#a9edd3',48);
+   }
+   return;
+  }
+ }
+ if(!fire.firing||fire.touched)return;
+ const above=player.y-player.h/2<fire.center-fire.halfGap;
+ const below=player.y+player.h/2>fire.center+fire.halfGap;
+ if(above||below){
+  fire.touched=true;
+  fire.clean=false;
+  hurt('arcade',player.x,player.y+(above?-24:24));
+ }
 }
 function spawnBlocker(previousTime){
  const cycle=Math.floor(t/blockerCycle),cycleStart=cycle*blockerCycle;
@@ -1872,7 +1918,7 @@ const starPaths=[[0,-95,10],[0,95,35],[-45,35,110],[65,0,-85]];
 function updateStarRoute(dt){
  if(boss||secret||golden){starRoute=null;return}
  if(!starRoute){
-  if(t<nextStarRoute||t+14>nextBoss||notice>0||formation||enemies.some(e=>e.formation&&e.hp>0))return;
+  if(t<nextStarRoute||t+14>nextBoss||notice>0||formation||arcadeFire||enemies.some(e=>e.formation&&e.hp>0))return;
   if((t>=bazaarStart-14&&t<bazaarBossTime)||(t>=laterWaveStart-14&&t<laterWaveEnd))return;
   const lane=clamp(player.y,205,375);
   const heights=starPaths[starRouteIndex++%starPaths.length];
@@ -2188,7 +2234,7 @@ function burstHostileShot(shot){
  }
 }
 
-const damageCauses={contact:'Gegnerkontakt',projectile:'Feindgeschoss',boss:'Bosskontakt',strike:'Bossvorstoß'};
+const damageCauses={contact:'Gegnerkontakt',projectile:'Feindgeschoss',boss:'Bosskontakt',strike:'Bossvorstoß',arcade:'Arkadenfeuer'};
 const slipstreamWindow=2.5,slipstreamReload=1.5;
 function grazeShot(shot){
  shot.grazed=true;
@@ -2394,7 +2440,7 @@ function updateBeam(beam,dt){
  return traceBeam(beam,shotAngle,(W-beam.x)/Math.cos(shotAngle),dealsDamage);
 }
 function startBoss(bazaarEncounter=false){
- starRoute=null;formation=null;
+ starRoute=null;formation=null;arcadeFire=null;
  const i=mainBossOrder[bossCount%mainBossOrder.length],cycle=Math.floor(bossCount/mainBossOrder.length);
  const attackRate=i===1?1.5:1;
  boss=setupSegments({i,x:830,y:270,w:150,h:146,hp:0,max:(90+cycle*30+i*15)*(1+threat*.2),age:0,fire:1.5/attackRate,warning:0,attackRate});
@@ -2418,7 +2464,7 @@ function leaveRuhr(){
  restoreBossPickups();spawn=2;notice=4;player.inv=2;
  noticeText=defeated?'BESIEGT · '+defeated.toUpperCase():'ZURÜCK IN DIE WOLKEN!';
 }
-function startRuhrBoss(){sound('boss');const i=secretType===2?6:5;boss=setupSegments({i,x:830,y:270,w:150,h:146,max:(i===6?155:120)*(1+threat*.22),age:0,fire:1.5,warning:0,encounter:{phase:1}});stashBossPickups();enemies=[];shots=[];notice=3;noticeText=bosses[i].toUpperCase()}
+function startRuhrBoss(){arcadeFire=null;sound('boss');const i=secretType===2?6:5;boss=setupSegments({i,x:830,y:270,w:150,h:146,max:(i===6?155:120)*(1+threat*.22),age:0,fire:1.5,warning:0,encounter:{phase:1}});stashBossPickups();enemies=[];shots=[];notice=3;noticeText=bosses[i].toUpperCase()}
 function vizierGuard(part){return boss?.i===0&&boss.strike&&part.role===1&&part.hp>0}
 function directHitGuard(target,source,isBoss,x,y){
  const moved=source.stepX||source.stepY;
@@ -2522,7 +2568,7 @@ function onHit(b,e,x,y){
 function damagePart(part,amount,x,y,bossFactor=1){
  if(!boss||part.hp<=0)return;
  part.hp=Math.max(0,part.hp-amount*bossFactor*(part.hp/part.max<.35?1+cardValues.execute(upgrades.execute):1));part.flash=.1;particle(x,y,'#fff0c8',8);if(flashes.length<28)flashes.push({x,y,r:18,life:.09,maxLife:.09});
- if(part.hp===0){sound('segment',{x});addRage(15,'killRage');score+=500;ring(x,y,'#ffb86b',72);particle(x,y,'#ffbe7b',30);shake=4;notice=1.5;noticeText='SEGMENT ZERSTÖRT!'}
+ if(part.hp===0){sound('segment',{x});addRage(15,'killRage');score+=500;const life=.55;rings.push({x:boss.x+part.aim[0],y:boss.y+part.aim[1],fracture:true,life,maxLife:life});particle(x,y,'#ffbe7b',18);shake=4;notice=1.5;noticeText='SEGMENT ZERSTÖRT!'}
  boss.hp=boss.parts.reduce((sum,p)=>sum+p.hp,0);
  if(boss.hp>0)return;
  const defeated=boss;
@@ -2779,6 +2825,8 @@ function updateGameplay(dt){
  updatePickupSpawns(dt);
  updateFieldPowerupSpawns(dt);
  updateFormation(previousTime);
+ updateArcadeFire(previousTime);
+ if(state!=='playing')return;
  updateStarRoute(dt);
  for(let i=0,count=bullets.length;i<count;i++){
   const b=bullets[i];
@@ -3040,20 +3088,7 @@ function drawFormationWarning(){
 }
 function drawGearDrop(drop){
  const {x,y,life,item}=drop;
- const color=gearRarities[item.rarity].color;
- const pixels=gearSlots[item.slot].pixels;
- c.save();
- c.globalAlpha=life<3&&Math.floor(life*6)%2===0?.62:1;
- c.fillStyle='#14253b';
- c.fillRect(x-15,y-15,30,30);
- c.lineWidth=2;c.strokeStyle=color;
- c.strokeRect(x-14,y-14,28,28);
- c.fillStyle=color;
- pixels.forEach((row,j)=>{
-  for(let i=0;i<row.length;i++)if(row[i]==='#')c.fillRect(x-10+i*4,y-pixels.length*2+j*4,4,4);
- });
- c.fillRect(x-12,y+11,Math.ceil(24*life/gearDropDuration),2);
- c.restore();
+ PfertArt.gearMedallion(c,x,y,item.slot,gearRarities[item.rarity].color,life/gearDropDuration);
 }
 function drawDamageFrame(){
  const top=62,bottom=H-7;
@@ -3075,6 +3110,7 @@ function render(){
  if(shake>0&&!reducedMotion?.matches)c.translate(Math.sin(now*83)*shake,Math.cos(now*77)*shake*.5);
  const arrival=!secret&&t>=districtDuration&&!reducedMotion?.matches?Math.min(1,(t%districtDuration)/.8):1;
  PfertArt.background(c,levelIndex,now,secret?secretType:0,arrival);
+ if(arcadeFire)PfertArt.arcadeField(c,arcadeFire,t,reducedMotion?.matches);
  for(const p of pickups){
   if(fieldPowerups[p.i])drawFieldPickup(p);
   else PfertArt.bottle(c,{...p,element:weaponElements[p.i]});
@@ -3119,8 +3155,12 @@ function render(){
  for(const beam of beams)PfertArt.beam(c,beam,now);
  for(const arc of arcs)PfertArt.arc(c,arc);for(const f of flashes)PfertArt.flash(c,f);
  for(const effect of elementalBursts)PfertArt.elementalBurst(c,effect);
- for(const r of rings)PfertArt.ring(c,r);
+ for(const r of rings){
+  if(r.fracture)PfertArt.segmentFracture(c,r,reducedMotion?.matches);
+  else PfertArt.ring(c,r);
+ }
  for(const p of particles)PfertArt.spark(c,p);c.globalAlpha=1;
+ if(arcadeFire)PfertArt.arcadeRails(c,arcadeFire,t);
  drawFormationWarning();
  if(boss)PfertArt.bossStrikeWarning(c,boss);
  if(starRoute)for(let i=starRoute.index;i<starRoute.gates.length;i++){
@@ -3147,7 +3187,7 @@ function render(){
  if(player&&(state==='playing'||state==='upgrade'||state==='transition'||state==='paused')){
   if(flash>0&&!reducedMotion?.matches)drawDamageFrame();
   const weapon=activeWeapon();
-  PfertArt.hud(c,{hearts,score,t,runTime,secret,secretType,secretTime,player,boss,weapon,cartridges,wine:wineStatus(weapon),weaponNames,level,xp,xpNeeded,upgrades,build:collectedCards(),combo,comboRemaining:comboTime/comboWindow,threat,maxHearts:maxHearts(),talentPoints:metaTimePoints+metaBosses});
+  PfertArt.hud(c,{hearts,score,t,runTime,secret,secretType,secretTime,player,boss,arcadeFire,weapon,cartridges,wine:wineStatus(weapon),weaponNames,level,xp,xpNeeded,upgrades,build:collectedCards(),combo,comboRemaining:comboTime/comboWindow,threat,maxHearts:maxHearts(),talentPoints:metaTimePoints+metaBosses});
  }
 }
 function pollGamepad(now=Date.now()){
@@ -3226,7 +3266,7 @@ function frame(now){
 requestAnimationFrame(frame);
  function snapshot(){const image=document.createElement('canvas');image.width=W;image.height=H;image.getContext('2d').drawImage(canvas,0,0);return image}
  function beginTransition(direction){
-  starRoute=null;formation=null;
+  starRoute=null;formation=null;arcadeFire=null;
   render();const image=snapshot();cancelCharge();padBlocked=true;padMove={x:0,y:0};
   transition={direction,elapsed:0,image,switched:false};state='transition';sound('transition');throw transitionInterrupt;
  }

@@ -46,6 +46,9 @@ Beide transparenten Streifen stammen aus einem gemeinsamen Pixelgrafik-Entwurf. 
 
 [characters-v2.png](../Pfert/assets/characters-v2.png) ist die Referenz für Spielfiguren und Gegner. Neue Sprites bei ihrer tatsächlichen Spielgröße beurteilen. Gezeichnete Umrisse auf das Pixelraster setzen und Animationen auf einen gemeinsamen Mittelpunkt ausrichten. Transparente Sprites mit deaktivierter Bildinterpolation skalieren. Kleine Details in lesbaren Pixelgruppen bündeln.
 
+- **Qualitätsschwelle.** Für die Laufzeit nur Grafiken freigeben, deren Form, Material und Lichtführung bei nativer Größe und bei verkleinerter Ansicht überzeugend lesbar sind. Grob hochskalierte Miniaturen, verwaschene Filterung, störende Alpharänder und provisorische Rasterglyphen erfüllen die Vorgabe nicht. Solche Grafiken vor der Freigabe überarbeiten oder durch eine fertige Fassung ersetzen. Das gilt auch für Canvas-Zeichnungen und Ersatzgrafiken.
+- **Pixelmaßstab.** Kanten und Details als bewusst gesetzte Pixelgruppen zeichnen. Die Detaildichte an benachbarten Spielgrafiken ausrichten. Bei beweglichen Sprites über alle Frames Ursprung, Licht und Silhouette prüfen. Zeichnungen bei der tatsächlichen Ausgabegröße beurteilen, inklusive ruhiger und stark strukturierter Hintergründe.
+- **Effekte.** Zeitkritische Warnungen über Form und Helligkeit vermitteln. Vorwarnung, Trefferfläche und dekorative Spuren erhalten klar unterschiedliche Konturen. Gefahren und sichere Flugspuren müssen ihren Kollisionsgrenzen folgen. Bei reduzierter Bewegung bleiben Warnung und Gefahrenfläche gleich lesbar; dekorative Bewegung und Bruchstücke werden gedrosselt.
 - **Licht und Material.** Licht kommt von links oben. Lichtkante, Grundton, Schattenfläche und tiefe Fuge als klar getrennte Farbstufen anlegen. Kühler, dunkler Konturenschlag trennt überlappende Flächen. Messing bekommt schmale Lichtkanten, Glas größere Facetten und Holz oder Stoff breite matte Flächen.
 - **Gegner.** Angriff und Rolle an der Silhouette erkennen lassen. Maschinen setzen Glaslinsen, genietete Metallteile und gestufte Facetten ein. Konturen und versetzte Schatten geben Tiefe. Trefferblitz, Angriffswarnung und Bosssegmente müssen über der Textur lesbar bleiben. Die Kontur muss auch über hellen Wolken und vor dunkler Industrie erkennbar sein.
 - **Warnsignale.** Gerade Gefahrenbahnen mit gestrichelten Lichtkanten und dunkler Unterlage markieren. Feindgeschosse vor Warnungen, Partikeln und Kulisse zeichnen. Herzverlust am Pfert und am Spielfeldrand zeigen, damit Trefferursache und nächste Gefahr im Blick bleiben.
@@ -64,6 +67,12 @@ Beide transparenten Streifen stammen aus einem gemeinsamen Pixelgrafik-Entwurf. 
 | [player-projectiles-v2.png](../Pfert/assets/player-projectiles-v2.png) | Sechzehn Geschossmotive mit bereinigten Konturen |
 
 `assets.js` enthält die Zuschnitte für die Gegner. Das Spiel skaliert sie ohne weiche Interpolation, zeichnet sie an gerundeten Positionen und ergänzt einzelne Schattenpixel am Figurenrand. Leuchtspuren liegen als eigene Effekte hinter den Geschossen.
+
+## Arkadenfeuer, Bossbruchstücke und Beute
+
+Arkadenfeuer verwendet gestrichelte Ränder, schraffierte Gefahrenzonen und Pfeile zur freien Flugspur. Die sichtbaren Kanten liegen an derselben y-Grenze wie der Trefferbereich. Die aktive Welle wechselt auf Kupferrot mit hellen Kanten. Das Flimmern unterbleibt bei reduzierter Bewegung. Über den Warnungen bleiben Pfert und Feindgeschosse sichtbar.
+
+Beim Zerstören eines Bosssegments springen kantige Bruchstücke vom Zielpunkt aus. Ausrüstung erscheint in gefassten Medaillons mit fünf silhouettenstarken Motiven für Kopf, Hufe, Sattel, Geschirr und Talisman. Der untere Balken zeigt die verbleibende Abholzeit. Die Medaillons werden pro Motiv und Seltenheitsfarbe zwischengespeichert.
 
 ## Ruhrpott-Buden
 

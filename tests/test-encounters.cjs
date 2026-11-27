@@ -48,7 +48,7 @@ globalThis.encounters = {
  mode:()=>state,gear:()=>gearDrops,worn:()=>wornGear,route:()=>starRoute,xp:()=>xp,orbs:()=>orbs,pauseGame,resumeGame,hurt,
  reset, update, render, startBoss, startRuhrBoss, damageEnemy, spawnRegularEnemy, enemyAttack,moveHostileShot,projectile,
  drawEnemy: unit => PfertArt.enemy(document.createElement('canvas').getContext('2d'), unit, 0, 0),
- state: () => ({boss, enemies, shots, player, score, combo, noticeText, t, nextRareEnemy, blockerPatrolDelay,hearts,threat,formation}),
+ state: () => ({boss, enemies, shots, player, score, combo, noticeText, t, nextRareEnemy, blockerPatrolDelay,hearts,threat,formation,arcadeFire}),
  skipTo: (clock, bosses = 0) => { t = clock; bossCount = bosses; nextBoss = (bosses + 1) * 300; },
  prepare: () => { spawn = 999; drop = 999; xpNeeded = Infinity; player.autoCooldown = Infinity; player.inv = Infinity; },
  setSpawn: value => { spawn = value; },
@@ -67,6 +67,86 @@ function setup(clock = 0, bosses = 0) {
 }
 function advance(seconds) {
  for (let i = 0; i < Math.round(seconds * 20); i++) game.update(.05);
+}
+
+if(process.argv.length===2||process.argv.includes('--arcade')){
+ function approachArcade(time=169,bosses=0){
+  setup(time-.02,bosses);
+  game.skipPortals();
+  game.state().player.y=110;
+  game.update(.04);
+  return game.state().arcadeFire;
+ }
+
+ const clean=approachArcade();
+ assert.equal(clean.halfGap,72);
+ assert.equal(clean.remaining,2);
+ assert.equal(clean.center,324,'Die erste freie Flugspur fordert eine Kurskorrektur');
+ game.allowContact();
+ advance(1.35);
+ assert.equal(game.state().hearts,5,'Warnbereiche richten noch keinen Schaden an');
+ assert.equal(clean.firing,false);
+ game.pauseGame();
+ const pausedAt=game.state().t;
+ advance(2);
+ assert.equal(game.state().t,pausedAt,'Pause hält die Vorwarnzeit an');
+ assert.equal(game.state().arcadeFire,clean);
+ game.resumeGame();
+ game.state().player.y=324;
+ advance(.45);
+ assert.equal(clean.firing,false);
+ assert.equal(clean.remaining,1);
+ assert.equal(clean.center,216);
+ game.state().player.y=216;
+ advance(1.4);
+ assert.equal(game.state().arcadeFire,null);
+ assert.equal(game.state().hearts,5);
+ assert.equal(game.state().score,350);
+ assert.equal(game.state().player.arcadeReward.points,350);
+
+ const grazedEdge=approachArcade();
+ game.allowContact();
+ const {player}=game.state();
+ player.y=grazedEdge.center-grazedEdge.halfGap+player.h/2-1;
+ advance(1.5);
+ assert.equal(grazedEdge.firing,true);
+ assert.equal(game.state().hearts,4,'Ein überstehender Pixel berührt die Gefahrenzone');
+ assert.equal(player.lastDamage.source,'arcade');
+ game.allowContact();
+ advance(.2);
+ assert.equal(game.state().hearts,4,'Eine Feuerwelle löst höchstens einen Treffer aus');
+ player.y=216;
+ advance(1.6);
+ assert.equal(game.state().arcadeFire,null);
+ assert.equal(game.state().score,0);
+
+ const protectedFlight=approachArcade();
+ advance(1.5);
+ assert.equal(game.state().hearts,5);
+ assert.equal(protectedFlight.clean,false,'Unverwundbarkeit vergibt keine Bonuspunkte für die Gefahrenzone');
+
+ for(const [time,bosses,halfGap,waves] of [[196,0,66,2],[452,1,60,3],[610,2,54,3],[830,2,48,3]]){
+  const fire=approachArcade(time,bosses);
+  assert.equal(fire.halfGap,halfGap);
+  assert.equal(fire.remaining,waves);
+  assert.equal(game.route(),null);
+ }
+ game.startBoss();
+ assert.equal(game.state().arcadeFire,null,'Boss-Start beendet die Begegnung');
+ setup(168.98);
+ game.setRuhr(1);
+ game.update(.04);
+ assert.equal(game.state().arcadeFire,null,'Im Ruhrpott startet kein Arkadenfeuer');
+ setup(167);
+ advance(.05);
+ assert.ok(game.route(),'Die Strecke ist bereits von der Sternenpost belegt');
+ advance(2);
+ assert.equal(game.state().arcadeFire,null,'Aktive Sternenpost hat Vorrang');
+ setup(451.98,1);
+ game.update(.04);
+ assert.equal(game.state().arcadeFire,null,'Ein Portalziel hat Vorrang');
+ console.log('OK: Fünf Arkadenfeuer, Warnzeit, Pause, Treffergrenze, Schutz und Punkte sowie Ausschluss bei Boss, Portal, Ruhrpott und Sternenpost.');
+ if(process.argv.includes('--arcade'))process.exit(0);
 }
 
 if(process.argv.includes('--telegraphs')){

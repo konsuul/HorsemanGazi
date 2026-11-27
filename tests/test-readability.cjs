@@ -44,6 +44,45 @@ for(const i of ['rockets','shield','sweeper']){
 }
 assert.equal(pickupShapes.size,3,'Jedes Feld-Power-up hat eine eigene Silhouette');
 
+// Both hostile zones share their exact boundaries with collision, including reduced motion.
+{
+ const fire={center:324,halfGap:72,firing:false,phaseStart:169,phaseEnd:170.45};
+ for(const reducedMotion of [false,true]){
+  const warning=makeContext(),active=makeContext();
+  a.art.arcadeField(warning,fire,169.5,reducedMotion);
+  a.art.arcadeRails(warning,fire,169.5);
+  assert.ok(warning.calls.some(call=>call[1]==='#9fe4d4'));
+  assert.deepEqual(warning.calls.filter(call=>call[1]==='#553142').map(call=>call.slice(2)),
+   [[0,62,960,190],[0,396,960,144]]);
+  a.art.arcadeField(active,{...fire,firing:true},170.5,reducedMotion);
+  a.art.arcadeRails(active,{...fire,firing:true},170.5);
+  assert.ok(active.calls.some(call=>call[1]==='#ffe3bb'));
+  assert.deepEqual(active.calls.filter(call=>call[1]==='#a73a32').map(call=>call.slice(2)),
+   [[0,62,960,190],[0,396,960,144]]);
+ }
+}
+// Each slot uses its own cached medallion and leaves its remaining lifetime visible.
+{
+ const ctx=makeContext(),sprites=[];
+ ctx.drawImage=(sprite)=>sprites.push(sprite);
+ for(const slot of ['head','hooves','saddle','harness','charm']){
+  a.art.gearMedallion(ctx,100,180,slot,'#ffd278',1);
+  a.art.gearMedallion(ctx,100,180,slot,'#ffd278',.5);
+  assert.equal(sprites.at(-1),sprites.at(-2));
+ }
+ assert.equal(new Set(sprites).size,5);
+ assert.ok(ctx.calls.some(call=>call[1]==='#ffd278'&&call[4]===11&&call[5]===2));
+ const normal=makeContext(),reduced=makeContext();
+ normal.fill=()=>normal.calls.push(['shard']);
+ reduced.fill=()=>reduced.calls.push(['shard']);
+ const burst={x:600,y:300,life:.3,maxLife:.55};
+ a.art.segmentFracture(normal,burst,false);
+ a.art.segmentFracture(reduced,burst,true);
+ assert.equal(normal.calls.filter(call=>call[0]==='shard').length,24);
+ assert.equal(reduced.calls.filter(call=>call[0]==='shard').length,10);
+}
+console.log('OK: Arkadenfeuer-Grenzen und Feuerfarbe, fünf wiederverwendete Beutesymbole, Bossbruchstücke und reduzierte Bewegung.');
+
 // A moving shield dial reuses its sprite until a shield changes.
 const dials=[];
 const dialCtx={drawImage:(...args)=>dials.push(args)};
