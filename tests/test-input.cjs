@@ -40,19 +40,22 @@ reset();
 {
  const player=a.get().player;
  player.weapon=2;player.effects[2]=8;
- gamepad.buttons[4].pressed=true;a.pollGamepad();
- a.get().pickups.push({x:player.x,y:player.y,i:6,w:30,h:42,age:0});
- a.update(.01);assert.equal(player.reserve,6);assert.equal(player.weapon,2);
- gamepad.buttons[5].pressed=true;a.pollGamepad();assert.ok(player.corkUntil>a.get().runTime);
- gamepad.buttons[5].pressed=false;a.pollGamepad();
- gamepad.buttons[4].pressed=false;a.pollGamepad();
- gamepad.buttons[4].pressed=true;a.pollGamepad();
- assert.equal(player.weapon,6);assert.equal(player.reserve,null);
- a.update(.02);const timer=player.effects[6];a.pollGamepad();assert.equal(player.effects[6],timer);
- gamepad.buttons[4].pressed=false;a.pollGamepad();
+ for(const index of [4,5,6])gamepad.buttons[index].pressed=true;
+ a.pollGamepad();
+ events.keydown({code:'KeyF',preventDefault:noop});
+ assert.equal(player.effects[2],8);
+ assert.equal(player.corkUntil,undefined);
+ for(const code of ['KeyR','KeyF']){
+  events.keydown({code,preventDefault:noop});
+  a.get().pickups.push({x:player.x,y:player.y,i:6,w:30,h:42,age:0});
+  a.update(.01);
+  assert.equal(player.weapon,6);
+  events.keyup({code,preventDefault:noop});
+ }
+ for(const index of [4,5,6])gamepad.buttons[index].pressed=false;
+ a.pollGamepad();
 }
-console.log('OK: Controller, Vorratskorken, Korkwende, Tastatur und seltene Karten gezielt geprüft.');
-
+console.log('OK: Controller, Tastatur und direkte Weinaufnahme geprüft.');
 
 // Ein bereits geöffnetes Kartenmenü aktualisiert seine Symbole beim Controllerwechsel.
 reset();
@@ -71,9 +74,11 @@ gamepad={...pad(),id:'Unbekannter Standard-Controller'};
 a.pollGamepad();
 assert.deepEqual(hints.map(hint=>hint.textContent),['X']);
 
-// Shift und die linke Schultertaste ändern das Flugtempo nicht.
+// Frühere Feinflug-Eingaben ändern das Tempo auch im Palastgitter nicht.
 reset();
 gamepad=null;a.pollGamepad();
+a.setTime(829.99);a.setNextBoss(1000);a.setFirstSeen(true);a.update(.02);
+assert.equal(a.get().levelIndex,4);
 const pilot=a.get().player;
 function stride(){
  const x=pilot.x;a.update(.04);return pilot.x-x;
@@ -86,9 +91,9 @@ events.keyup({code:'ShiftLeft',preventDefault:noop});
 assert.ok(Math.abs(stride()-fullStride)<1e-8);
 events.keyup({code:'KeyD',preventDefault:noop});
 gamepad={...pad(),id:'Xbox Wireless Controller',axes:[1,0]};
-gamepad.buttons[4].pressed=true;a.pollGamepad();
+gamepad.buttons[6].pressed=true;a.pollGamepad();
 assert.ok(Math.abs(stride()-fullStride)<1e-8);
-gamepad.buttons[4].pressed=false;a.pollGamepad();
+gamepad.buttons[6].pressed=false;a.pollGamepad();
 assert.ok(Math.abs(stride()-fullStride)<1e-8);
 gamepad=null;a.pollGamepad();
 

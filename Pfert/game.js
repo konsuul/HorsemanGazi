@@ -451,14 +451,12 @@ function syncTalentCache(){
  talentCountCache.clear();
 }
 function owns(id){
- if(runMode==='courier')return false;
  syncTalentCache();
  return ownedTalents.has(id);
 }
 let metaNavigating=false,metaBStart=null,metaBLong=false;
 function sellSelectedTalent(){const next=PfertMeta.sell(metaData,metaSelected);if(next){metaData=next;metaSave();renderTalents()}else if(PfertMeta.rank(metaData,metaSelected)>0){overlay.querySelector('.meta-message').textContent='Dieser Knoten kann nicht entfernt werden, solange dadurch andere gekaufte Knoten vom Start getrennt würden.'}}
 function metaCount(prefix,numbers){
- if(runMode==='courier')return 0;
  if(!metaAvailable||!metaData)return 0;
  syncTalentCache();
  if(!ownedTalents.size)return 0;
@@ -810,7 +808,7 @@ function clearRageShots(){
  if(warned&&warned.wait>0&&warned.wait<=.24)warned.overture=true;
  shots=shots.filter(s=>!onPlayfield(s));
 }
-function activateRage(){if(runMode==='courier'||state!=='playing'||player.rage<100||player.overdrive>0)return false;player.rage=0;player.overdrive=rageBaseDuration*(1+.06*metaCount('K1',[5,10])+.06*metaCount('K2',[5,10])+.03*(metaCount('K2',[11,12,14,15,17,18,19])+2*Number(owns('K2-21'))))*(owns('K2-23')?2.05:1)*gearFactor('rageDuration');player.metaRageMax=player.overdrive;player.metaAfterglow=0;player.metaLightning=1;heal(2);player.inv=Math.max(player.inv,owns('K3-13')?.85:.65);clearRageShots();if(owns('K3-22'))player.inv=Math.max(player.inv,1.5);if(owns('K3-23')){player.inv=Math.max(player.inv,3);player.metaRageLock=player.overdrive+5}for(const e of enemies){if(e.hp>0&&e.x+e.w/2>=0&&e.x-e.w/2<=W&&e.y+e.h/2>=62&&e.y-e.h/2<=H){e.hp=0;death(e)}}enemies=enemies.filter(e=>e.hp>0);ring(player.x,player.y,'#b6f8ff',180);flashes.push({x:player.x,y:player.y,r:100,life:.15,maxLife:.15});shake=4;notice=2;noticeText='KÄSERAUSCH!';sound('overdrive');return true}
+function activateRage(){if(state!=='playing'||player.rage<100||player.overdrive>0)return false;player.rage=0;player.overdrive=rageBaseDuration*(1+.06*metaCount('K1',[5,10])+.06*metaCount('K2',[5,10])+.03*(metaCount('K2',[11,12,14,15,17,18,19])+2*Number(owns('K2-21'))))*(owns('K2-23')?2.05:1)*gearFactor('rageDuration');player.metaRageMax=player.overdrive;player.metaAfterglow=0;player.metaLightning=1;heal(2);player.inv=Math.max(player.inv,owns('K3-13')?.85:.65);clearRageShots();if(owns('K3-22'))player.inv=Math.max(player.inv,1.5);if(owns('K3-23')){player.inv=Math.max(player.inv,3);player.metaRageLock=player.overdrive+5}for(const e of enemies){if(e.hp>0&&e.x+e.w/2>=0&&e.x-e.w/2<=W&&e.y+e.h/2>=62&&e.y-e.h/2<=H){e.hp=0;death(e)}}enemies=enemies.filter(e=>e.hp>0);ring(player.x,player.y,'#b6f8ff',180);flashes.push({x:player.x,y:player.y,r:100,life:.15,maxLife:.15});shake=4;notice=2;noticeText='KÄSERAUSCH!';sound('overdrive');return true}
 
 function clock(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(Math.floor(s%60)).padStart(2,'0')}
 function sound(kind,strong=false){if(typeof PfertSound!=='undefined')PfertSound.play(kind,strong)}
@@ -983,7 +981,6 @@ const contracts=[
 const contractOrbCount=8,contractOrbBurstTime=.55;
 let contractSelection=0;
 function cycleContract(){
- if(skillMode!=='regular')return;
  contractSelection=(contractSelection+1)%contracts.length;
  document.getElementById('contract').textContent=contracts[contractSelection]+' · C / X';
 }
@@ -1008,32 +1005,29 @@ function settleContract(won){
  player.contractReward={text:reward,until:runTime+4};
  sound('ready');
 }
-let skillSelection=0,lastChosenSkill=0,skillReturn,skillMode='regular';
+let skillSelection=0,lastChosenSkill=0,skillReturn;
 function chooseBaseSkill(index){
  if(state!=='skill'||!baseSkills[index])return;
  lastChosenSkill=index;
- if(skillMode==='regular'){reset(baseSkills[index]);player.contract=contractSelection}
- else startPractice(skillMode,baseSkills[index]);
+ reset(baseSkills[index]);player.contract=contractSelection;
 }
 function selectBaseSkill(index,focus=true){
  skillSelection=(index+baseSkills.length)%baseSkills.length;
  baseSkills.forEach((_,i)=>document.getElementById('skill-'+i)?.classList.toggle?.('selected',i===skillSelection));
  if(focus)document.getElementById('skill-'+skillSelection)?.focus?.();
 }
-function showBaseSkills(mode='regular'){
+function showBaseSkills(){
  if(state!=='menu'&&state!=='over')return;
  contractSelection=0;
- skillMode=typeof mode==='string'?mode:'regular';
  skillReturn={state,markup:overlay.innerHTML};
  state='skill';padBlocked=true;cancelCharge();
  overlay.classList.remove('game-over');
  overlay.classList.add('skill-overlay');
- const title=skillMode==='training'?'Großwesir-Training':skillMode==='courier'?'Sternenpost-Kurierlauf':'Basisskill wählen';
- overlay.innerHTML='<h2>'+title+'</h2><div class="skill-options">'+baseSkills.map((skill,i)=>
+ overlay.innerHTML='<h2>Basisskill wählen</h2><div class="skill-options">'+baseSkills.map((skill,i)=>
   '<button id="skill-'+i+'" class="skill-option skill-'+skill.id+'"><span class="skill-icon" aria-hidden="true">'+skill.icon+
   '</span><strong>'+skill.title+'</strong><span>'+skill.desc+'</span>'+
   (metaAvailable?'<span class="skill-talent">Talentbonus · '+skill.talents.map(id=>talentTitle(id)+(owns(id)?' ✓':'')).join(' / ')+'</span>':'')+'</button>').join('')+
-  '</div>'+(skillMode==='regular'?'<button id="contract">Ohne Käsezettel · C / X</button>':'<p class="hint">Ungewertet · '+(skillMode==='courier'?'90 Sekunden · Siegel sammeln und Gegnern ausweichen':'Großwesir direkt üben')+'</p>')+'<p class="hint">Klicken oder Pfeile + Enter · Steuerkreuz + '+padHint(0)+'</p><button id="skill-back">Zurück</button>';
+  '</div><button id="contract">Ohne Käsezettel · C / X</button><p class="hint">Klicken oder Pfeile + Enter · Steuerkreuz + '+padHint(0)+'</p><button id="skill-back">Zurück</button>';
  refreshPadHints();
  baseSkills.forEach((_,i)=>{
   const button=document.getElementById('skill-'+i);
@@ -1054,8 +1048,6 @@ function closeBaseSkills(){
 }
 function bindHomeControls(){
  document.getElementById('inspect-hit')?.addEventListener('click',showHitFrame);
- document.getElementById('training')?.addEventListener('click',()=>showBaseSkills('training'));
- document.getElementById('courier')?.addEventListener('click',()=>showBaseSkills('courier'));
  refreshPadHints();
  document.getElementById(state==='menu'?'start':'again')?.addEventListener('click',showBaseSkills);
  document.getElementById('talents')?.addEventListener('click',showTalents);
@@ -1071,13 +1063,6 @@ function goToStartMenu(){
 function selectDebugOption(direction){
  debugSelection=(debugSelection+direction+debugOptions.length)%debugOptions.length;
  debugOptions.forEach((option,i)=>document.getElementById(option.id)?.classList.toggle?.('debug-selected',i===debugSelection));
-}
-function startPractice(mode,skill){
- leaveDebugTalents();
- startRun(mode,skill);
- padBlocked=true;player.immortal=false;
- if(mode==='training'){t=bazaarBossTime;levelIndex=1;startBoss(true)}
- else{levelIndex=1;xpNeeded=Infinity;player.courierWave=0;player.courierRoute=0}
 }
 function startDebugRun(){
  if(debugTalents)useDebugTalents();
@@ -1113,19 +1098,18 @@ function grantDebugTalentPoints(){
  else if(state==='talents')renderTalents();
  else{notice=3;noticeText='DEBUG · +360 TALENTPUNKTE'}
 }
-function finishUnranked(completed=false){
+function finishUnranked(){
  state='debugResult';boss=null;shots=[];
  cancelCharge();padBlocked=true;
  overlay.classList.remove('hidden','upgrade-overlay','game-over','pause-overlay','gear-overlay');
  overlay.classList.add('debug-overlay');
- const title=runMode==='training'?(completed?'Großwesir besiegt':'Großwesir-Training beendet'):
-  runMode==='courier'?(completed?'Kurierlauf geschafft':'Kurierlauf beendet'):'Debug-Runde beendet';
- const recap=clock(runTime)+(runMode==='courier'?' · '+flightStats.deliveries+' / '+courierRoutes.length+' Zustellungen':'');
+ const title='Debug-Runde beendet';
+ const recap=clock(runTime);
  const lastHit=typeof damageSummary==='function'?damageSummary():'';
  overlay.innerHTML='<h2>'+title+'</h2><p>'+recap+'</p>'+lastHit+
   '<div class="debug-actions"><button id="debug-retry">Erneut starten</button><button id="debug-exit">Hauptmenü</button></div>';
  debugOptions=[
-  {id:'debug-retry',action:runMode==='debug'?startDebugRun:()=>startPractice(runMode,player.skill)},
+  {id:'debug-retry',action:startDebugRun},
   {id:'debug-exit',action:goToStartMenu}];
  debugSelection=0;selectDebugOption(0);
  for(const option of debugOptions)document.getElementById(option.id).addEventListener('click',option.action);
@@ -1136,9 +1120,6 @@ window.addEventListener('keydown',e=>{
  if(state==='inspect'){if(e.code==='Escape'||e.code==='KeyL')closeHitFrame();return}
  if(state==='over'&&(e.code==='KeyL'||e.code==='Enter'&&e.target?.id==='inspect-hit')){e.preventDefault();showHitFrame();return}
  if(state==='encore')return;
- if(state==='menu'&&!e.repeat&&(e.code==='Digit2'||e.code==='Digit3')){
-  e.preventDefault();showBaseSkills(e.code==='Digit2'?'training':'courier');return;
- }
 
  if(e.code==='Numpad0'){
   if(state==='menu'){
@@ -1213,16 +1194,12 @@ window.addEventListener('keydown',e=>{
  if(state==='upgrade'){if(!e.repeat){if(/^Digit[123]$/.test(e.code))chooseCard(Number(e.code.slice(-1))-1);else if(['ArrowLeft','ArrowRight','KeyA','KeyD'].includes(e.code))selectCard(selectedCard+((e.code==='ArrowRight'||e.code==='KeyD')?1:-1));else if(e.code==='Enter'){e.preventDefault();chooseCard(selectedCard)}}return}
  if(state==='playing'&&/^(?:Space|Key[WASDQ]|Arrow(?:Up|Down|Left|Right))$/.test(e.code))lastFlightInput='keyboard';
  keys.add(e.code);
- if(state==='playing'&&!e.repeat){
-  if(e.code==='KeyR')recallBottle();
-  if(e.code==='KeyF')corkBlock();
- }
  if(e.code==='Space'&&!e.repeat&&state==='playing')fireSpecial();
  if(e.code==='KeyE'&&!e.repeat&&state==='playing'){lastFlightInput='keyboard';aimSweeper()}
  if(e.code==='KeyQ'&&!e.repeat)activateRage();
  if(e.code==='KeyT'&&!e.repeat&&(state==='menu'||state==='over'))showTalents();
 
- if(e.code==='Enter'&&!e.repeat&&(state==='menu'||state==='over')&&!['talents','training','courier'].includes(e.target?.id)){e.preventDefault();showBaseSkills()}
+ if(e.code==='Enter'&&!e.repeat&&(state==='menu'||state==='over')&&e.target?.id!=='talents'){e.preventDefault();showBaseSkills()}
 });
 window.addEventListener('keyup',e=>{
  keys.delete(e.code);
@@ -2147,28 +2124,6 @@ function spawnRareEnemy(y){
  nextRareEnemy=t+rand(120,145);
  notice=2;noticeText=rareEnemy.name.toUpperCase();
 }
-const courierDuration=90;
-const courierRoutes=[
- [4,[245,162,310]],[23,[386,287,177]],[42,[150,296,403]],[61,[365,185,290]]
-];
-const courierWaves=[
- [2,1,160],[7,3,340],[12,1,405],[16,0,245],[21,3,160],[26,1,316],
- [30,0,400],[34,3,410],[39,1,225],[44,3,345],[48,1,170],[52,0,300],
- [57,3,200],[62,1,388],[66,3,270],[71,1,165],[75,0,415],[79,3,352],[84,1,245]
-];
-function updateCourier(previousTime,dt){
- while(player.courierWave<courierWaves.length&&t>=courierWaves[player.courierWave][0]){
-  const [,type,y]=courierWaves[player.courierWave++];
-  const unit=enemy(type,y);
-  Object.assign(unit,{speed:118,fire:1.9,phase:0,elite:false,hp:100,max:100});
- }
- const next=courierRoutes[player.courierRoute];
- if(next&&previousTime<next[0]&&t>=next[0]){
-  player.courierRoute++;
-  starRoute={index:0,gates:next[1].map((y,i)=>({x:W+28+i*215,y}))};
- }
- if(starRoute)updateStarRoute(dt);
-}
 const starPaths=[[0,-95,10],[0,95,35],[-45,35,110],[65,0,-85]];
 function updateStarRoute(dt){
  if(boss||secret||golden){starRoute=null;return}
@@ -2196,10 +2151,6 @@ function updateStarRoute(dt){
  if(route.fork&&route.index===0)for(const p of pickups)if(p.forkJuice)p.dead=true;
  if(++route.index<route.gates.length)return;
  flightStats.deliveries++;
- if(runMode==='courier'){
-  heal(1);player.metaBottleSpeed=5;player.inv=Math.max(player.inv,1.5);
-  ring(player.x,player.y,'#a9edd3',72);starRoute=null;return;
- }
  const deliveredItem=(route.fork||Math.random()<.3)&&dropGear(player.x,player.y,!!route.fork);
  const burst={x:player.x,y:player.y};
  const centerX=clamp(burst.x,22+starOrbRadius,W-22-starOrbRadius);
@@ -2543,7 +2494,7 @@ function hurt(source,sourceX=player.x,sourceY=player.y,impactShot=null){
  player.metaLastHit=runTime;if(owns('V1-16'))player.metaHitSpeed=2;
  if(owns('Q2'))player.metaRevenge=5;
  if(owns('V2-20')&&!player.metaShieldUsed){player.metaShieldUsed=true;player.inv=.3;showProtection('TALENTSCHUTZ');if(owns('V2-22'))shots=shots.filter(s=>Math.hypot(s.x-player.x,s.y-player.y)>90);ring(player.x,player.y,'#aeeaff',90);sound('block');return}
- const lostHeart=player.effects[2]<=0||(source==='projectile'&&impactShot?.bossSpecial==='Teppichwand'&&impactShot.x<player.x);
+ const lostHeart=player.effects[2]<=0;
  if(!lostHeart){
   sound('block');showProtection('WEINSCHUTZ');player.effects[2]=0;impact(player.x,player.y,'#ffc3e3',18);
  }else{
@@ -2910,10 +2861,6 @@ function damagePart(part,amount,x,y,bossFactor=1){
  if(boss.hp>0)return;
  const defeated=boss;
  flightStats.bosses++;
- if(runMode==='training'){
-  if(typeof PfertSound!=='undefined')PfertSound.stopMusic();
-  sound('bossClear');finishUnranked(true);return;
- }
  if(player.contract===2)settleContract(hearts>=4);
  sound('bossClear');
  dropGear(defeated.x,defeated.y,true,secret);
@@ -3153,11 +3100,6 @@ function updateGameplay(dt){
  const targetThreat=encounterThreat(t,upgrades,activeWeapon()>=0);
  threat+=(targetThreat-threat)*Math.min(1,dt*.25);
  const previousRunTime=runTime;runTime+=dt;
- if(runMode==='courier'&&runTime>=courierDuration-1e-8){
-  runTime=courierDuration;
-  if(typeof PfertSound!=='undefined')PfertSound.stopMusic();
-  finishUnranked(true);return;
- }
  if(player.contract===1&&runTime>=120)settleContract(true);
  if(gearDrops.length){
   for(const drop of gearDrops)if(!drop.returning)drop.life-=dt;
@@ -3169,7 +3111,7 @@ function updateGameplay(dt){
  const previousTime=t;
  if(secret)secretTime+=dt;else t+=dt;
  notice=Math.max(0,notice-dt);flash=Math.max(0,flash-dt);shake=Math.max(0,shake-dt*18);
- const nextLevel=runMode==='courier'?1:Math.floor(t/districtDuration)%levels.length;if(!secret&&nextLevel!==levelIndex){levelIndex=nextLevel;notice=4;noticeText=levels[levelIndex]}
+ const nextLevel=Math.floor(t/districtDuration)%levels.length;if(!secret&&nextLevel!==levelIndex){levelIndex=nextLevel;notice=4;noticeText=levels[levelIndex]}
  player.metaQ10Speed=Math.max(0,(player.metaQ10Speed||0)-dt);player.metaRevenge=Math.max(0,(player.metaRevenge||0)-dt);player.metaBottleSpeed=Math.max(0,(player.metaBottleSpeed||0)-dt);player.guardFlash=Math.max(0,player.guardFlash-dt);player.metaAfterSpecial=Math.max(0,(player.metaAfterSpecial||0)-dt);player.metaGuardCooldown=Math.max(0,(player.metaGuardCooldown||0)-dt);player.metaGrazeSpeed=Math.max(0,(player.metaGrazeSpeed||0)-dt);player.metaHitSpeed=Math.max(0,(player.metaHitSpeed||0)-dt);player.metaGrazeInvCooldown=Math.max(0,(player.metaGrazeInvCooldown||0)-dt);const previousRage=player.overdrive;player.overdrive=Math.max(0,player.overdrive-dt);player.metaRageLock=Math.max(0,(player.metaRageLock||0)-dt);if(previousRage>0&&player.overdrive===0)player.metaAfterglow=3*(Number(owns('K2-16'))+Number(owns('K2-22')));else player.metaAfterglow=Math.max(0,player.metaAfterglow-dt);player.inv=Math.max(0,player.inv-dt);player.podCooldown=Math.max(0,player.podCooldown-dt);player.muzzle=Math.max(0,player.muzzle-dt);
  if(player.overdrive>0&&owns('K1-20')){player.metaLightning=(player.metaLightning||0)-dt;if(player.metaLightning<=0){player.metaLightning+=1;const targets=enemies.filter(e=>e.hp>0).sort((a,b)=>Math.hypot(a.x-player.x,a.y-player.y)-Math.hypot(b.x-player.x,b.y-player.y)).slice(0,owns('K1-23')?2:1);for(const e of targets){arcs.push({x:player.x,y:player.y,tx:e.x,ty:e.y,life:.16,maxLife:.16});damageEnemy(e,damage(1.2),e.x,e.y)}}}
  player.verticalWine=Math.max(0,(player.verticalWine||0)-dt);
@@ -3186,16 +3128,13 @@ function updateGameplay(dt){
  const len=Math.max(1,Math.hypot(dx,dy)),speed=(activeWeapon()===4?300:220)*1.15*1.05*1.15*(1+cardValues.agility(upgrades.agility))*(owns('S2')?1.06:1)*(owns('B2-23')?.9:1)*(owns('V2-23')?.88:1)*(player.metaBossSpeed>0?1.30:1)*(1+v1+(owns('Q1')?.09:0)+(player.metaQ10Speed>0&&owns('Q10')?.24:0))*(player.metaBottleSpeed>0?1.30:1);
  player.bank=(player.bank||0)+(dy/len-(player.bank||0))*Math.min(1,dt*9);
  const gearSpeed=1+gearBonus('speed')+gearBonus(player.overdrive>0?'rageSpeed':'calmSpeed')+(hearts<=2?gearBonus('lowSpeed'):0);
- const fine=arcadeFire&&levelIndex===4&&(keys.has('ShiftLeft')||keys.has('ShiftRight')||flightPad.fine);
- const travel=speed*gearSpeed*dt/len*(fine?.5:1);
+ const travel=speed*gearSpeed*dt/len;
  const playerX=player.x,playerY=player.y;
  player.x=clamp(player.x+dx*travel,30,W-32);
  player.y=clamp(player.y+dy*travel,90,H-34);
  const power=player.fieldPower;
  const clearing=power.beamTime>0?sweeperRay(true):null;
  power.launchCooldown=Math.max(0,power.launchCooldown-dt);
- if(runMode==='courier')updateCourier(previousTime,dt);
- else{
  updateAutoFire(dt);
  updateOrbiters(dt);
  if(!secret&&!golden&&!goldenAppeared&&t>=420&&!boss&&t<nextBoss){goldenAppeared=true;golden={x:1000,y:clamp(player.y,110,460),w:64,h:38,age:0,kind:1};notice=4;noticeText='GOLDENE SUCUK! SCHIESS SIE AB!'}
@@ -3222,7 +3161,6 @@ function updateGameplay(dt){
  updateArcadeFire(previousTime);
  if(state!=='playing')return;
  updateStarRoute(dt);
- }
  for(let i=0,count=bullets.length;i<count;i++){
   const b=bullets[i];
   const previousX=b.x,previousY=b.y;
@@ -3269,10 +3207,7 @@ function updateGameplay(dt){
   const s=shots[i];
   recordProjectileTrail(s,dt,.035,4);
   moveHostileShot(s,dt);s.life-=dt;
-  if(s.life>0&&player.corkUntil>runTime&&activeWeapon()===2&&s.bossSpecial==='Teppichwand'&&s.vx<0&&s.x>=player.x&&hit(player,s)){
-   s.life=0;player.corkUntil=0;player.effects[2]=Math.min(player.effectMax||18,player.effects[2]+.9);
-   showProtection('KORKWENDE');sound('block');
-  }else if(s.life>0&&clearing&&sweeperClears(clearing,s)){s.life=0;particle(s.x,s.y,fieldPowerups.sweeper.color,3)}
+  if(s.life>0&&clearing&&sweeperClears(clearing,s)){s.life=0;particle(s.x,s.y,fieldPowerups.sweeper.color,3)}
   if(s.life>0&&s.burstAt&&s.age>=s.burstAt)burstHostileShot(s);
  }
  const pickupRadius=pickups.length?(78+cardValues.magnet(upgrades.magnet))*(1+.09*metaCount('B2',[1,2,3,4,6,7,8,9])+(owns('B2-23')?3:0))+(owns('B2-13')?120:0)+gearBonus('bottleMagnet'):0;
@@ -3338,7 +3273,7 @@ function updateGameplay(dt){
    if(e.fire<=0){
     enemyAttack(e);e.aimTarget=null;
     if(e.formation)e.fire=e.formationVolleys>0?1.25:Infinity;
-    else e.fire=runMode==='courier'?2.7:e.blocker?4:e.rear?3.4:e.rareEnemy?4.8:e.introSimit?4:rand(1.8,3.1)/(1+threat*.16)/(e.elite?1.12:1);
+    else e.fire=e.blocker?4:e.rear?3.4:e.rareEnemy?4.8:e.introSimit?4:rand(1.8,3.1)/(1+threat*.16)/(e.elite?1.12:1);
    }
   }
   if(secret&&e.machine==='diver'&&e.hp>0&&!e.salvaged&&!player.scrap){
@@ -3411,9 +3346,6 @@ function updateGameplay(dt){
    starRoute.upper=true;
   }
   if(fieldPowerups[p.i]){collectFieldPowerup(p);continue}
-  if(p.i!==5&&p.i!==16&&(keys.has('KeyR')||flightPad.store)&&player.reserve==null){
-   player.reserve=p.i;p.dead=true;notice=2;noticeText='EINGELAGERT · '+powerNames[p.i];continue;
-  }
   drinkBottle(p);
  }
 
@@ -3426,11 +3358,6 @@ function updateGameplay(dt){
  shots=shots.filter(s=>s.life>0&&s.x>-30&&s.x<W+30&&s.y>-30&&s.y<H+30);pickups=pickups.filter(p=>!p.dead&&p.x>-30);
  particles=particles.filter(p=>p.life>0);deaths=deaths.filter(d=>d.life>0);rings=rings.filter(r=>r.life>0);beams=beams.filter(b=>b.life>0);arcs=arcs.filter(a=>a.life>0);flashes=flashes.filter(f=>f.life>0).slice(-28);
  collectGear();
-}
-function recallBottle(){
- if(state!=='playing'||player.reserve==null)return;
- const i=player.reserve;player.reserve=null;
- drinkBottle({i,x:player.x,y:player.y});
 }
 function drinkBottle(p){
  if(player.contract===1&&p.i!==5)settleContract(false);
@@ -3664,9 +3591,6 @@ function render(still=false){
  if(arcadeFire)PfertArt.arcadeRails(c,arcadeFire,t);
  for(const e of enemies)drawEnemyMarks(e);
  drawFormationWarning();
- if(player?.corkUntil>runTime&&activeWeapon()===2){
-  c.strokeStyle='#ff9abf';c.lineWidth=4;c.beginPath();c.arc(player.x,player.y,28,-1.1,1.1);c.stroke();
- }
  if(boss){drawBossMarks(boss);PfertArt.bossStrikeWarning(c,boss)}
  if(starRoute&&!starRoute.upper)for(let i=starRoute.index;i<starRoute.gates.length;i++){
   const gate=starRoute.gates[i];
@@ -3692,14 +3616,8 @@ function render(still=false){
  if(player&&(state==='playing'||state==='upgrade'||state==='transition'||state==='paused')){
   if(flash>0&&!reducedMotion?.matches)drawDamageFrame();
   const weapon=activeWeapon();
-  PfertArt.hud(c,{hearts,score,t,runTime,secret,secretType,secretTime,player,boss,arcadeFire,weapon,cartridges,wine:wineStatus(weapon),weaponNames,level,xp,xpNeeded,upgrades,build:collectedCards(),combo,comboRemaining:comboTime/comboWindow,threat,maxHearts:maxHearts(),talentPoints:metaTimePoints+metaBosses,reserveName:powerNames[player.reserve]});
+  PfertArt.hud(c,{hearts,score,t,runTime,secret,secretType,secretTime,player,boss,arcadeFire,weapon,cartridges,wine:wineStatus(weapon),weaponNames,level,xp,xpNeeded,upgrades,build:collectedCards(),combo,comboRemaining:comboTime/comboWindow,threat,maxHearts:maxHearts(),talentPoints:metaTimePoints+metaBosses});
  }
-}
-const flightPad={fine:false,store:false,block:false};
-function corkBlock(){
- if(activeWeapon()!==2||runTime<(player.corkReady||0))return;
- player.corkUntil=runTime+.38;player.corkReady=runTime+1.5;
- ring(player.x+24,player.y,'#ffaacc',25);
 }
 function pollGamepad(now=Date.now()){
  const pads=typeof navigator!=='undefined'&&navigator.getGamepads?navigator.getGamepads():[];const pad=Array.from(pads||[]).find(p=>p&&p.mapping==='standard');
@@ -3716,12 +3634,6 @@ function pollGamepad(now=Date.now()){
  const left=b(14)||axis(0)<-.5,right=b(15)||axis(0)>.5,up=b(12)||axis(1)<-.5,down=b(13)||axis(1)>.5,a=b(0),rage=b(1),confirm=b(2),target=b(3),menu=b(9);
  padMove={x:clamp(axis(0)+Number(b(15))-Number(b(14)),-1,1),y:clamp(axis(1)+Number(b(13))-Number(b(12)),-1,1)};
  if((state==='playing'||state==='menu'||state==='over')&&(a||rage||padMove.x||padMove.y))lastFlightInput='gamepad';
- const store=b(4),block=b(5);
- if(state==='playing'&&!padBlocked){
-  if(block&&!flightPad.block)corkBlock();
-  if(store&&!flightPad.store)recallBottle();
- }
- flightPad.fine=b(6)&&!padBlocked;flightPad.store=store;flightPad.block=block;
  if(padBlocked){
   if(!a&&!confirm&&!target&&!b(12)&&!b(13)&&!b(14)&&!b(15)&&!axis(0)&&!axis(1)&&!rage&&!menu)padBlocked=false;
   padMove={x:0,y:0};
@@ -3761,7 +3673,7 @@ function pollGamepad(now=Date.now()){
   if(down&&!padPrev.down)selectBaseSkill(skillSelection+2);
   if(a&&!padPrev.a)chooseBaseSkill(skillSelection);
   else if(rage&&!padPrev.rage||menu&&!padPrev.menu)closeBaseSkills();
- }else if(state==='menu'||state==='over'){if(rage&&!padPrev.rage&&metaAvailable){showTalents();padBlocked=true}else if(state==='menu'&&confirm&&!padPrev.confirm)showBaseSkills('training');else if(state==='menu'&&target&&!padPrev.target)showBaseSkills('courier');else if(a&&!padPrev.a)showBaseSkills()}else if(state==='playing'){
+ }else if(state==='menu'||state==='over'){if(rage&&!padPrev.rage&&metaAvailable){showTalents();padBlocked=true}else if(a&&!padPrev.a)showBaseSkills()}else if(state==='playing'){
   if(a&&!padPrev.a)fireSpecial();
   if(rage&&!padPrev.rage)activateRage();
   if(target&&!padPrev.target){lastFlightInput='gamepad';aimSweeper()}

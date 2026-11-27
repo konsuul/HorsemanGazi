@@ -2,7 +2,7 @@
 
 Die Einträge nennen die Urheberschaft. Vorschläge sind keine Zusage zur Umsetzung.
 
-Jeder offene Punkt hat eine feste ID direkt über seinem Kästchen. IDs beim Ergänzen, Verschieben oder Erledigen nicht neu vergeben. Unterpunkte nutzen die Eltern-ID mit eigener Endnummer (z. B. `2.2.1`).
+Jeder Punkt hat eine feste ID direkt über seinem Eintrag. IDs beim Ergänzen, Verschieben oder Erledigen nicht neu vergeben. Unterpunkte nutzen die Eltern-ID mit eigener Endnummer (z. B. `2.2.1`).
 
 ## Vorschläge von Konsuul
 
@@ -65,13 +65,13 @@ Stage 1 bleibt als manueller Pfert-Run spielbar. Stage 2 baut darauf auf: **Eier
 
 #### 3.2
 
-- [ ] **Basar und Großwesir lesbarer inszenieren.** Einen 20-Sekunden-Vergleich mit Einflug, sichtbarem Ausholen und Armbruch bauen. Die Flugbahn bleibt kontrastarm, der gebrochene Arm am Boss sichtbar. Beim Laser einen schmalen hellen Kern mit transparenter Außenkante erproben. Ziel: Gefahr und Trefferfortschritt bleiben ohne Ton und bei halber Fenstergröße erkennbar. Im Training spielbar und als drei stumme Chromium-Szenen in halber Größe geprüft.
+- [ ] **Basar und Großwesir lesbarer inszenieren.** Einen 20-Sekunden-Vergleich mit Einflug, sichtbarem Ausholen und Armbruch bauen. Die Flugbahn bleibt kontrastarm, der gebrochene Arm am Boss sichtbar. Beim Laser einen schmalen hellen Kern mit transparenter Außenkante erproben. Ziel: Gefahr und Trefferfortschritt bleiben ohne Ton und bei halber Fenstergröße erkennbar. Einflug, Ausholen und Armbruch in drei stummen Chromium-Szenen bei halber Größe geprüft.
 
 ### P2 · Übung und Wiederspielwert
 
 #### 4.1
 
-- [ ] **Boss-Training.** Mit dem vorhandenen Debug-Einstieg zunächst nur den Großwesir als regulär auswählbare Übung anbieten: Basisskill wählen, direkt starten und schnell wiederholen. Keine Talentpunkte oder Ranglisteneinträge; ideal zum Lernen der Angriffsmuster und Vergleichen beider Bruchreihenfolgen. Einstieg und ungewertete Wiederholung lokal geprüft.
+Großwesir-Training · Auf Wunsch in 1.1.7 entfernt.
 
 #### 4.2
 
@@ -79,4 +79,4 @@ Stage 1 bleibt als manueller Pfert-Run spielbar. Stage 2 baut darauf auf: **Eier
 
 #### 4.3
 
-- [ ] **Sternenpost-Kurierlauf.** Einen separaten 90-Sekunden-Kurs mit festen Siegeln und Gegnerwellen prototypen. Der Schwerpunkt liegt auf Fluglinie und Ausweichen, nicht auf Abschüssen. Zustellungen sollen im Kurs einen spürbaren Vorteil bringen; Punkte allein sind nicht der Anreiz. Kurs, Übergang ins Ergebnis und Zustellboni lokal geprüft.
+Sternenpost-Kurierlauf · Auf Wunsch in 1.1.7 entfernt.

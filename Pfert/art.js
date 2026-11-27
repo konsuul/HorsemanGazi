@@ -2159,7 +2159,6 @@ const PfertArt = (() => {
     ctx.save();ctx.beginPath();ctx.rect(x-1,30,Math.round(16*fill)+1,20);ctx.clip();pixelHeart(ctx,x,33,true);ctx.restore();
    }
   }
-  if(s.reserveName)label(ctx,'VORRAT · '+s.reserveName,18,53,8,'#ffc98f');
   if(s.player.contractReward?.until>s.runTime){
    label(ctx,'Käsezettel erfüllt · '+s.player.contractReward.text,480,61,9,'#fff0b0','center');
   }

@@ -44,7 +44,6 @@ vm.runInContext(code('game.js').replace(/\}\)\(\);\s*$/, `
 globalThis.encounters = {
  testRules:${testPermute.toString()},
  testFlights:${testEnemyFlights.toString()},
- testPractice:${testPractice.toString()},
  cartridges:()=>cartridges,chooseCartridge:id=>{choices=[cardDefs.find(c=>c.id===id)];state='upgrade';chooseCard(0);xp=0},
  fireCharge,bullets:()=>bullets,beams:()=>beams,readyTime:time=>{runTime=time},damagePart,enemy,
  spawnsFrom:index=>{spawnIndex=index;nextRareEnemy=Infinity},
@@ -162,36 +161,6 @@ if(process.argv.length===2||process.argv.includes('--flight-profiles')){
  console.log('OK: Diagonalen, Ansturmphasen, Frost, Pause, Kontakt, Druckbegrenzung und Formation ohne Text.');
  if(process.argv.includes('--flight-profiles'))process.exit(0);
 }
-function testPractice(){
- const saved=[];
- window.localStorage={getItem:()=>null,setItem:(key,value)=>saved.push(key)};
- startPractice('training',baseSkills[1]);
- assert.equal(player.skill,baseSkills[1]);assert.equal(boss.i,0);assert.ok(boss.x>W);
- const parts=boss.parts;for(const part of parts)damagePart(part,Infinity,boss.x,boss.y);
- assert.equal(state,'debugResult');assert.match(overlay.innerHTML,/Großwesir besiegt/);assert.equal(saved.length,0);
- debugOptions[0].action();assert.equal(player.skill,baseSkills[1]);assert.equal(boss.i,0);
- const routeAndWave=()=>{
-  startPractice('courier',baseSkills[2]);
-  for(let i=0;i<81;i++)update(.05);
-  return JSON.stringify([starRoute?.gates,enemies.map(e=>[e.i,e.x,e.y,e.fire,e.hp])]);
- };
- assert.equal(routeAndWave(),routeAndWave());
- assert.equal(enemies.length,1);assert.equal(boss,null);assert.equal(bullets.length,0);
- assert.equal(starRoute.gates.length,3);
- const route=starRoute;hearts=3;
- for(const gate of route.gates){gate.x=player.x;player.y=gate.y;updateStarRoute(0)}
- assert.equal(flightStats.deliveries,1);assert.equal(hearts,4);assert.ok(player.inv>0&&player.metaBottleSpeed===5);
- assert.equal(orbs.length,0);assert.equal(gearDrops.length,0);
- pauseGame();const time=runTime;update(1);assert.equal(runTime,time);resumeGame();
- runTime=89.99;update(.05);assert.equal(runTime,90);assert.equal(state,'debugResult');
- assert.match(overlay.innerHTML,/Kurierlauf geschafft/);assert.equal(saved.length,0);
-}
-if(process.argv.length===2||process.argv.includes('--practice')){
- sandbox.assert=assert;
- game.testPractice();
- console.log('OK: Großwesir-Training, Wiederholung, fester Kurierkurs, Zustellbonus und ungewertete Abschlüsse.');
- if(process.argv.includes('--practice'))process.exit(0);
-}
 function testPermute(){
   const fresh=skill=>{reset(skill);player.autoCooldown=Infinity;spawn=drop=xpNeeded=Infinity};
   const pop=(i)=>drinkBottle({i,x:player.x,y:player.y});
@@ -289,8 +258,8 @@ function testPermute(){
   assert.equal(state,'over');assert.equal(player.fatalFrame.shot.vx,-90);
   showHitFrame();assert.equal(state,'inspect');closeHitFrame();assert.equal(state,'over');
   fresh();pop(6);keys.add('KeyR');pickups.push({i:9,x:player.x,y:player.y,w:30,h:42,age:0});step();
-  assert.equal(player.reserve,9);assert.equal(activeWeapon(),6);recallBottle();assert.equal(activeWeapon(),9);
-  const duration=player.effects[9];step();recallBottle();assert.ok(player.effects[9]<duration);
+  assert.equal(activeWeapon(),9,'Weinflasche aktiviert sich auch bei gedrücktem R sofort');
+  assert.equal(pickups.length,0);
   for(const wait of [.2,.3]){
    fresh();startBoss();boss.volleyIndex=2;bossVolley(boss);boss.special.wait=wait;
    player.rage=100;activateRage();updateBossSpecial(boss,1);
@@ -309,9 +278,12 @@ function testPermute(){
   player.rage=100;activateRage();updateBossSpecial(boss,1);
   assert.equal(shots.length,216);assert.equal(orbs.length,0);
   for(const front of [true,false]){
-   fresh();pop(2);player.effects[2]=4;player.podCooldown=100;corkBlock();
+   fresh();pop(2);player.effects[2]=4;player.podCooldown=100;
    shots.push(hostileProjectile(player.x+(front?6:-6),player.y,front?-1:1,0,'pink',12,{bossSpecial:'Teppichwand'}));
-   step();assert.equal(hearts,front?5:4);assert.equal(player.effects[2]>4,front);
+   step();assert.equal(hearts,5);assert.equal(player.effects[2],0);
+   player.inv=0;
+   shots.push(hostileProjectile(player.x+(front?6:-6),player.y,front?-1:1,0,'pink',12,{bossSpecial:'Teppichwand'}));
+   step();assert.equal(hearts,4);
   }
   fresh();levelIndex=1;t=bazaarStart+4;updateStarRoute(0);assert.equal(starRoute.fork,true);
   assert.ok(pickups.find(p=>p.forkJuice));const route=starRoute;
@@ -323,7 +295,7 @@ function testPermute(){
   Object.assign(starRoute.gates[0],{x:player.x,y:player.y});updateStarRoute(0);assert.equal(starRoute.index,0);
   fresh();t=districtDuration*4+110-.01;nextBoss=t+100;goldenAppeared=secondAppeared=true;update(.02);
   assert.ok(arcadeFire);keys.add('ArrowRight');let x=player.x;step();const normal=player.x-x;
-  keys.add('ShiftLeft');x=player.x;step();assert.ok(Math.abs(player.x-x-normal/2)<1e-8);
+  keys.add('ShiftLeft');x=player.x;step();assert.ok(Math.abs(player.x-x-normal)<1e-8);
   keys.delete('ShiftLeft');x=player.x;step();assert.ok(Math.abs(player.x-x-normal)<1e-8);
   fresh();bossCount=1;startBoss();
   const inside=(x,y)=>boss.parts.filter(part=>partHit({x:boss.x+x,y:boss.y+y,w:1,h:1},boss,part)).map(p=>p.name).join();
@@ -333,7 +305,7 @@ function testPermute(){
 if(process.argv.length===2||process.argv.includes('--permute')){
  sandbox.assert=assert;
  game.testRules();
- console.log('OK: 13 Permute-Spielregeln und getrennte Trefferkonturen.');
+ console.log('OK: Käsezettel, Begegnungen, Weinaufnahme, Rosé-Schutz und getrennte Trefferkonturen.');
  if(process.argv.includes('--permute'))process.exit(0);
 }
 if(process.argv.length===2||process.argv.includes('--arcade')){

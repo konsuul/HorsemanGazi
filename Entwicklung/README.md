@@ -8,10 +8,9 @@ Unter goldenen Kuppeln zieht etwas seine Kreise, das besser nie hätte fliegen l
 
 Vor der Skillwahl schaltet **C / X** den freiwilligen Käsezettel um. Wer 120 Sekunden ohne Wein übersteht, bekommt eine Explosion aus acht EP-Orbs, die zum Pfert zurückfliegen und ungefähr eine Stufe bringen. Wer den ersten Boss mit mindestens vier Herzen besiegt, erhält das **Geschirr des Wolkenbrechers**. Beim Tragen erhöht es die automatische Feuerrate um 15 % und den Schaden an Bosssegmenten um 12 %. Der Fund wartet bis zum Einsammeln und bleibt für diese Runde nutzbar.
 
-**R / LB** beim Einsammeln halten, um eine Weinflasche einzulagern. Erneutes Drücken trinkt den Vorrat. **F / RB** blockt mit Rosé ein frontal eintreffendes Geschoss der Teppichwand. Im Palastgitter halbiert **Shift / LT** das Tempo, solange die Taste gedrückt ist.
-
 Nach dem letzten Herz zeigt **L / Y** die Trefferlupe. Klick, Esc oder B führen zum Ergebnis zurück. Nach dem ersten Pascha-Sieg wählt man den Abspann oder spielt mit demselben Build die Zugabe.
 
+- [Verbindliche Eingabesteuerung für neue Features](ARCHITEKTUR.md#verbindliche-eingabesteuerung)
 - [Spielarchitektur](ARCHITEKTUR.md) mit Spielablauf, Berechnungen und Einstiegspunkten im Code
 - [Roadmap](ROADMAP.md) mit Anforderungen, Spieltest-Feedback und offenen Aufgaben
 - [Talentbaum-Entwurf](Meta%20progression.md) und [Grafikrichtlinie](ARTWORK.md)
@@ -29,13 +28,9 @@ Nach dem letzten Herz zeigt **L / Y** die Trefferlupe. Klick, Esc oder B führen
 - Türkis gerahmte Flaschen mit Pluszeichen sind Powerups. Rot umrandete, hohle Projektile sind gefährlich. Getroffene Gegner blitzen weiß auf.
 - Noch nicht eingesammelte Flaschen setzen während des Bosskampfs aus. Sie erscheinen nach dem Sieg wieder, bei geheimen Bossen beim Rückwechsel ins Hauptspiel.
 
-## Training und Kurierlauf
-
-- Im Hauptmenü öffnet **Großwesir-Training** (2 / X) die Basisskill-Auswahl für den direkten Bosskampf. Nach dem Ergebnis startet **Erneut starten** denselben Skill.
-- **Sternenpost-Kurierlauf** (3 / Y) dauert 90 Sekunden. Jede vollständige Folge aus drei Siegeln heilt ein Herz, beschleunigt das Pfert fünf Sekunden lang und schützt es kurz. Beide Modi sind ungewertet.
-- Gewertete Ergebnisse vergleichen die Überlebenszeit mit dem bisherigen Rekord des gewählten Basisskills. Arcade und Zugabe haben eigene Bestzeiten.
-
 ## Basisskills und Builds
+
+Gewertete Ergebnisse zeigen die bisherige Bestlaufzeit des Basisskills. Arcade und Zugabe haben eigene Bestzeiten.
 
 Vor jedem Run wählst du einen Basisskill. Der gewählte Angriff kehrt zurück, sobald ein Waffenwein ausläuft oder verbraucht ist. Solange passende Karten verfügbar sind, ist unter den Level-up-Karten mindestens eine Empfehlung für deinen Skill. Die Lichtlanze bietet Karten für Projektile wie Rückenwind, Harte Kruste und Billardkäse erst an, wenn der Build regelmäßig Projektile erzeugt, etwa durch Käsebruch oder eine Geschosspatrone. Bumerangkäse, Sprungkruste und reine Wein-Sonderangriffskarten stehen bei der Lichtlanze nicht zur Wahl. Im Auswahlmenü stehen die Talente, die deinen Basisskill zusätzlich verstärken.
 
