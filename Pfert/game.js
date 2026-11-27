@@ -1711,7 +1711,7 @@ function fireCharge(special=false){
  const speedMultiplier=1+.03*metaCount('A1',[5,10])+(weapon>=0?.015*metaCount('W3',[1,2,3,4,6,7,8,9]):0);
  for(const b of bullets.slice(firstNew)){b.vx*=speedMultiplier;b.vy*=speedMultiplier;if(!charged&&owns('A1-16'))b.life*=1.225}
  if(!charged){
-  const balance=[.325,.419,1.084,.3225,.415,1,1.339,.83,1.339,.922,1.976,1.921,.585,4.089,.619,1.866];
+  const balance=[.325,.419,1.084,.3225,.415,1,1.339,.83,1.339,1.875,1.976,1.921,.585,4.089,.619,1.866];
   if(weapon>=0){for(const b of bullets.slice(firstNew))b.damage*=balance[weapon];for(const beam of beams.slice(firstBeam))beam.damage*=balance[weapon]}
   player.autoAttacks++;
   let bonus=1+.015*metaCount('A1',[1,2,3,4,6,7,8,9])+(weapon>=0?.015*(metaCount('W3',[11,12,14,15,17,18,19])+2*Number(owns('W3-21')))+(owns('W2-13')?.12:0):0)+(player.metaAfterSpecial>0&&owns('W3-20')?.15:0);
