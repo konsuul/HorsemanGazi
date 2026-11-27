@@ -6,7 +6,9 @@ Unter goldenen Kuppeln zieht etwas seine Kreise, das besser nie hätte fliegen l
 
 ### Neue Flugoptionen in 1.1.2
 
-Vor der Skillwahl schaltet **C / X** den freiwilligen Käsezettel um. **R / LB** beim Einsammeln halten, um eine Weinflasche einzulagern. Erneutes Drücken trinkt den Vorrat. **F / RB** blockt mit Rosé ein frontal eintreffendes Geschoss der Teppichwand. Im Palastgitter halbiert **Shift / LT** das Tempo, solange die Taste gedrückt ist.
+Vor der Skillwahl schaltet **C / X** den freiwilligen Käsezettel um. Wer 120 Sekunden ohne Wein übersteht, bekommt eine Explosion aus acht EP-Orbs, die zum Pfert zurückfliegen und ungefähr eine Stufe bringen. Wer den ersten Boss mit mindestens vier Herzen besiegt, erhält das **Geschirr des Wolkenbrechers**. Beim Tragen erhöht es die automatische Feuerrate um 15 % und den Schaden an Bosssegmenten um 12 %. Der Fund wartet bis zum Einsammeln und bleibt für diese Runde nutzbar.
+
+**R / LB** beim Einsammeln halten, um eine Weinflasche einzulagern. Erneutes Drücken trinkt den Vorrat. **F / RB** blockt mit Rosé ein frontal eintreffendes Geschoss der Teppichwand. Im Palastgitter halbiert **Shift / LT** das Tempo, solange die Taste gedrückt ist.
 
 Nach dem letzten Herz zeigt **L / Y** die Trefferlupe. Klick, Esc oder B führen zum Ergebnis zurück. Nach dem ersten Pascha-Sieg wählt man den Abspann oder spielt mit demselben Build die Zugabe.
 

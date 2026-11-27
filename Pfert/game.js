@@ -267,6 +267,7 @@ const gearCatalog=[
  [49,'Siegel des Käsesultans','charm',1,{rageDuration:.18,allRage:.15}],
  [50,'Herz der Basarlaterne','charm',2,{rageDamage:.18,allRage:.25}]
 ].map(([id,name,slot,rarity,effects])=>({id,name,slot,rarity,effects}));
+const bossContractGear=gearCatalog.find(item=>item.id===40);
 const gearEffectLabels={
  standardDamage:'Standardschaden',criticalChance:'PP kritische Trefferchance',
  hitProtection:'Schutzzeit nach Herzverlust',bossDamage:'Schaden an Bosssegmenten',
@@ -308,7 +309,7 @@ function equipGear(item){
 }
 function chooseGearDrop(isBoss){
  const occupied=new Set([...Object.values(wornGear),...gearBag,...gearDrops.map(drop=>drop.item)]);
- const available=gearCatalog.filter(item=>!occupied.has(item));
+ const available=gearCatalog.filter(item=>!occupied.has(item)&&(player?.contract!==2||item!==bossContractGear));
  const tiers=gearRarities.map((rarity,index)=>({
   weight:isBoss?rarity.bossWeight:rarity.rareWeight,
   items:available.filter(item=>item.rarity===index)
@@ -973,16 +974,37 @@ function pauseOnFocusLoss(){
  padBlocked=true;padMove={x:0,y:0};
  pauseGame();
 }
-const contracts=['Ohne Käsezettel','120 Sekunden ohne Wein · +250 Punkte','Ersten Boss mit mindestens 4 Herzen besiegen · +250 Punkte'];
+const contracts=[
+ 'Ohne Käsezettel',
+ '120 Sekunden ohne Wein · EP-Explosion für etwa eine Stufe',
+ 'Ersten Boss mit mindestens 4 Herzen besiegen · '+bossContractGear.name+' (+15 % Feuerrate, +12 % Bossschaden)'
+];
+const contractOrbCount=8,contractOrbBurstTime=.55;
 let contractSelection=0;
 function cycleContract(){
  contractSelection=(contractSelection+1)%contracts.length;
  document.getElementById('contract').textContent=contracts[contractSelection]+' · C / X';
 }
 function settleContract(won){
- if(!player.contract)return;
+ const contract=player.contract;
  player.contract=0;
- if(won){score+=250;notice=2;noticeText='KÄSEZETTEL ERFÜLLT · +250'}
+ if(!won||!contract)return;
+ let reward;
+ if(contract===1){
+  const value=xpNeeded/(contractOrbCount*1.25*orbXpMultiplier);
+  for(let i=0;i<contractOrbCount;i++){
+   const orb=dropOrb(player.x,player.y,value,0,'normal',2);
+   orb.contractAngle=i*2*Math.PI/contractOrbCount;
+  }
+  ring(player.x,player.y,'#a9edd3',64);
+  particle(player.x,player.y,'#a9edd3',24);
+  reward='EP-Explosion · 8 Orbs';
+ }else{
+  gearDrops.push({item:bossContractGear,x:player.x,y:player.y,w:30,h:30,life:Infinity,returning:secret});
+  reward=bossContractGear.name;
+ }
+ player.contractReward={text:reward,until:runTime+4};
+ sound('ready');
 }
 let skillSelection=0,lastChosenSkill=0,skillReturn;
 function chooseBaseSkill(index){
@@ -2734,8 +2756,7 @@ function damagePart(part,amount,x,y,bossFactor=1){
  if(boss.hp>0)return;
  const defeated=boss;
  flightStats.bosses++;
- const bossContractWon=player.contract===2&&hearts>=4;
- if(player.contract===2)settleContract(bossContractWon);
+ if(player.contract===2)settleContract(hearts>=4);
  sound('bossClear');
  dropGear(defeated.x,defeated.y,true,secret);
  if(defeated.i===0)firstBossDefeated=true;
@@ -2755,7 +2776,7 @@ function damagePart(part,amount,x,y,bossFactor=1){
  deaths.push({...defeated,boss:true,secret,life:1.2,age:0,rotation:.3});shake=5;
  if(secret)beginTransition('leave');
  boss=null;shots=[];restoreBossPickups();
- notice=3;noticeText='BESIEGT · '+bosses[defeated.i].toUpperCase()+(bossContractWon?' · KÄSEZETTEL +250':'');
+ notice=3;noticeText='BESIEGT · '+bosses[defeated.i].toUpperCase();
  if(defeated.i===2&&runMode==='regular'&&!player.encore){
   state='encore';cancelCharge();padBlocked=true;
   overlay.innerHTML='<h2>Pascha besiegt</h2><p>'+score+' Punkte · '+clock(runTime)+'</p><button id="credits">Abspann und Wertung · A</button><button id="encore">Zugabe spielen · B</button>';
@@ -3088,6 +3109,13 @@ function updateGameplay(dt){
  const eliteReach=orbs.length&&owns('B3-16')?45:0;
  for(const orb of orbs){
   orb.age+=dt;
+  if(orb.contractAngle!==undefined){
+   const progress=clamp(orb.age/contractOrbBurstTime,0,1);
+   const radius=46*Math.sin(progress*Math.PI);
+   orb.x=clamp(player.x+Math.cos(orb.contractAngle)*radius,22,W-22);
+   orb.y=clamp(player.y+Math.sin(orb.contractAngle)*radius,85,H-22);
+   continue;
+  }
   if(orb.starBurst){
    const burst=orb.starBurst;
    const progress=Math.min(1,orb.age/starOrbFlightTime);
@@ -3197,7 +3225,7 @@ function updateGameplay(dt){
  if(power.shieldTime===0)power.shield=0;
  power.beamTime=Math.max(0,power.beamTime-dt);
  if(state!=='playing')return;
- for(const orb of orbs)if((!orb.starBurst||orb.age>=starOrbFlightTime+starOrbPickupDelay)&&hit(player,orb)){const elite=orb.kind==='elite',bossOrb=orb.kind==='boss';const bonus=.015*(metaCount('B1',[5,10,11,12,14,15,17,18,19])+2*Number(owns('B1-21')))+(owns('B1-16')&&elite?.15:0)+(owns('B1-23')?.30:0)+(owns('Q5')&&player.overdrive>0?.075:0)+(elite?.015*metaCount('B3',[1,2,3,4,6,7,8,9]):0)+(bossOrb?.015*(metaCount('B3',[11,12,14,15,17,18,19])+2*Number(owns('B3-21'))):0)+(bossOrb&&owns('B3-13')?.225:0)+(owns('B3-23')?(elite||bossOrb?.45:-.10):0);xp+=orb.value*(1+bonus)*1.25*orbXpMultiplier*gearFactor('orbXp');orb.collected=true;player.metaOrbs=(player.metaOrbs||0)+1;const wave=(owns('B1-20')&&player.metaOrbs%25===0)||(bossOrb&&owns('B3-22'));if(wave){const radius=112.5+(owns('B1-22')?37.5:0),amount=damage(1.5+(owns('B1-22')?.75:0));ring(player.x,player.y,'#80faff',radius);for(const e of enemies)if(e.hp>0&&Math.hypot(e.x-player.x,e.y-player.y)<radius)damageEnemy(e,amount,e.x,e.y)}}
+ for(const orb of orbs)if((orb.contractAngle===undefined||orb.age>=contractOrbBurstTime)&&(!orb.starBurst||orb.age>=starOrbFlightTime+starOrbPickupDelay)&&hit(player,orb)){const elite=orb.kind==='elite',bossOrb=orb.kind==='boss';const bonus=.015*(metaCount('B1',[5,10,11,12,14,15,17,18,19])+2*Number(owns('B1-21')))+(owns('B1-16')&&elite?.15:0)+(owns('B1-23')?.30:0)+(owns('Q5')&&player.overdrive>0?.075:0)+(elite?.015*metaCount('B3',[1,2,3,4,6,7,8,9]):0)+(bossOrb?.015*(metaCount('B3',[11,12,14,15,17,18,19])+2*Number(owns('B3-21'))):0)+(bossOrb&&owns('B3-13')?.225:0)+(owns('B3-23')?(elite||bossOrb?.45:-.10):0);xp+=orb.value*(1+bonus)*1.25*orbXpMultiplier*gearFactor('orbXp');orb.collected=true;player.metaOrbs=(player.metaOrbs||0)+1;const wave=(owns('B1-20')&&player.metaOrbs%25===0)||(bossOrb&&owns('B3-22'));if(wave){const radius=112.5+(owns('B1-22')?37.5:0),amount=damage(1.5+(owns('B1-22')?.75:0));ring(player.x,player.y,'#80faff',radius);for(const e of enemies)if(e.hp>0&&Math.hypot(e.x-player.x,e.y-player.y)<radius)damageEnemy(e,amount,e.x,e.y)}}
  orbs=orbs.filter(orb=>!orb.collected&&orb.x+orb.w/2>=0);if(xp>=xpNeeded){offerCards();return}
  for(const p of pickups)if(!p.dead&&(hit(player,p)||p.forkJuice&&starRoute?.fork&&Math.abs(p.x-player.x)<25&&player.y>=110&&player.y<=250)){
   if(p.forkJuice&&starRoute?.fork){
@@ -3312,7 +3340,7 @@ function drawFormationWarning(){
 }
 function drawGearDrop(drop){
  const {x,y,life,item}=drop;
- PfertArt.gearMedallion(c,x,y,item.slot,gearRarities[item.rarity].color,life/gearDropDuration);
+ PfertArt.gearMedallion(c,x,y,item.slot,gearRarities[item.rarity].color,Math.min(1,life/gearDropDuration));
 }
 function drawDamageFrame(){
  const top=62,bottom=H-7;
@@ -3436,6 +3464,12 @@ function render(still=false){
  if(player&&(state==='playing'||state==='upgrade'||state==='transition'||state==='paused')){
   if(flash>0&&!reducedMotion?.matches)drawDamageFrame();
   const weapon=activeWeapon();
+  if(player.contractReward?.until>runTime){
+   c.save();c.textAlign='center';c.font='bold 16px sans-serif';
+   c.fillStyle='#14192c';c.fillRect(W/2-205,H-55,410,32);
+   c.fillStyle='#fff0b0';c.fillText('Käsezettel erfüllt · '+player.contractReward.text,W/2,H-34);
+   c.restore();
+  }
   PfertArt.hud(c,{hearts,score,t,runTime,secret,secretType,secretTime,player,boss,arcadeFire,weapon,cartridges,wine:wineStatus(weapon),weaponNames,level,xp,xpNeeded,upgrades,build:collectedCards(),combo,comboRemaining:comboTime/comboWindow,threat,maxHearts:maxHearts(),talentPoints:metaTimePoints+metaBosses});
  }
 }

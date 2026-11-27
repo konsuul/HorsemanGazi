@@ -97,13 +97,53 @@ function testPermute(){
    assert.equal(player.echoVolleys,0);bullets=[];beams=[];fireCharge();
    assert.ok(!player.moonPulses?.length&&!bullets.some(b=>b.split));
   }
-  fresh();player.contract=1;runTime=119.995;step();assert.equal(score,250);step();assert.equal(score,250);
-  fresh();player.contract=1;pop(6);runTime=120;step();assert.equal(score,0);
-  for(const hp of [3,4]){
-   fresh();hearts=hp;player.contract=2;startBoss();
-   const parts=boss.parts;for(const part of parts)damagePart(part,Infinity,0,0);
-   assert.equal(score,500*parts.length+2000+(hp>=4?250:0));assert.equal(player.contract,0);
+  function finishTransition(direction){
+   assert.throws(()=>beginTransition(direction),error=>error===transitionInterrupt);
+   for(let i=0;i<2;i++)update(1.5);
+   assert.equal(state,'playing');
   }
+  for(const contract of [0,1]){
+   fresh();player.contract=contract;xpNeeded=100;runTime=119.995;step();step();
+   assert.equal(score,0);
+   assert.equal(orbs.length,contract?8:0);
+   if(!contract)continue;
+   assert.match(player.contractReward.text,/EP-Explosion/);
+   finishTransition('enter');
+   assert.equal(orbs.length,8);
+   player.x=928;player.y=90;
+   for(let i=0;i<12;i++)update(.05);
+   assert.equal(orbs.length,0);assert.equal(state,'upgrade');assert.equal(xp,100);assert.equal(score,0);
+   chooseCard(0);step();assert.equal(level,2);assert.equal(orbs.length,0);
+  }
+  fresh();player.contract=1;pop(6);runTime=120;step();
+  assert.equal(score,0);assert.equal(orbs.length,0);assert.equal(player.contractReward,undefined);
+  for(const [contract,hp] of [[0,5],[2,3],[2,4]]){
+   fresh();hearts=hp;player.contract=contract;startBoss();
+   const parts=boss.parts;for(const part of parts)damagePart(part,Infinity,0,0);
+   assert.equal(score,500*parts.length+2000);assert.equal(player.contract,0);
+   const won=contract===2&&hp>=4;
+   assert.equal(gearDrops.length,won?2:1);
+   if(won){
+    assert.equal(player.contractReward.text,bossContractGear.name);
+    assert.equal(gearDrops.filter(drop=>drop.item===bossContractGear).length,1);
+    step();assert.equal(wornGear.harness,bossContractGear);
+    assert.equal(gearFactor('autoRate'),1.15);assert.equal(gearFactor('bossDamage'),1.12);
+   }
+   startBoss();for(const part of boss.parts)damagePart(part,Infinity,0,0);
+   assert.equal(gearDrops.filter(drop=>drop.life===Infinity).length,0);
+  }
+  fresh();player.contract=2;secret=true;secretType=1;startRuhrBoss();
+  const secretParts=boss.parts;
+  for(const part of secretParts.slice(0,-1))damagePart(part,Infinity,0,0);
+  assert.throws(()=>damagePart(secretParts.at(-1),Infinity,0,0),error=>error===transitionInterrupt);
+  const rewardDrop=gearDrops.find(drop=>drop.item===bossContractGear);
+  assert.equal(rewardDrop.returning,true);
+  update(1.5);update(1.5);
+  assert.equal(rewardDrop.returning,false);
+  player.x=rewardDrop.x+150;update(21);
+  assert.ok(gearDrops.includes(rewardDrop));
+  player.x=rewardDrop.x;player.y=rewardDrop.y;step();
+  assert.equal(wornGear.harness,bossContractGear);
   function formationScore(leaderFirst){
    fresh();levelIndex=1;t=districtDuration+27;updateFormation(t-.01);
    t=formation.releaseAt;updateFormation(t-.01);const units=enemies.slice();
