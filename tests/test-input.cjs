@@ -36,7 +36,22 @@ gamepad=pad();a.pollGamepad();reset();let x=a.get().player.x;gamepad.axes[0]=1;a
 a.setXp(a.get().xpNeeded);a.update(.01);assert.equal(a.get().selectedCard,0);events.keydown({code:'ArrowRight',repeat:false,preventDefault:noop});assert.equal(a.get().selectedCard,1);press();assert.equal(a.get().state,'upgrade','Leertaste bestätigt keine Karte');events.keydown({code:'Enter',repeat:false,preventDefault:noop});assert.equal(a.get().state,'playing');
 a.setRunTime(120);a.setXp(a.get().xpNeeded);a.update(.01);a.pollGamepad();gamepad.buttons[15].pressed=true;a.pollGamepad();assert.equal(a.get().selectedCard,1);a.pollGamepad();assert.equal(a.get().selectedCard,1,'gehaltene Richtung wiederholt nicht');gamepad.buttons[15].pressed=false;a.pollGamepad();gamepad.buttons[0].pressed=true;a.pollGamepad();assert.equal(a.get().state,'upgrade','A bestätigt keine Karte');gamepad.buttons[0].pressed=false;gamepad.buttons[2].pressed=true;a.pollGamepad();assert.equal(a.get().state,'playing');gamepad.buttons[2].pressed=false;a.pollGamepad();
 reset();a.get().upgrades.spread=1;a.setRunTime(120);a.setXp(10);a.offerCards();assert.equal(a.get().choices[0].id,'fork');a.chooseCard(1);for(const id of Object.keys(a.get().upgrades))a.get().upgrades[id]=0;a.get().upgrades.spread=1;a.setXp(15);a.offerCards();assert.equal(a.get().choices[0].id,'fork','einzige berechtigte Karte bleibt verfügbar');
-console.log('OK: Controller, Tastatur und seltene Karten gezielt geprüft.');
+reset();
+{
+ const player=a.get().player;
+ player.weapon=2;player.effects[2]=8;
+ gamepad.buttons[4].pressed=true;a.pollGamepad();
+ a.get().pickups.push({x:player.x,y:player.y,i:6,w:30,h:42,age:0});
+ a.update(.01);assert.equal(player.reserve,6);assert.equal(player.weapon,2);
+ gamepad.buttons[5].pressed=true;a.pollGamepad();assert.ok(player.corkUntil>a.get().runTime);
+ gamepad.buttons[5].pressed=false;a.pollGamepad();
+ gamepad.buttons[4].pressed=false;a.pollGamepad();
+ gamepad.buttons[4].pressed=true;a.pollGamepad();
+ assert.equal(player.weapon,6);assert.equal(player.reserve,null);
+ a.update(.02);const timer=player.effects[6];a.pollGamepad();assert.equal(player.effects[6],timer);
+ gamepad.buttons[4].pressed=false;a.pollGamepad();
+}
+console.log('OK: Controller, Vorratskorken, Korkwende, Tastatur und seltene Karten gezielt geprüft.');
 
 
 // Ein bereits geöffnetes Kartenmenü aktualisiert seine Symbole beim Controllerwechsel.
@@ -117,8 +132,8 @@ reset();a.setXp(a.get().xpNeeded);a.update(.01);events.keydown({code:'KeyD',repe
  a.get().upgrades.multiShot=2;a.get().upgrades.fanShot=2;a.fireCharge();
  const [main,...copies]=a.get().bullets;
  assert.equal(copies.length,6);
- assert.ok(Math.abs(copies[0].damage/main.damage-.1152)<1e-9);
- assert.ok(Math.abs(copies[2].damage/main.damage-.17)<1e-9);
+ assert.ok(Math.abs(copies[0].damage/main.damage-.2304)<1e-9);
+ assert.ok(Math.abs(copies[2].damage/main.damage-.34)<1e-9);
  assert.ok(copies[2].damage>copies[4].damage);
  assert.equal(main.elements.frost,.25);assert.equal(main.skillElement,'salvo');
  assert.equal(main.y,a.get().player.y-2);

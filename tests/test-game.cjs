@@ -52,7 +52,7 @@ function testSeekingAfterHit(){
  assert.ok(shot.hit.has(first));
  const fragments=a.get().bullets.filter(b=>b.generation===1);
  assert.equal(fragments.length,2);
- assert.ok(fragments.every(b=>b.damage===shot.damage*.126&&!b.homing&&!b.seekRank));
+ assert.ok(fragments.every(b=>b.damage===shot.damage*.252&&!b.homing&&!b.seekRank));
  const velocities=Array.from([shot,...fragments],b=>[b.vx,b.vy]);
  a.update(.05);
  assert.deepEqual(Array.from([shot,...fragments],b=>[b.vx,b.vy]),velocities,'Kein Umlenken auf den zweiten Gegner');
@@ -273,7 +273,7 @@ for(const [key,index,x,signature] of [
 reset();shoot();assert.equal(a.get().bullets.length,1);assert.equal(a.get().bullets[0].charged,false);
 // Tatsächliche Kartenauswahl: Die zusätzlichen Schüsse existieren, liegen ohne Streuflug aber deckungsgleich.
 reset();a.setXp(a.get().xpNeeded);a.update(.01);a.get().choices[0]=a.cardDefs.find(card=>card.id==='multiShot');a.chooseCard(0);assert.equal(a.get().upgrades.multiShot,1);a.get().player.autoCooldown=Infinity;shoot();assert.equal(a.get().bullets.length,2,'Doppelter Käse erzeugt zwei Geschosse');assert.equal(a.get().bullets[0].x,a.get().bullets[1].x);assert.notEqual(a.get().bullets[0].y,a.get().bullets[1].y);assert.equal(a.get().bullets[0].vx,a.get().bullets[1].vx);assert.ok(Math.abs(a.get().bullets[0].vy-a.get().bullets[1].vy)<1e-9);
-reset();a.get().upgrades.snakeShot=1;shoot();let snake=a.get().bullets[0],snakeY=snake.y;a.update(.1);assert.ok(Math.abs(snake.y-snakeY-Math.sin(.8)*20.4)<1e-8,'Schlangenlinie schwingt sichtbar');
+reset();a.get().upgrades.snakeShot=1;shoot();let snake=a.get().bullets[0],snakeY=snake.y;a.update(.1);assert.ok(Math.abs(snake.y-snakeY-Math.sin(.8)*40.8)<1e-8,'Schlangenlinie schwingt sichtbar');
 reset();press();assert.equal(a.get().bullets.length,0,'kein Sonderangriff ohne Wein');release();
 for(const weapon of [1,3,13]){
  a.reset();a.setDrop(Infinity);
@@ -316,7 +316,7 @@ reset();a.setTime(419.99);a.setNextBoss(600);a.update(.02);a.get().golden.x=-59;
 reset();a.setTime(419.99);a.startBoss();a.update(.02);assert.equal(a.get().golden,null);defeatBoss();a.update(.01);assert.ok(a.get().golden);
 reset();a.setXp(a.get().xpNeeded);a.update(.02);q=a.get();assert.equal(q.state,'upgrade');assert.equal(q.choices.length,3);assert.equal(new Set(q.choices.map(c=>c.id)).size,3);const frozen=q.t;a.update(2);assert.equal(a.get().t,frozen,'Auswahl pausiert Spiel');const selected=q.choices[0].id;a.chooseCard(0);assert.equal(a.get().upgrades[selected],1);assert.equal(a.get().xpNeeded,15);a.chooseCard(0);assert.equal(a.get().upgrades[selected],1,'kein doppelter Kauf');
 a.setRunTime(120);a.setXp(a.get().xpNeeded);a.update(.02);assert.equal(a.get().state,'upgrade');events.keydown({code:'Digit2',repeat:false,preventDefault:noop});assert.equal(a.get().state,'playing');assert.equal(Object.values(a.get().upgrades).reduce((x,y)=>x+y,0),2);
-reset();a.get().upgrades.spread=1;shoot();assert.equal(a.get().bullets.length,3,'dauerhafte Flankenschüsse');reset();a.get().upgrades.damage=2;shoot();assert.ok(Math.abs(a.get().bullets[0].damage-.8625*1.12**2)<1e-9);reset();a.get().upgrades.charge=4;shoot(1.15);assert.ok(a.get().bullets[0].charged);assert.ok(a.get().bullets[0].w>32);
+reset();a.get().upgrades.spread=1;shoot();assert.equal(a.get().bullets.length,3,'dauerhafte Flankenschüsse');reset();a.get().upgrades.damage=2;shoot();assert.ok(Math.abs(a.get().bullets[0].damage-.8625*1.24**2)<1e-9);reset();a.get().upgrades.charge=4;shoot(1.15);assert.ok(a.get().bullets[0].charged);assert.ok(a.get().bullets[0].w>32);
 reset();let p=a.get().player;a.get().shots.push({x:p.x+25,y:p.y,vx:0,vy:0,w:10,h:10,life:1});a.update(.01);assert.equal(a.get().shots.length,0);assert.equal(a.get().hearts,5);assert.ok(p.guardFlash>0,'Schutzimpuls wird kurz angezeigt');
 for(let i=0;i<5;i++){p.inv=0;a.get().shots.push({x:p.x,y:p.y,vx:0,vy:0,w:8,h:8,life:1});a.update(.01)}assert.equal(a.get().state,'over');reset();assert.equal(a.get().hearts,5);assert.equal(Object.values(a.get().upgrades).reduce((x,y)=>x+y,0),0);
 for(let i=0;i<5;i++){reset();a.setTime(i*180);a.update(.01);a.render()}
@@ -415,7 +415,7 @@ for(const [special,radius] of [[0,120],[1,188]]){
 {
  reset();const {upgrades}=a.get();Object.assign(upgrades,{boomerang:1,bounceCrust:1,ricochet:2,seekShot:1,snakeShot:1,breakShot:1});
  shoot();const [main]=a.get().bullets;
- main.y=74;main.vy=-100;
+ main.y=74;main.vy=-400;
  a.update(.05);
  const [edgeSplit]=a.get().bullets.filter(b=>b.generation===1);
  assert.ok(edgeSplit&&edgeSplit.damage===main.damage*.21&&edgeSplit.seekRank===1&&edgeSplit.snakeRank===1);
@@ -476,7 +476,7 @@ testRocketPickup();
 function testBossRocketTarget(){
  for(let phase=0;phase<6;phase++){
   reset();a.startBoss();a.setRunTime(phase*Math.PI/9);
-  const {boss,player}=a.get(),armor=boss.parts.find(part=>part.role===1);
+  const {boss,player}=a.get(),armor=boss.parts.find(part=>part.name==='Linker Arm');
   boss.fire=999;
   player.x=boss.x-195;player.y=boss.y+armor.aim[1];
   const power=player.fieldPower,nextPickup=power.dropIn;
@@ -574,10 +574,10 @@ reset();a.get().upgrades.echo=1;for(let i=0;i<6;i++)shoot();assert.equal(a.get()
 for(const rank of [1,2,3,4]){
  reset();a.get().upgrades.rear=rank;shoot();
  const front=a.get().bullets.find(b=>b.vx>0),rear=a.get().bullets.find(b=>b.vx<0);
- assert.ok(Math.abs(rear.damage-front.damage*1.2*rank)<1e-9,'Rückwärtsschuss: sechsfacher bisheriger Schaden je Rang');
+ assert.ok(Math.abs(rear.damage-front.damage*2.4*rank)<1e-9,'Rückwärtsschuss: 240 % der Grundstärke je Rang');
 }
 reset();a.get().upgrades.guard=1;pl=a.get().player;a.get().shots.push({x:pl.x+25,y:pl.y,vx:0,vy:0,w:10,h:10,life:1});a.update(.01);assert.ok(pl.podCooldown<2.5);
-reset();a.get().upgrades.execute=1;e=placeTarget(400,268);e.hp=30;shoot();a.get().bullets[0].x=400;a.update(.01);assert.ok(Math.abs(e.hp-(30-.8625*1.10))<1e-9,'Letzter Bissen wirkt');
+reset();a.get().upgrades.execute=1;e=placeTarget(400,268);e.hp=30;shoot();a.get().bullets[0].x=400;a.update(.01);assert.ok(Math.abs(e.hp-(30-.8625*1.20))<1e-9,'Letzter Bissen wirkt');
 // An aimed shot keeps its locked direction even if the player moves before it fires.
 {
  reset();const shooter=a.enemy(3,220);
@@ -611,9 +611,9 @@ reset();a.setTime(840);a.setNextBoss(900);a.update(.01);assert.equal(a.get().gol
 reset();assert.equal(a.get().hearts,5);a.hurt();assert.equal(a.get().hearts,4);a.get().pickups.push({x:135,y:270,i:5,w:30,h:42});a.update(.01);assert.equal(a.get().hearts,5);a.get().pickups.push({x:135,y:270,i:5,w:30,h:42});a.update(.01);assert.equal(a.get().hearts,5,'Heilung bleibt bei fünf');
 reset();a.get().upgrades.spread=1;a.setRunTime(120);a.setXp(a.get().xpNeeded);a.update(.02);assert.ok(a.get().choices.some(c=>c.id==='fork'),'passende seltene Karte angeboten');a.chooseCard(a.get().choices.findIndex(c=>c.id==='fork'));assert.equal(a.get().upgrades.fork,1);
 reset();a.setRunTime(120);a.setXp(a.get().xpNeeded);a.update(.02);assert.ok(a.get().choices.every(c=>!c.rare),'keine unpassende Synergie');
-reset();a.get().upgrades.damage=3;shoot();assert.ok(Math.abs(a.get().bullets[0].damage-.8625*Math.pow(1.12,3))<.0001,'Schaden multipliziert je Rang');
+reset();a.get().upgrades.damage=3;shoot();assert.ok(Math.abs(a.get().bullets[0].damage-.8625*Math.pow(1.24,3))<.0001,'Schaden multipliziert je Rang');
 reset();a.get().upgrades.fork=1;e=placeTarget(400,268,1);shoot();a.get().bullets[0].x=400;a.update(.01);assert.equal(a.get().bullets.length,2,'Basisschuss verzweigt');assert.ok(a.get().bullets.every(b=>b.generation===1));second=placeTarget(450,268,100);for(const b of a.get().bullets){b.x=450;b.y=268}a.update(.01);assert.ok(a.get().bullets.length<=2,'Kinder verzweigen nicht endlos');
-reset();a.get().upgrades.chain=1;a.get().upgrades.cascade=2;a.get().upgrades.frost=1;a.get().upgrades.ember=1;first=placeTarget(400,268,1);second=placeTarget(490,280,100);shoot();a.get().bullets[0].x=400;a.update(.01);assert.ok(Math.abs(second.hp-(100-.8625*.2*1.45**2))<1e-9,'multiplikativer Kettenschaden');assert.ok(second.slowTime>0&&second.burnLife>0,'Kette überträgt Elemente');
+reset();a.get().upgrades.chain=1;a.get().upgrades.cascade=2;a.get().upgrades.frost=1;a.get().upgrades.ember=1;first=placeTarget(400,268,1);second=placeTarget(490,280,100);shoot();a.get().bullets[0].x=400;a.update(.01);assert.ok(Math.abs(second.hp-(100-.8625*.2*1.9**2))<1e-9,'multiplikativer Kettenschaden');assert.ok(second.slowTime>0&&second.burnLife>0,'Kette überträgt Elemente');
 reset();a.get().upgrades.frost=1;a.get().upgrades.ember=1;a.get().upgrades.shatter=1;first=placeTarget(400,268,100);second=placeTarget(445,278,100);shoot();a.get().bullets[0].x=400;a.update(.01);assert.ok(first.shatterCooldown>0&&second.hp<100,'Frost und Glut zünden Flächentreffer');
 reset();a.get().upgrades.echo=1;a.get().upgrades.echoForge=1;for(let i=0;i<4;i++)shoot();assert.equal(a.get().bullets.length,6,'vierter Angriff wiederholt echte Geschosse');assert.equal(a.get().bullets.filter(b=>b.echoed).length,2);
 equip(3);a.get().upgrades.echoForge=1;for(let i=0;i<4;i++)shoot();assert.equal(a.get().beams.length,6,'auch Laser erhält Echos');assert.equal(a.get().beams.filter(b=>b.echoed).length,2);a.render();
@@ -630,7 +630,7 @@ reset();a.get().shots.push({x:700,y:160,vx:-60,vy:20,w:10,h:10,life:4});for(let 
 for(const age of [.02,.12,.28,.5,.65]){reset();e=placeTarget(400,268,.5);shoot();a.get().bullets[0].x=400;a.update(.01);a.get().deaths[0].age=age;a.render()}
 reset();a.startBoss();for(const part of a.get().boss.parts)part.hp=part.max*.2;a.render();
 // Boss body layouts have different counts and isolated hit reactions.
-for(let i=0;i<7;i++){reset();for(let j=0;j<=Math.min(i,4);j++)a.startBoss();let boss=a.get().boss;if(i>=5){boss.i=i;const layout=vm.runInContext('PfertArt.bossLayout('+i+')',sandbox);boss.parts=layout.map(p=>{const xs=p.points.map(v=>v[0]),ys=p.points.map(v=>v[1]);return {...p,dx:(Math.min(...xs)+Math.max(...xs))/2,dy:(Math.min(...ys)+Math.max(...ys))/2,w:Math.max(...xs)-Math.min(...xs),h:Math.max(...ys)-Math.min(...ys),hp:20,max:20,flash:0}})}assert.equal(boss.parts.length,[3,4,2,3,5,4,5][i]);for(const part of boss.parts){assert.ok(a.partHit({x:boss.x+part.aim[0],y:boss.y+part.aim[1],w:2,h:2},boss,part),'Treffpunkt liegt im Bereich '+i+':'+part.name);assert.equal(a.partHit({x:boss.x-300,y:boss.y,w:2,h:2},boss,part),false)}const target=boss.parts[0],before=boss.parts.map(p=>p.hp);a.get().bullets.push(bullet(boss.x+target.aim[0],boss.y+target.aim[1]));a.update(.01);assert.ok(target.hp<before[0]&&target.flash>0,'getroffene Fläche blitzt');for(let j=1;j<boss.parts.length;j++)assert.equal(boss.parts[j].hp,before[j],'andere Bereiche bleiben unbeschädigt');a.render()}
+for(let i=0;i<7;i++){reset();for(let j=0;j<=Math.min(i,4);j++)a.startBoss();let boss=a.get().boss;if(i>=5){boss.i=i;const layout=vm.runInContext('PfertArt.bossLayout('+i+')',sandbox);boss.parts=layout.map(p=>{const xs=p.points.map(v=>v[0]),ys=p.points.map(v=>v[1]);return {...p,dx:(Math.min(...xs)+Math.max(...xs))/2,dy:(Math.min(...ys)+Math.max(...ys))/2,w:Math.max(...xs)-Math.min(...xs),h:Math.max(...ys)-Math.min(...ys),hp:20,max:20,flash:0}})}assert.equal(boss.parts.length,[5,4,2,3,5,6,5][i]);for(const part of boss.parts){assert.ok(a.partHit({x:boss.x+part.aim[0],y:boss.y+part.aim[1],w:2,h:2},boss,part),'Treffpunkt liegt im Bereich '+i+':'+part.name);assert.equal(a.partHit({x:boss.x-300,y:boss.y,w:2,h:2},boss,part),false)}const target=boss.parts[0],before=boss.parts.map(p=>p.hp);a.get().bullets.push(bullet(boss.x+target.aim[0],boss.y+target.aim[1]));a.update(.01);assert.ok(target.hp<before[0]&&target.flash>0,'getroffene Fläche blitzt');for(let j=1;j<boss.parts.length;j++)assert.equal(boss.parts[j].hp,before[j],'andere Bereiche bleiben unbeschädigt');a.render()}
 // Elemental powerups apply to taps, charge shots, echoes, shards and beams.
 for(const [weapon,element] of [[0,'fire'],[1,'frost'],[3,'lightning'],[6,'earth']]){equip(weapon);shoot();const attack=a.get().bullets[0]||a.get().beams[0];assert.ok(attack.elements[element],'Powerup verleiht '+element)}
 equip(0);e=placeTarget(400,268,100);shoot();a.get().bullets[0].x=400;a.update(.01);assert.ok(e.burnLife>0&&e.burnDps>0,'Rotwein brennt ohne Karte');hp=e.hp;a.update(.1);assert.ok(e.hp<hp,'Feuer verursacht Folgeschaden');
@@ -640,7 +640,7 @@ equip(7);e=placeTarget(400,268,1);shoot();a.get().bullets[0].x=400;a.update(.01)
 equip(0);for(const id of ['frost','chain','fork'])a.get().upgrades[id]=1;first=placeTarget(400,268,1);second=placeTarget(480,280,100);shoot();let attack=a.get().bullets[0];assert.ok(attack.elements.fire>0&&attack.elements.frost>0&&attack.elements.chainBonus>0&&attack.elements.forkBonus>0);attack.x=400;a.update(.01);assert.ok(second.slowTime>0&&second.burnLife>0,'Blitz überträgt kombinierte Elemente');const shards=a.get().bullets.filter(b=>b.generation===1);assert.ok(shards.length>0&&shards.every(b=>b.elements.fire>0&&b.elements.frost>0),'Splitter erben Elemente');
 equip(0);shoot();attack=a.get().bullets[0];a.get().player.weapon=12;a.get().player.effects[0]=0;a.get().player.effects[12]=18;assert.ok(attack.elements.fire>0&&attack.elements.frost===0,'Elemente eines abgefeuerten Angriffs bleiben stabil');
 equip(3);a.get().upgrades.ember=1;a.get().upgrades.frost=1;a.startBoss();let burningBoss=a.get().boss;a.get().player.y=burningBoss.y+burningBoss.parts[1].aim[1];shoot();a.update(.01);let burningPart=burningBoss.parts.find(p=>p.burnLife>0);assert.ok(burningPart&&burningPart.slowTime>0,'Laser-Elemente wirken auf Bossflächen');hp=burningPart.hp;a.get().beams.length=0;a.update(.3);assert.ok(burningPart.hp<hp,'Boss-Fläche erhält Feuerschaden über Zeit');
-equip(12);a.get().upgrades.frost=1;e=placeTarget(400,268,100);shoot();a.get().bullets[0].x=400;a.update(.01);assert.ok(Math.abs(e.slow-.32)<.0001,'Frost-Karte addiert sich zu Eiswein');
+equip(12);a.get().upgrades.frost=1;e=placeTarget(400,268,100);shoot();a.get().bullets[0].x=400;a.update(.01);assert.ok(Math.abs(e.slow-.36)<.0001,'Frost-Karte addiert sich zu Eiswein');
 // Real input/update integration: automatic fire, charging, resume and pauses.
 function autoReset(){a.reset();a.setSpawn(999);a.setDrop(999)}
 autoReset();a.update(.01);assert.equal(a.get().player.attacks,1,'feuert ohne Tastendruck');for(let i=0;i<30;i++)a.update(.02);assert.ok(a.get().player.attacks>=3,'Dauerfeuer setzt sich fort');
@@ -703,11 +703,11 @@ assert.notEqual(played.at(-1),firstRound[0],'Neustart mischt die Playlist neu');
 for(let rank=1;rank<=2;rank++){
  reset();a.get().upgrades.fanShot=rank;shoot();assert.equal(a.get().bullets.length,1+2*rank);assert.ok(a.get().bullets[1].vy<0&&a.get().bullets.at(-1).vy>0);
  reset();a.get().upgrades.multiShot=rank;shoot();assert.equal(a.get().bullets.length,1+rank);assert.equal(new Set(a.get().bullets.map(b=>b.y)).size,1+rank);
- reset();a.get().upgrades.snakeShot=rank;shoot();let b=a.get().bullets[0],y=b.y;a.update(.1);assert.ok(Math.abs(b.y-y-Math.sin(.8)*rank*20.4)<1e-8);
+ reset();a.get().upgrades.snakeShot=rank;shoot();let b=a.get().bullets[0],y=b.y;a.update(.1);assert.ok(Math.abs(b.y-y-Math.sin(.8)*rank*40.8)<1e-8);
  reset();a.get().upgrades.seekShot=rank;let e=placeTarget(400,350,100);shoot();let b2=a.get().bullets[0];a.update(.05);assert.ok(b2.vy>0);
  reset();a.get().upgrades.breakShot=rank;let e2=placeTarget(400,270,100);shoot();a.get().bullets[0].x=400;a.get().bullets[0].y=270;a.update(.001);assert.equal(a.get().bullets.filter(b=>b.generation===1).length,rank+1);
 }
-reset();a.get().upgrades.multiShot=1;let wide=placeTarget(400,270,100);wide.w=80;wide.h=100;shoot();for(const b of a.get().bullets){b.x=400;b.vx=0;b.vy=0}a.update(.001);assert.ok(Math.abs(wide.hp-(100-.8625*1.1152))<1e-9,'beide Standardschüsse verursachen Schaden');
+reset();a.get().upgrades.multiShot=1;let wide=placeTarget(400,270,100);wide.w=80;wide.h=100;shoot();for(const b of a.get().bullets){b.x=400;b.vx=0;b.vy=0}a.update(.001);assert.ok(Math.abs(wide.hp-(100-.8625*1.2304))<1e-9,'beide Standardschüsse verursachen Schaden');
 
 
 // Flaschen übergeben die Elementzuordnung an die Darstellung.
@@ -733,12 +733,13 @@ reset();let seen=[];const artApi=vm.runInContext("PfertArt",sandbox),originalBot
 // A regular frost shot stacks against the same enemy, caps, and wears off.
 {
  reset();const target=placeTarget(430,268);
- a.get().upgrades.frost=5;
+ a.get().upgrades.frost=3;
  const chills=[];
  for(let i=0;i<8;i++){
   shoot();a.get().bullets.at(-1).x=430;a.update(.01);
   chills.push(target.slow);
  }
+ assert.ok(Math.abs(chills[0]-.49)<1e-9,'Eisfächer und drei Kühlketten-Ränge stapeln');
  assert.ok(chills[1]>chills[0]);
  assert.equal(target.slow,.65);
  for(let i=0;i<40;i++)a.update(.05);
@@ -883,9 +884,9 @@ for(const weapon of [-1,0,3]){
  const main=Math.max(...attacks.map(attack=>attack.damage));
  assert.equal(attacks.length,4);
  const factor=weapon<0?1:.85;
- assert.equal(attacks.filter(attack=>Math.abs(attack.damage-main*.1152*factor)<1e-9).length,1);
- assert.equal(attacks.filter(attack=>Math.abs(attack.damage-main*.24*factor)<1e-9).length,1);
- assert.equal(attacks.filter(attack=>Math.abs(attack.damage-main*.17*factor)<1e-9).length,1);
+ assert.equal(attacks.filter(attack=>Math.abs(attack.damage-main*.2304*factor)<1e-9).length,1);
+ assert.equal(attacks.filter(attack=>Math.abs(attack.damage-main*.48*factor)<1e-9).length,1);
+ assert.equal(attacks.filter(attack=>Math.abs(attack.damage-main*.34*factor)<1e-9).length,1);
 }
 {
  equip(6);
@@ -896,7 +897,7 @@ for(const weapon of [-1,0,3]){
  a.update(.01);
  const fragments=a.get().bullets.filter(b=>b.generation===1);
  assert.equal(fragments.filter(b=>b.damage===shot.damage*.21).length,5);
- assert.equal(fragments.filter(b=>b.damage===shot.damage*.126).length,1);
+ assert.equal(fragments.filter(b=>b.damage===shot.damage*.252).length,1);
 }
 
 // All six projectile profiles appear in both enemy and boss encounters.

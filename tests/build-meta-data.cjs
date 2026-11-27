@@ -2,8 +2,11 @@
 const fs=require('fs');
 const source=fs.readFileSync(__dirname+'/../Entwicklung/Meta progression.md','utf8');
 const iconPaths=require('./assets/tabler-talent-icons.json');
-const descriptions={S1:'Erste Reifung: +3 % Schaden',S2:'Flinke Hufe: +3 % Bewegungsgeschwindigkeit',S3:'Käsefunke: +3 % Käserausch-Aufladung',S4:'Spürnase: +7,5 % Orb-Ansaugradius',S5:'Kellermeister: +4,5 % Waffen-Power-up-Dauer'};
-const titles=Object.fromEntries(Object.entries(descriptions).map(([id,text])=>[id,text.split(':')[0]]));
+const descriptions={}, titles={};
+for(const [,id,title,description] of source.matchAll(/^\| (S[1-5]) · ([^|]+) \| ([^|]+) \|/gm)){
+ titles[id]=title.trim();
+ descriptions[id]=description.trim();
+}
 const icons={S1:'sword',S2:'run',S3:'bolt',S4:'magnet',S5:'bottle'};
 const improvements={
  A1:[['Dauerfeuer','sword'],['Schnelle Geschosse','bolt'],['Feuerrate','bolt']],
@@ -38,6 +41,8 @@ for(const m of source.matchAll(pattern)){
    descriptions[key]=(n===21?'Doppelt: ':'')+abc[group+1];
   });
  }
+ const skillBonus=body.match(/^- 5 zusätzlich: (.+)$/m);
+ if(skillBonus)descriptions[id+'-5']+='. '+skillBonus[1].trim();
  for(const n of [13,16,20,22,23]){
   const match=body.match(new RegExp('^- '+n+' · ([^:]+): (.+)$','m'));
   if(!match)throw Error(id+'-'+n);
@@ -52,7 +57,6 @@ for(const [,id,title,description] of source.matchAll(/^\| (Q\d+) · ([^|]+) \| [
  descriptions[id]=description.trim();
  icons[id]='link';
 }
-for(const id of ['S1','S2','S3','S4','S5'])descriptions[id]=descriptions[id].split(': ')[1];
 if(Object.keys(descriptions).length!==360)throw Error('Knotenbeschreibungen: '+Object.keys(descriptions).length);
 if(Object.keys(descriptions).some(id=>!titles[id]||!iconPaths[icons[id]]?.length))throw Error('Talentname oder Icon fehlt');
 fs.writeFileSync(__dirname+'/../Pfert/meta-data.js',"/* Aus Meta progression.md und assets/tabler-talent-icons.json erzeugt. */\n(function(root){root.PfertMetaData="+JSON.stringify({titles,descriptions,icons,iconPaths})+";})(globalThis);\n");

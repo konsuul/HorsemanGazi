@@ -234,6 +234,8 @@ const PfertSound=(()=>{
   else if(kind==='card'){tone('triangle',330,495,.16,.029,now);tone('triangle',495,660,.16,.026,now+.08)}
   else if(kind==='synergy'){tone('square',330,495,.18,.024,now);tone('triangle',495,660,.18,.03,now+.08);tone('triangle',660,990,.24,.026,now+.16)}
   else if(kind==='heal'){tone('sine',440,880,.24,.034,now);tone('sine',660,1320,.2,.018,now+.03)}
+  else if(kind==='hammer'){tone('triangle',170,48,.12,.06,now,pan);noise(.06,.05,now,2200,pan)}
+  else if(kind==='steam')noise(.72,.075,now,4900,pan);
   else if(kind==='charge'){tone('sine',70,245,.26,.018,now);noise(.19,.006,now,1000)}
   else if(kind==='charged'||kind==='ready'){tone('triangle',kind==='ready'?920:740,kind==='ready'?1380:1100,.13,.026,now);tone('sine',1480,1320,.09,.013,now+.025)}
   else if(kind==='block'){tone('triangle',1250,360,.1,.029,now,pan);foley('shield',.054,now,pan)}
