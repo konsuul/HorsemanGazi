@@ -16,4 +16,14 @@ assert.equal(result.ranked.length,1);assert.match(sandbox.api.scoreTable(result)
 result=sandbox.api.saveScore(2500,900,'Zugabe');
 assert.equal(result.ranked.length,1);assert.equal(result.history.length,2);
 result=sandbox.api.saveScore(200,70,'Arcade');assert.equal(result.ranked.length,2);
+const byKey=new Map();
+sandbox.window.localStorage={getItem:key=>byKey.get(key)??null,setItem:(key,value)=>byKey.set(key,value)};
+byKey.set('pfert-scoreboard-v1',JSON.stringify([{points:9000,seconds:999,mode:'Arcade'}]));
+assert.equal(sandbox.api.saveScore(3,100,'Arcade','laser').best.previous,-1);
+assert.equal(sandbox.api.saveScore(2,125,'Abspann','laser').best.previous,100);
+assert.equal(sandbox.api.saveScore(4,110,'Arcade','laser').best.previous,125);
+assert.equal(sandbox.api.saveScore(6,250,'Zugabe','laser').best.previous,-1);
+assert.equal(sandbox.api.saveScore(8,80,'Arcade','other').best.previous,-1);
+for(let i=0;i<11;i++)sandbox.api.saveScore(i,110,'Arcade','laser');
+assert.equal(sandbox.api.saveScore(0,124,'Arcade','laser').best.previous,125);
 console.log('OK: Scoreboard speichert zehn letzte Runden, sortiert Punkte, markiert Platzierung und behandelt Speicherfehler.');

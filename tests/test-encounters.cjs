@@ -5,12 +5,12 @@ const vm = require('node:vm');
 const path = require('node:path');
 
 const noop = () => {};
-const drawLabels = [],drawBars=[];
+const drawLabels = [],drawBars=[], fieldLabels=[];
 const dangerTracks=[];
 let line;
 const random=Object.create(Math);
 const canvas = new Proxy({
- fillText(label){drawLabels.push(label);},
+ fillText(label,x,y){drawLabels.push(label);if(y>=62&&y<=540)fieldLabels.push(label);},
  fillRect(x,y,w,h){if(w>0&&h===3)drawBars.push({x,y,w,color:this.fillStyle});},
  moveTo(x,y){line=[x,y];},
  lineTo(x,y){if(line)line.push(x,y);},
@@ -44,6 +44,7 @@ vm.runInContext(code('game.js').replace(/\}\)\(\);\s*$/, `
 globalThis.encounters = {
  testRules:${testPermute.toString()},
  testFlights:${testEnemyFlights.toString()},
+ testPractice:${testPractice.toString()},
  cartridges:()=>cartridges,chooseCartridge:id=>{choices=[cardDefs.find(c=>c.id===id)];state='upgrade';chooseCard(0);xp=0},
  fireCharge,bullets:()=>bullets,beams:()=>beams,readyTime:time=>{runTime=time},damagePart,enemy,
  spawnsFrom:index=>{spawnIndex=index;nextRareEnemy=Infinity},
@@ -133,12 +134,63 @@ function testEnemyFlights(){
  update(.4);assert.equal(hearts,MAX_HEARTS);
  dodged.y=H+dodged.h;update(.05);assert.ok(!enemies.includes(dodged));
 
+ fresh(207);levelIndex=1;
+ updateFormation(206.95);t=formation.releaseAt;updateFormation(t-.05);
+ assert.equal(enemies.filter(e=>e.chain).length,3);
+ const leader=enemies.find(e=>e.leader),guards=enemies.filter(e=>e.chain&&!e.leader);
+ assert.ok(guards.every(e=>e.chain.leader===leader));
+ let ribbons=0;const curve=c.quadraticCurveTo;c.quadraticCurveTo=()=>ribbons++;
+ for(const e of enemies)drawEscortBand(e);
+ assert.equal(ribbons,4);
+ fieldLabels.length=0;render();
+ assert.equal(fieldLabels.length,0,'Formationsspuren und Gegnerrollen ohne eingeblendeten Text');
+ guards[0].hp=0;death(guards[0]);ribbons=0;
+ for(const e of enemies)drawEscortBand(e);
+ assert.equal(ribbons,2);
+ guards[1].hp=0;death(guards[1]);ribbons=0;
+ for(const e of enemies)drawEscortBand(e);
+ assert.equal(ribbons,0);c.quadraticCurveTo=curve;
+ assert.ok(rings.some(r=>r.size===36));
+ fieldLabels.length=0;render();
+ assert.equal(fieldLabels.length,0,'Auch nach der Auflösung bleibt die Formation ohne Text');
+ const marks=enemies.filter(e=>e.chain);
+ assert.equal(marks.filter(e=>e.leader).length,1);
 }
 if(process.argv.length===2||process.argv.includes('--flight-profiles')){
- sandbox.assert=assert;
+ sandbox.assert=assert;sandbox.fieldLabels=fieldLabels;
  game.testFlights();
- console.log('OK: Diagonalen, Ansturmphasen, Frost, Pause, Kontakt, Druckbegrenzung.');
+ console.log('OK: Diagonalen, Ansturmphasen, Frost, Pause, Kontakt, Druckbegrenzung und Formation ohne Text.');
  if(process.argv.includes('--flight-profiles'))process.exit(0);
+}
+function testPractice(){
+ const saved=[];
+ window.localStorage={getItem:()=>null,setItem:(key,value)=>saved.push(key)};
+ startPractice('training',baseSkills[1]);
+ assert.equal(player.skill,baseSkills[1]);assert.equal(boss.i,0);assert.ok(boss.x>W);
+ const parts=boss.parts;for(const part of parts)damagePart(part,Infinity,boss.x,boss.y);
+ assert.equal(state,'debugResult');assert.match(overlay.innerHTML,/Großwesir besiegt/);assert.equal(saved.length,0);
+ debugOptions[0].action();assert.equal(player.skill,baseSkills[1]);assert.equal(boss.i,0);
+ const routeAndWave=()=>{
+  startPractice('courier',baseSkills[2]);
+  for(let i=0;i<81;i++)update(.05);
+  return JSON.stringify([starRoute?.gates,enemies.map(e=>[e.i,e.x,e.y,e.fire,e.hp])]);
+ };
+ assert.equal(routeAndWave(),routeAndWave());
+ assert.equal(enemies.length,1);assert.equal(boss,null);assert.equal(bullets.length,0);
+ assert.equal(starRoute.gates.length,3);
+ const route=starRoute;hearts=3;
+ for(const gate of route.gates){gate.x=player.x;player.y=gate.y;updateStarRoute(0)}
+ assert.equal(flightStats.deliveries,1);assert.equal(hearts,4);assert.ok(player.inv>0&&player.metaBottleSpeed===5);
+ assert.equal(orbs.length,0);assert.equal(gearDrops.length,0);
+ pauseGame();const time=runTime;update(1);assert.equal(runTime,time);resumeGame();
+ runTime=89.99;update(.05);assert.equal(runTime,90);assert.equal(state,'debugResult');
+ assert.match(overlay.innerHTML,/Kurierlauf geschafft/);assert.equal(saved.length,0);
+}
+if(process.argv.length===2||process.argv.includes('--practice')){
+ sandbox.assert=assert;
+ game.testPractice();
+ console.log('OK: Großwesir-Training, Wiederholung, fester Kurierkurs, Zustellbonus und ungewertete Abschlüsse.');
+ if(process.argv.includes('--practice'))process.exit(0);
 }
 function testPermute(){
   const fresh=skill=>{reset(skill);player.autoCooldown=Infinity;spawn=drop=xpNeeded=Infinity};
@@ -229,9 +281,10 @@ function testPermute(){
   const enhanced=beams.at(-1).damage;assert.equal(player.scrap,false);
   runTime+=10;dischargeCartridge();assert.equal(enhanced,beams.at(-1).damage*1.5);
   fresh();secretType=2;startRuhrBoss();boss.fire=.8;
-  updateBoss(.01);assert.match(boss.cue,/1\/3/);updateBoss(.26);assert.match(boss.cue,/2\/3/);
-  updateBoss(.26);assert.match(boss.cue,/3\/3/);updateBoss(.4);
-  boss.fire=.8;updateBoss(.01);assert.match(boss.cue,/DAMPF/);
+  updateBoss(.01);assert.equal(boss.cue,'hammer');assert.equal(boss.beat,1);
+  updateBoss(.26);assert.equal(boss.beat,2);
+  updateBoss(.26);assert.equal(boss.beat,3);updateBoss(.4);
+  boss.fire=.8;updateBoss(.01);assert.equal(boss.cue,'steam');
   fresh();hearts=1;hurt('projectile',90,100,{x:140,y:270,w:10,h:8,vx:-90,vy:15});
   assert.equal(state,'over');assert.equal(player.fatalFrame.shot.vx,-90);
   showHitFrame();assert.equal(state,'inspect');closeHitFrame();assert.equal(state,'over');
@@ -924,6 +977,7 @@ for(const [index,pattern,specials] of cases){
  if(index<5||index>=7)game.startBoss(index===0);
  else {game.setRuhr(index-4);game.startRuhrBoss();}
  const boss=game.state().boss;
+ if(index===0){assert.ok(boss.x>960,'Großwesir fliegt sichtbar von rechts ein');advance(1)}
  game.state().player.podCooldown=Infinity;
  for(const expected of [...pattern,...specials,pattern[0]]){
   if(boss.strike)advance(1.8);

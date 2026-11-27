@@ -10,11 +10,11 @@ Jeder offene Punkt hat eine feste ID direkt über seinem Kästchen. IDs beim Erg
 
 #### 1.1
 
-- [ ] **Unterschiedliche Gegner-Flugprofile.** Standardgegner kommen nicht alle gerade vom Bildschirmrand. Einige fliegen diagonal ein; andere preschen vor, halten kurz an, erfassen die Position des Pferts und stoßen dann gezielt vor. Das Pfert soll in Bewegung bleiben und auf unterschiedliche Muster reagieren. Anstürme gut ankündigen und im frühen Spiel sparsam einsetzen. Bestehende Boss-, Formations- und Spezialabläufe bewahren. In 1.1.5 umgesetzt und mit `node tests/test-encounters.cjs --flight-profiles` lokal geprüft.
+- [ ] **Unterschiedliche Gegner-Flugprofile.** Standardgegner kommen nicht alle gerade vom Bildschirmrand. Einige fliegen diagonal ein; andere preschen vor, halten kurz an, erfassen die Position des Pferts und stoßen dann gezielt vor. Das Pfert soll in Bewegung bleiben und auf unterschiedliche Muster reagieren. Anstürme gut ankündigen und im frühen Spiel sparsam einsetzen. Bestehende Boss-, Formations- und Spezialabläufe bewahren. In 1.1.5 umgesetzt und mit `node tests/test-encounters.cjs --flight-profiles` lokal geprüft. GitHub-Bestätigung steht aus.
 
 #### 1.2
 
-- [ ] **Basarwachen ohne Texte intuitiv erkennbar machen.** „Wache 1/2“ nicht durch Ziffern, Striche oder andere Zählzeichen ersetzen. Wachen und Anführer durch sichtbares Verhalten und ihre Beziehung zueinander unterscheiden, etwa durch ein am Gegner befestigtes Eskortenband, das beim Abschuss einer Wache sichtbar nachgibt. Die Darstellung darf keine Unverwundbarkeit vortäuschen. In einem kurzen Spieltest prüfen, ob jemand ohne Erklärung erkennt, dass beide Wachen vor dem Anführer fallen sollen. Keine eingeblendeten Texte im Spielfeld; die Regel in den Entwicklungsvorgaben festhalten.
+- [ ] **Basarwachen ohne Texte intuitiv erkennbar machen.** „Wache 1/2“ nicht durch Ziffern, Striche oder andere Zählzeichen ersetzen. Wachen und Anführer durch sichtbares Verhalten und ihre Beziehung zueinander unterscheiden, etwa durch ein am Gegner befestigtes Eskortenband, das beim Abschuss einer Wache sichtbar nachgibt. Die Darstellung darf keine Unverwundbarkeit vortäuschen. In einem kurzen Spieltest prüfen, ob jemand ohne Erklärung erkennt, dass beide Wachen vor dem Anführer fallen sollen. Keine eingeblendeten Texte im Spielfeld; die Regel in den Entwicklungsvorgaben festhalten. Bannerbänder und Wegfall beider Verbindungen lokal geprüft. Die Verständlichkeit ohne Erklärung im menschlichen Spieltest ist offen.
 
 ### Stage 2 · Pferteranch
 
@@ -61,22 +61,22 @@ Stage 1 bleibt als manueller Pfert-Run spielbar. Stage 2 baut darauf auf: **Eier
 
 #### 3.1
 
-- [ ] **Boss-Balancing mit drei Builds prüfen.** Sultan und Pascha jeweils mit frischem, typischem und starkem Build unter vergleichbaren Bedingungen testen. Zeit bis zum Sieg, verlorene Herzen und ausgespielte Angriffsmuster erfassen. In 1.1.4 ergeben fünf Ränge Käsereifung allein rund 2,93× statt 1,76× Schaden; ob dadurch ganze Bossphasen entfallen, ist noch nicht im Spiel belegt. Falls das regelmäßig passiert, zuerst Ausreißer oder gezielte Angriffsmuster anpassen. Wertvolle Power-ups erhalten; Gegnerleben nicht pauschal erhöhen.
+- [ ] **Boss-Balancing mit drei Builds prüfen.** Sultan und Pascha jeweils mit frischem, typischem und starkem Build unter vergleichbaren Bedingungen testen. Zeit bis zum Sieg, verlorene Herzen und ausgespielte Angriffsmuster erfassen. In 1.1.4 ergeben fünf Ränge Käsereifung allein rund 2,93× statt 1,76× Schaden; ob dadurch ganze Bossphasen entfallen, ist noch nicht im Spiel belegt. Falls das regelmäßig passiert, zuerst Ausreißer oder gezielte Angriffsmuster anpassen. Wertvolle Power-ups erhalten; Gegnerleben nicht pauschal erhöhen. Reproduzierbarer Vergleich und gezielte Sultan-Anpassung sind in der Architektur dokumentiert.
 
 #### 3.2
 
-- [ ] **Basar und Großwesir lesbarer inszenieren.** Einen 20-Sekunden-Vergleich mit Einflug, sichtbarem Ausholen und Armbruch bauen. Die Flugbahn bleibt kontrastarm, der gebrochene Arm am Boss sichtbar. Beim Laser einen schmalen hellen Kern mit transparenter Außenkante erproben. Ziel: Gefahr und Trefferfortschritt bleiben ohne Ton und bei halber Fenstergröße erkennbar.
+- [ ] **Basar und Großwesir lesbarer inszenieren.** Einen 20-Sekunden-Vergleich mit Einflug, sichtbarem Ausholen und Armbruch bauen. Die Flugbahn bleibt kontrastarm, der gebrochene Arm am Boss sichtbar. Beim Laser einen schmalen hellen Kern mit transparenter Außenkante erproben. Ziel: Gefahr und Trefferfortschritt bleiben ohne Ton und bei halber Fenstergröße erkennbar. Im Training spielbar und als drei stumme Chromium-Szenen in halber Größe geprüft.
 
 ### P2 · Übung und Wiederspielwert
 
 #### 4.1
 
-- [ ] **Boss-Training.** Mit dem vorhandenen Debug-Einstieg zunächst nur den Großwesir als regulär auswählbare Übung anbieten: Basisskill wählen, direkt starten und schnell wiederholen. Keine Talentpunkte oder Ranglisteneinträge; ideal zum Lernen der Angriffsmuster und Vergleichen beider Bruchreihenfolgen.
+- [ ] **Boss-Training.** Mit dem vorhandenen Debug-Einstieg zunächst nur den Großwesir als regulär auswählbare Übung anbieten: Basisskill wählen, direkt starten und schnell wiederholen. Keine Talentpunkte oder Ranglisteneinträge; ideal zum Lernen der Angriffsmuster und Vergleichen beider Bruchreihenfolgen. Einstieg und ungewertete Wiederholung lokal geprüft.
 
 #### 4.2
 
-- [ ] **Bestlauf pro Basisskill in der Rundenauswertung.** Neben der bestehenden gemeinsamen Punktetafel anzeigen, wie viel länger der aktuelle Lauf gegenüber der bisherigen Bestzeit desselben Basisskills war. Arcade und Zugabe getrennt vergleichen; ältere Einträge ohne Basisskill nicht falsch zuordnen.
+- [ ] **Bestlauf pro Basisskill in der Rundenauswertung.** Neben der bestehenden gemeinsamen Punktetafel anzeigen, wie viel länger der aktuelle Lauf gegenüber der bisherigen Bestzeit desselben Basisskills war. Arcade und Zugabe getrennt vergleichen; ältere Einträge ohne Basisskill nicht falsch zuordnen. Speicherung, Trennung und alte Einträge lokal geprüft.
 
 #### 4.3
 
-- [ ] **Sternenpost-Kurierlauf.** Einen separaten 90-Sekunden-Kurs mit festen Siegeln und Gegnerwellen prototypen. Der Schwerpunkt liegt auf Fluglinie und Ausweichen, nicht auf Abschüssen. Zustellungen sollen im Kurs einen spürbaren Vorteil bringen; Punkte allein sind nicht der Anreiz.
+- [ ] **Sternenpost-Kurierlauf.** Einen separaten 90-Sekunden-Kurs mit festen Siegeln und Gegnerwellen prototypen. Der Schwerpunkt liegt auf Fluglinie und Ausweichen, nicht auf Abschüssen. Zustellungen sollen im Kurs einen spürbaren Vorteil bringen; Punkte allein sind nicht der Anreiz. Kurs, Übergang ins Ergebnis und Zustellboni lokal geprüft.

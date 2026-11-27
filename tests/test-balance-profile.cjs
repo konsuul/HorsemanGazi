@@ -9,7 +9,7 @@ const harnessEnd=gameTests.indexOf('for(let i=0;i<17;i++)');
 assert.ok(harnessEnd>0,'Spieltest-Hülle ist vorhanden');
 const harness=gameTests.slice(0,harnessEnd).replace(
  'shouldSpawnPickup,damagePart,art:PfertArt,',
- 'activeWeapon,encounterThreat,startRuhrBoss,setBossCount:value=>bossCount=value,setThreat:value=>threat=value,setSecret:type=>{secret=true;secretType=type},shouldSpawnPickup,damagePart,art:PfertArt,'
+ 'activeWeapon,nextBossAttack,encounterThreat,startRuhrBoss,setBossCount:value=>bossCount=value,setThreat:value=>threat=value,setSecret:type=>{secret=true;secretType=type},shouldSpawnPickup,damagePart,art:PfertArt,'
 );
 const {game,seed,press}=new Function('require','__dirname',harness+`
  return {
@@ -119,16 +119,18 @@ function opening(strategy){
 function bossTrial(id,build){
  seed(731+id);
  game.reset();
- const time=[300,600,0,0,0,0,840][id],player=game.get().player;
+ const time=[300,600,900,0,0,0,840][id],player=game.get().player;
  game.setTime(time);game.setRunTime(time);game.setSpawn(Infinity);game.setDrop(Infinity);game.setNextBoss(Infinity);
  if(build==='typisch')Object.assign(game.get().upgrades,{damage:3,multiShot:1,seekShot:1,frost:1});
- if(build==='typisch'){player.weapon=1;player.effects[1]=18}
- game.setThreat(game.encounterThreat(time,game.get().upgrades,game.activeWeapon()>=0));
+ if(build==='stark')Object.assign(game.get().upgrades,{damage:5,multiShot:4,tempo:5,seekShot:1,frost:2,fanShot:2,ember:2});
+ if(build!=='frisch'){player.weapon=1;player.effects[1]=18}
+ game.setThreat(2);
  if(id===6){game.setSecret(2);game.setSecretTime(60);game.startRuhrBoss()}
  else{game.setBossCount(id);game.startBoss(id===0)}
  player.x=395;
  const boss=game.get().boss,initialHp=boss.hp;
- let elapsed=0,reachable=0,hits=0,lastY=boss.y,verticalSpeed=0,wineTime=0,targetY=270;
+ const announced=new Set(),released=new Set();
+ let elapsed=0,reachable=0,hits=0,verticalSpeed=0,wineTime=0,targetY=270;
  for(let i=0;i<7200;i++){
   const state=game.get();
   if(!state.boss||state.state==='transition'||state.state==='over')break;
@@ -145,13 +147,16 @@ function bossTrial(id,build){
    if(i%48===0&&i>60&&i<300&&Math.abs(player.y-(boss.y+choice.aim[1]))<35)press('Space');
   }
   const previousY=boss.y,previousHearts=state.hearts;
+  const volley=boss.volleyIndex||0,attack=game.nextBossAttack(boss);
   game.update(step);elapsed+=step;
+  if((boss.volleyIndex||0)>volley)announced.add(Array.isArray(attack)?attack[0]:attack);
+  for(const shot of game.get().shots)if(shot.bossSpecial)released.add(shot.bossSpecial);
   verticalSpeed=.85*verticalSpeed+.15*(boss.y-previousY)/step;
   if(game.get().hearts<previousHearts)hits++;
  }
  const result=game.get();
  return {id,build,seconds:round(elapsed),reachable:round(reachable),initialHp,
-  remainingHp:round(result.boss?.hp||0),hits,wineSeconds:round(wineTime),
+  remainingHp:round(result.boss?.hp||0),hits,wineSeconds:round(wineTime),announced:[...announced].join(', '),released:[...released].join(', '),
   result:result.state==='over'?'Tod':boss.hp<=0?'Sieg':'Zeitlimit'};
 }
 
@@ -173,7 +178,7 @@ assert.equal(game.encounterThreat(180,{healing:2,agility:2,magnet:2,guard:2},fal
 assert.ok(game.encounterThreat(180,{damage:4},false)>game.encounterThreat(180,{},false));
 assert.ok(game.encounterThreat(180,{fork:1},false)>game.encounterThreat(180,{damage:1},false));
 const openings=[opening('sofort'),opening('aufsparen')];
-const bosses=[0,1,6].flatMap(id=>['neutral','typisch'].map(build=>bossTrial(id,build)));
+const bosses=[1,2].flatMap(id=>['frisch','typisch','stark'].map(build=>bossTrial(id,build)));
 const pressure=[
  ['Basis',{}],['Heilung',{healing:8}],['Komfort',{agility:3,guard:2,magnet:3}],
  ['Direktfeuer',{damage:4,fanShot:2,multiShot:2}],
@@ -185,5 +190,6 @@ console.log('Erste Karte, XP, Orbs, Wein und Käserausch');
 console.log(JSON.stringify(openings,null,2));
 console.log('Bosszeiten und gemessene Zeit auf Segmenthöhe');
 console.table(bosses);
+if(process.argv.includes('--boss-json'))console.log(JSON.stringify(bosses));
 console.log('Karten und Bedrohungsdruck am selben Abschnitt');
 console.table(pressure);

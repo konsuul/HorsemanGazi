@@ -29,6 +29,12 @@ Nach dem letzten Herz zeigt **L / Y** die Trefferlupe. Klick, Esc oder B führen
 - Türkis gerahmte Flaschen mit Pluszeichen sind Powerups. Rot umrandete, hohle Projektile sind gefährlich. Getroffene Gegner blitzen weiß auf.
 - Noch nicht eingesammelte Flaschen setzen während des Bosskampfs aus. Sie erscheinen nach dem Sieg wieder, bei geheimen Bossen beim Rückwechsel ins Hauptspiel.
 
+## Training und Kurierlauf
+
+- Im Hauptmenü öffnet **Großwesir-Training** (2 / X) die Basisskill-Auswahl für den direkten Bosskampf. Nach dem Ergebnis startet **Erneut starten** denselben Skill.
+- **Sternenpost-Kurierlauf** (3 / Y) dauert 90 Sekunden. Jede vollständige Folge aus drei Siegeln heilt ein Herz, beschleunigt das Pfert fünf Sekunden lang und schützt es kurz. Beide Modi sind ungewertet.
+- Gewertete Ergebnisse vergleichen die Überlebenszeit mit dem bisherigen Rekord des gewählten Basisskills. Arcade und Zugabe haben eigene Bestzeiten.
+
 ## Basisskills und Builds
 
 Vor jedem Run wählst du einen Basisskill. Der gewählte Angriff kehrt zurück, sobald ein Waffenwein ausläuft oder verbraucht ist. Solange passende Karten verfügbar sind, ist unter den Level-up-Karten mindestens eine Empfehlung für deinen Skill. Die Lichtlanze bietet Karten für Projektile wie Rückenwind, Harte Kruste und Billardkäse erst an, wenn der Build regelmäßig Projektile erzeugt, etwa durch Käsebruch oder eine Geschosspatrone. Bumerangkäse, Sprungkruste und reine Wein-Sonderangriffskarten stehen bei der Lichtlanze nicht zur Wahl. Im Auswahlmenü stehen die Talente, die deinen Basisskill zusätzlich verstärken.
@@ -146,6 +152,8 @@ Kampflicht reagiert lokal auf geladene Geschosse und Treffer. Die Bosskörper be
 ## Flugmanöver und Sternenpost
 
 Im regulären Gegnerstrom kommen einige Gegner diagonal von oben oder unten. Ab etwa zwei Minuten preschen einzelne Gegner vor und halten zwischen zwei hellen Winkeln an. Am Ende der Warnung peilen sie das Pfert einmal an. Ein seitlicher Spurwechsel beim Losstürmen lässt die Attacke vorbeigehen.
+
+In der Basarformation führen Bannerbänder von beiden Wachen zum Anführer. Mit jeder besiegten Wache verschwindet ihr Band. Beide Wachen vor dem Anführer zu besiegen bringt den Kettenbonus.
 
 - **Umgebungsgefahren** — Ab 2:49 können Arkadenfeuer, Fallgitter, Kreuzfeuer, Flutkammer und Palastgitter zwei oder drei Gefahrwellen auslösen. Das Spielfeld wird grau. Pfeile weisen zwischen die gestrichelten Gefahrenzonen. Wechsle rechtzeitig in die neue Spur, die auch senkrecht verlaufen kann. Eine berührungsfreie Passage bringt je nach Gebiet 350 oder 450 Punkte.
 

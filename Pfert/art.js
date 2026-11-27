@@ -1449,15 +1449,39 @@ const PfertArt = (() => {
  function boss(ctx,b,ruhr){
   const sprite=bossSprite(b.i,ruhr?3:0);
   ctx.save();ctx.translate(Math.round(b.x),Math.round(b.y));
+  const missing=b.i===0?b.parts.filter(part=>part.role===2&&part.hp<=0):[];
+  ctx.save();
+  if(missing.length){
+   ctx.beginPath();ctx.rect(-135,-135,270,270);
+   for(const part of missing){
+    part.points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();
+   }
+   ctx.clip('evenodd');
+  }
   spriteShadow(ctx,sprite,7,0);
   placeSprite(ctx,sprite,7,0);
+  ctx.restore();
   for(const part of b.parts){
+   if(missing.includes(part))continue;
    ctx.save();ctx.beginPath();part.points.forEach((point,i)=>i?ctx.lineTo(point[0],point[1]):ctx.moveTo(point[0],point[1]));ctx.closePath();ctx.clip();
    if(part.flash>0){placeSprite(ctx,whiteMask(sprite),7,0,1)}
    else if(part.hp>0&&part.slowTime>0){ctx.globalAlpha=.17;placeSprite(ctx,lightMask(sprite,'#8be3ff'),7,0,1)}
    else if(part.hp<=0){ctx.globalAlpha=.76;placeSprite(ctx,lightMask(sprite,'#101d2c'),7,0,1)}
    else if(part.hp/part.max<.5){ctx.globalAlpha=.18;placeSprite(ctx,lightMask(sprite,'#3f2b38'),7,0,1)}
    ctx.restore();
+  }
+  if(b.i===0&&b.strike&&!b.strike.launched){
+   const arm=b.parts.find(part=>part.role===2&&part.hp>0);
+   if(arm){
+    const [x,y]=arm.aim;
+    const progress=Math.min(1,b.strike.elapsed/b.strike.warning);
+    ctx.save();ctx.translate(x,y);ctx.rotate(.7*progress);
+    ctx.strokeStyle='#241728';ctx.lineWidth=10;ctx.beginPath();
+    ctx.moveTo(14,13);ctx.quadraticCurveTo(-3,-5,-24,-8-13*progress);ctx.stroke();
+    ctx.strokeStyle='#fff0c0';ctx.lineWidth=4;ctx.stroke();
+    ctx.beginPath();ctx.arc(-24,-8-13*progress,5,0,Math.PI*2);ctx.fillStyle='#fff0c0';ctx.fill();
+    ctx.restore();
+   }
   }
   ctx.restore();
   if(b.encounter?.cue==='warning'){
@@ -1950,15 +1974,13 @@ const PfertArt = (() => {
    for(let i=0;i<(b.charged?7:3);i++){const x=b.x+40+i*115,y=b.y+Math.sin(time*13+i)*w;arc(ctx,{x:x-30,y:b.y,tx:x+35,ty:y,life:1,maxLife:1})}
    ctx.restore();beamPulse(ctx,b,time);return;
   }
-  const fade=Math.min(1,b.life/.12),w=b.width*(.8+.12*Math.sin(time*59)),length=960-b.x;ctx.save();ctx.globalAlpha=fade;ctx.globalCompositeOperation='lighter';
-  ctx.fillStyle='#8d5fe71c';ctx.fillRect(b.x,b.y-w*1.8,length,w*3.6);ctx.fillStyle='#b281f44a';ctx.fillRect(b.x,b.y-w*.8,length,w*1.6);
-  ctx.fillStyle='#bc95eb';ctx.fillRect(b.x,b.y-w*.4,length,w*.8);ctx.fillStyle='#e8d5ff';ctx.fillRect(b.x,b.y-w*.18,length,w*.36);ctx.fillStyle='#fff9ee';ctx.fillRect(b.x,b.y-1,length,3);
-  ctx.fillStyle='#e5bbff';
-  for(let x=Math.round(b.x);x<960;x+=16){
-   const y=b.y+Math.sin(x*.05+time*28)*w*.68;
-   pixelRibbon(ctx,x,y,x+12,b.y+Math.sin((x+12)*.05+time*28)*w*.68,2,4);
-  }
-  ctx.restore();glow(ctx,b.x,b.y,w*1.6,'#ccb4ff55');beamPulse(ctx,b,time);
+  const fade=Math.min(1,b.life/.12),w=b.width,length=960-b.x;
+  ctx.save();ctx.globalAlpha=fade;
+  const edge=ctx.createLinearGradient(0,b.y-w/2,0,b.y+w/2);
+  edge.addColorStop(0,'#b281f400');edge.addColorStop(.5,'#b281f476');edge.addColorStop(1,'#b281f400');
+  ctx.fillStyle=edge;ctx.fillRect(b.x,b.y-w/2,length,w);
+  ctx.fillStyle='#fff9ee';ctx.fillRect(b.x,b.y-1,length,2);
+  ctx.restore();beamPulse(ctx,b,time);
  }
  const hostileGlowColors={needle:'#ff795980',sickle:'#f4aa6780',splitter:'#df617480',mortar:'#f8a16880',mine:'#e86a6180',pulse:'#ff704b80',football:'#ffa17f90',orb:'#e96b5380'};
  function hostile(ctx,s){g=ctx;const x=Math.round(s.x),y=Math.round(s.y),r=Math.max(7,s.w*.75)*(s.w<=8?1.5:1),kind=s.kind||'orb';ctx.save();
@@ -2136,6 +2158,10 @@ const PfertArt = (() => {
    if(fill>0&&fill<1){
     ctx.save();ctx.beginPath();ctx.rect(x-1,30,Math.round(16*fill)+1,20);ctx.clip();pixelHeart(ctx,x,33,true);ctx.restore();
    }
+  }
+  if(s.reserveName)label(ctx,'VORRAT · '+s.reserveName,18,53,8,'#ffc98f');
+  if(s.player.contractReward?.until>s.runTime){
+   label(ctx,'Käsezettel erfüllt · '+s.player.contractReward.text,480,61,9,'#fff0b0','center');
   }
   const rage=s.player.overdrive>0?s.player.overdrive/(s.player.metaRageMax||s.player.overdrive):(s.player.rage||0)/100,ready=s.player.rage>=100;
   label(ctx,s.player.overdrive>0?'KÄSERAUSCH!':ready?'KÄSERAUSCH BEREIT':'KÄSERAUSCH',138,19,11,ready||s.player.overdrive>0?'#d7faff':'#d0e3eb');

@@ -180,6 +180,29 @@ Direkttreffer, Brennen, Splitter, Ketten und Flächenschaden haben eigene Pfade.
 - Der Abzweig ab 4:04 nutzt die vorhandene Basarkulisse. Die breite obere Spur liefert Most, drei untere Siegel liefern ein Ausrüstungsteil aus dem verfügbaren Katalog. Im Palastgitter halbiert Feinflug ausschließlich den Bewegungsschritt. Die Windschattenprüfung läuft wie zuvor.
 - Der erste reguläre Pascha-Sieg friert die Runde zur Ergebniswahl ein. Abspann speichert den Arcade-Wert, Zugabe setzt die bestehende Runde fort. Zeit und Bossgutschriften laufen über denselben Talent-Checkpoint. Der zusätzliche Modus im lokalen Ergebnisdatensatz trennt die Ranglisten. Die Trefferlupe hält nur beim letzten Herzverlust das Bild, die Kollisionsmaße und gegebenenfalls die Geschossbewegung fest.
 
+## Reproduzierbare Balancemessung
+
+`node tests/test-balance-profile.cjs --boss-json` startet Sultan bei 10:00 und Pascha bei 15:00 mit Bedrohung 2, fünf Herzen, demselben Basisskill und Seed 731 + Boss-ID. Der Test steuert auf Segmenthöhe, vermeidet erkennbare Gefahren und protokolliert die Dauer, verlorene Herzen und abgespielte Spezialmuster. „Frisch“ startet ohne Karten und Wein. „Typisch“ erhält Schadensrang 3, Mehrfachschuss, Zielsuche und Frost je Rang 1. „Stark“ erhält Schaden und Tempo je Rang 5, Mehrfachschuss 4, Zielsuche 1, Frost, Fächerschuss und Brand je Rang 2. Beide ausgerüsteten Builds starten mit 18 s Weißwein.
+
+| Boss / Build | 1.1.3 Zeit / Herzen verloren | 1.1.4 Zeit / Herzen verloren | 1.1.6 Zeit / Herzen verloren |
+| --- | --- | --- | --- |
+| Sultan, frisch | Tod 120,6 s / 5 | Tod 120,6 s / 5 | Tod 121,2 s / 5 |
+| Sultan, typisch | Sieg 86,8 s / 3 | Sieg 57,6 s / 1 | Sieg 58,2 s / 3 |
+| Sultan, stark | Sieg 37,6 s / 1 | Sieg 19,5 s / 0 | Sieg 19,6 s / 0 |
+| Pascha, frisch | Tod 38,9 s / 5 | Tod 38,9 s / 5 | Tod 38,9 s / 5 |
+| Pascha, typisch | Tod 54,2 s / 5 | Tod 54,2 s / 5 | Tod 54,2 s / 5 |
+| Pascha, stark | Tod 26,0 s / 5 | Tod 51,7 s / 5 | Tod 51,7 s / 5 |
+
+Vergleichsbasis sind die Commits `433cb8a` und `4097ecc`. Der starke Build der 1.1.4 sah den angekündigten Kesseldruck ohne Abschuss. In 1.1.6 wartet der Sultan nach seinen ersten Dampfdüsen höchstens 0,35 s bis zum Beginn der nächsten Warnung. Die Warnzeit selbst bleibt erhalten. Damit spielen im Modell alle sechs Läufe beide Spezialmuster ihres Bosses aus. Der starke Pascha-Versuch endet mit 47,6 Boss-HP. Das ist ein Ergebnis der festgelegten Fluglogik, keine Aussage über menschliche Siegchancen.
+
+Die zwei Einstiegsstrategien des Tests erreichten mit den neuen Flugprofilen die erste Karte weiterhin bei 38,6 s. Beim sofortigen Einsatz des Käserauschs endete die Simulation bei 219,9 statt 359,8 s mit sieben statt fünf Herzverlusten. Beim Aufsparen stieg die Dauer von 206,3 auf 223,2 s bei je sieben Herzverlusten. Diese Einzelläufe zeigen, wie verschieden derselbe Gegnerdruck auf zwei Flugstrategien wirkt. Spielgefühl und Schwierigkeitskurve brauchen einen menschlichen Durchlauf.
+
+## Übungen und persönliche Zeiten ab 1.1.6
+
+- **Großwesir-Training.** Menü und Basisskill-Auswahl starten den normalen Basar-Großwesir direkt. Sieg, Niederlage und Rundenabbruch führen zum ungewerteten Ergebnis mit Wiederholung desselben Basisskills. Beim Einflug startet der Boss rechts außerhalb des Canvas. Beim Ausholen zeigt der intakte Arm eine animierte Kontur, gebrochene Arme werden aus dem Sprite ausgespart. Eine zurückgenommene Kulisse und ein Portwein-Laser mit schmalem Kern und transparentem Rand lassen Treffer und Feindgeschosse besser erkennen.
+- **Sternenpost-Kurierlauf.** Der 90-Sekunden-Kurs hat 19 fest getaktete Gegner und vier Routen mit jeweils drei festen Siegeln. Die Wellen greifen mit festen Feuerintervallen an. Ein vollständiger Satz bringt ein Herz, fünf Sekunden schnelleres Fliegen und 1,5 Sekunden Schutz. Der Kurs verwendet die normalen Flugregeln ohne Talentboni, automatisches Feuer oder Kartenaufstieg. Beide Übungsmodi schreiben weder die Punktetafel noch Talentfortschritt.
+- **Persönliche Bestlaufzeit.** Beim gewerteten Ergebnis wird die Überlebenszeit in ganzen Sekunden mit dem bisherigen Maximum desselben Basisskills und derselben Wertungsart verglichen. Ein eigener lokaler Speicher hält den Rekord fest, auch wenn der Eintrag aus den letzten zehn Runden fällt. Alte Punktetafeleinträge ohne Skill bleiben lesbar und gehen in keinen Skillvergleich ein.
+
 ## Änderungen vorbereiten
 
 1. Bei einer neuen Regel zuerst in der [Roadmap](ROADMAP.md) den gewünschten Effekt und die betroffenen Fälle festhalten. Für Zahlenänderungen Startwert, Multiplikatoren, Rundung und mindestens einen konkreten Zielwert angeben. Bei Bossen zusätzlich Boss-ID, Segment und Vergleichs-Bedrohung festlegen.
