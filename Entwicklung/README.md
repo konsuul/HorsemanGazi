@@ -145,6 +145,8 @@ Kampflicht reagiert lokal auf geladene Geschosse und Treffer. Die Bosskörper be
 
 ## Flugmanöver und Sternenpost
 
+Im regulären Gegnerstrom kommen einige Gegner diagonal von oben oder unten. Ab etwa zwei Minuten preschen einzelne Gegner vor und halten zwischen zwei hellen Winkeln an. Am Ende der Warnung peilen sie das Pfert einmal an. Ein seitlicher Spurwechsel beim Losstürmen lässt die Attacke vorbeigehen.
+
 - **Umgebungsgefahren** — Ab 2:49 können Arkadenfeuer, Fallgitter, Kreuzfeuer, Flutkammer und Palastgitter zwei oder drei Gefahrwellen auslösen. Das Spielfeld wird grau. Pfeile weisen zwischen die gestrichelten Gefahrenzonen. Wechsle rechtzeitig in die neue Spur, die auch senkrecht verlaufen kann. Eine berührungsfreie Passage bringt je nach Gebiet 350 oder 450 Punkte.
 
 - **Windschatten** — Innerhalb von 2,5 Sekunden drei verschiedene Feindgeschosse knapp passieren. Das bringt zusätzlich zu den Streifpunkten 125 Punkte und zieht bei jeder nachladenden Patrone bis zu 1,5 Sekunden ab. Ein Herzverlust unterbricht die Serie. Im HUD zeigen drei Rauten den Stand.

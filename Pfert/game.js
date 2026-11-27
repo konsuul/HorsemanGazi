@@ -1297,6 +1297,79 @@ function dropOrb(x,y,value,speed=32.5,kind='normal',tier=1){
  const orb={x:clamp(x,22,W-22),y:clamp(y,85,H-22),w:16,h:16,value,speed,age:0,kind,tier};
  orbs.push(orb);return orb;
 }
+const aimedRushStart=115,aimedRushWindup=.65,aimedRushSpeed=510,aimedRushDuration=1.2;
+const diagonalTypes=new Set([1,4]),aimedRushTypes=new Set([2,5]);
+function rushEncounterActive(){
+ const districtStart=Math.floor(t/districtDuration)*districtDuration;
+ const district=Math.floor(t/districtDuration)%levels.length;
+ const imminent=[nextBoss,nextRareEnemy,districtStart+formationSchedule[district][0],
+  districtStart+levelHazards[district].offset].some(at=>at>=t&&at-t<3);
+ return !!(imminent||secret||boss||golden||formation||arcadeFire||starRoute||
+  enemies.some(unit=>unit.hp>0&&(unit.formation||unit.blocker||unit.rareEnemy||unit.rear)));
+}
+function assignEnemyFlight(unit){
+ if(diagonalTypes.has(unit.i)){
+  const direction=player.diagonalDirection??1;
+  player.diagonalDirection=-direction;
+  unit.flight={phase:'diagonal',direction};
+  unit.y=clamp(unit.y,155,435)-direction*57;
+ }else if(aimedRushTypes.has(unit.i)&&t>=aimedRushStart&&threat>=.25&&
+  t>=(player.nextAimedRush||0)&&!rushEncounterActive()&&
+  !enemies.some(enemy=>enemy.hp>0&&!enemy.exited&&enemy.flight&&
+   enemy.flight.phase!=='diagonal'&&enemy.flight.phase!=='exit')){
+  unit.flight={phase:'approach'};
+  player.nextAimedRush=t+Math.max(10,18-2*threat);
+ }
+}
+function aimedRushHasRoom(e){
+ return e.x-player.x>=145&&Math.hypot(e.x-player.x,e.y-player.y)>=210;
+}
+function moveEnemyFlight(e,dt){
+ const f=e.flight,pace=1-(e.slow||0);
+ if(f.phase==='diagonal'){
+  e.x-=e.speed*dt*pace;
+  e.y=clamp(e.y+94*f.direction*dt*pace,95,495);
+  if(e.x<=W-170)e.flight=null;
+ }else if(f.phase==='approach'){
+  e.x=Math.max(650,e.x-220*dt*pace);
+  if(e.x>650)return;
+  if(!rushEncounterActive()&&aimedRushHasRoom(e)){
+   f.phase='aim';f.wait=aimedRushWindup;e.aimTarget=null;
+  }else f.phase='exit';
+ }else if(f.phase==='aim'){
+  f.wait-=dt;
+  if(f.wait>1e-8)return;
+  if(rushEncounterActive()||!aimedRushHasRoom(e)){f.phase='exit';return}
+  const dx=player.x-e.x,dy=player.y-e.y,length=Math.hypot(dx,dy);
+  Object.assign(f,{phase:'dash',vx:dx/length*aimedRushSpeed,vy:dy/length*aimedRushSpeed,remaining:aimedRushDuration});
+ }else if(f.phase==='dash'){
+  const step=Math.min(dt,f.remaining);
+  e.x+=f.vx*step*pace;e.y+=f.vy*step*pace;
+  f.remaining-=step;
+  if(f.remaining<=1e-8){f.phase='exit';e.fire=Math.max(e.fire,.8)}
+ }else{
+  e.x-=e.speed*dt*pace;
+ }
+}
+function sweptEnemyContact(e,oldX,oldY,playerX,playerY){
+ // Use relative motion to catch a crossing even if both boxes miss at frame end.
+ let first=0,last=1;
+ for(const [from,to,half] of [
+  [oldX-playerX,e.x-player.x,(e.w+player.w-8)/2],
+  [oldY-playerY,e.y-player.y,(e.h+player.h-8)/2]
+ ]){
+  const delta=to-from;
+  if(delta===0){if(Math.abs(from)>=half)return false;continue}
+  const a=(-half-from)/delta,b=(half-from)/delta;
+  first=Math.max(first,Math.min(a,b));last=Math.min(last,Math.max(a,b));
+  if(first>=last)return false;
+ }
+ return true;
+}
+function enemyFlightOutside(e){
+ return !!e.flight&&(e.y+e.h/2<62||e.y-e.h/2>H||
+  (e.flight.phase==='dash'||e.flight.phase==='exit')&&e.x+e.w/2<0);
+}
 const enemyRushStart=1.1,enemyRushEnd=enemyRushStart+.45*1.4;
 function enemySpeed(e,dt=0){
  const phase=e.age%3;
@@ -2105,7 +2178,10 @@ function spawnRegularEnemy(){
   const unit=enemy([2,5,8][kind],y);
   unit.machine=['weaver','diver','beacon'][kind];
   unit.fire=1.75;
- }else enemy(type,y);
+ }else{
+  const unit=enemy(type,y);
+  if(!secret)assignEnemyFlight(unit);
+ }
  spawnIndex++;
  spawn+=1;
 }
@@ -3025,6 +3101,7 @@ function updateGameplay(dt){
  const gearSpeed=1+gearBonus('speed')+gearBonus(player.overdrive>0?'rageSpeed':'calmSpeed')+(hearts<=2?gearBonus('lowSpeed'):0);
  const fine=arcadeFire&&levelIndex===4&&(keys.has('ShiftLeft')||keys.has('ShiftRight')||flightPad.fine);
  const travel=speed*gearSpeed*dt/len*(fine?.5:1);
+ const playerX=player.x,playerY=player.y;
  player.x=clamp(player.x+dx*travel,30,W-32);
  player.y=clamp(player.y+dy*travel,90,H-34);
  const power=player.fieldPower;
@@ -3141,8 +3218,13 @@ function updateGameplay(dt){
  for(const e of enemies){
   e.age+=dt;e.shatterCooldown=Math.max(0,(e.shatterCooldown||0)-dt);e.flash=Math.max(0,e.flash-dt);e.slowTime=Math.max(0,(e.slowTime||0)-dt);if(e.slowTime<=0)e.slow=0;
   if(e.burnLife>0&&e.hp>0){e.burnLife-=dt;e.metaLastDamage=e.burnDps*dt;e.hp-=e.metaLastDamage;eruptElement('fire',e);if(e.hp<=0)death(e)}
-  if(e.hp<=0)continue;
-  if(e.patrol){
+  if(e.hp<=0||e.exited)continue;
+  const oldX=e.x,oldY=e.y;
+  const attackPhase=e.flight?.phase;
+  if(e.flight){
+   moveEnemyFlight(e,dt);
+   if(enemyFlightOutside(e))e.exited=true;
+  }else if(e.patrol){
    if(e.age>=e.lifetime){e.hp=0;continue}
    moveBlockerPatrol(e,dt);
   }else{
@@ -3158,7 +3240,8 @@ function updateGameplay(dt){
     e.y=clamp(e.y+verticalSpeed*(1-(e.slow||0))*dt,95,495);
    }
   }
-  if(!e.patrol&&e.x-e.w/2<W&&e.x+e.w/2>0){
+  const aimingOrDashing=attackPhase==='aim'||attackPhase==='dash'||e.flight?.phase==='aim';
+  if(!aimingOrDashing&&!e.exited&&!e.patrol&&e.x-e.w/2<W&&e.x+e.w/2>0){
    const fireRate=e.formation||e.machine||e.rareEnemy||e.rear||e.blocker?1:.7;
    e.fire-=dt*(1-(e.slow||0)*.4)*fireRate;
    if(e.fire<=.55*fireRate&&!e.aimTarget)e.aimTarget={x:player.x,y:player.y};
@@ -3172,7 +3255,7 @@ function updateGameplay(dt){
    e.salvage=Math.hypot(player.x-e.x,player.y-e.y)<78?(e.salvage||0)+dt:0;
    if(e.salvage>=2){e.salvaged=true;player.scrap=true;notice=2;noticeText='BAUTEIL · NÄCHSTE PATRONE +50 %'}
   }
-  if(hit(player,e,8)){
+  if(hit(player,e,8)||attackPhase==='dash'&&sweptEnemyContact(e,oldX,oldY,playerX,playerY)){
    hurt('contact',e.x,e.y);
    if(state!=='playing')return;
   }
@@ -3188,7 +3271,7 @@ function updateGameplay(dt){
   const rocket=b.style==='rocket';
   if(rocket&&b.life<=0)continue;
   if(!rocket&&golden&&hit(b,golden)){score+=500;beginTransition('enter');break}
-  for(const e of enemies){if(e.hp<=0||e===b.returnContact||b.hit.has(e)||!hit(b,e))continue;
+  for(const e of enemies){if(e.hp<=0||e===b.returnContact||e.exited||b.hit.has(e)||!hit(b,e))continue;
    b.hit.add(e);e.lastCharged=!!(b.charged||b.sourceCharged);e.lastImpact=b.style;
    damageEnemy(e,modifyDirectHit(e,b.damage||1,b,false,b.x,b.y),b.x,b.y);
    if(!rocket)onHit(b,e,b.x,b.y);
@@ -3249,7 +3332,7 @@ function updateGameplay(dt){
  for(const r of rings)r.life-=dt;for(const a of arcs)a.life-=dt;for(const f of flashes)f.life-=dt;
  for(const effect of elementalBursts)effect.life-=dt;
  elementalBursts=elementalBursts.filter(effect=>effect.life>0);
- enemies=enemies.filter(e=>e.hp>0&&(e.patrol||e.x>-100&&(!e.rear||e.x-e.w/2<W)));bullets=bullets.filter(b=>!b.dead&&b.life>0&&b.x<W+60&&b.x>-60&&b.y>-50&&b.y<H+50);
+ enemies=enemies.filter(e=>e.hp>0&&!e.exited&&(e.patrol||e.x>-100&&(!e.rear||e.x-e.w/2<W)));bullets=bullets.filter(b=>!b.dead&&b.life>0&&b.x<W+60&&b.x>-60&&b.y>-50&&b.y<H+50);
  shots=shots.filter(s=>s.life>0&&s.x>-30&&s.x<W+30&&s.y>-30&&s.y<H+30);pickups=pickups.filter(p=>!p.dead&&p.x>-30);
  particles=particles.filter(p=>p.life>0);deaths=deaths.filter(d=>d.life>0);rings=rings.filter(r=>r.life>0);beams=beams.filter(b=>b.life>0);arcs=arcs.filter(a=>a.life>0);flashes=flashes.filter(f=>f.life>0).slice(-28);
  collectGear();
@@ -3343,6 +3426,23 @@ function drawFormationWarning(){
  }
  c.restore();
 }
+function strokeFieldMark(){
+ c.strokeStyle='#182033';c.lineWidth=5;c.stroke();
+ c.strokeStyle='#fff0bb';c.lineWidth=2;c.stroke();
+}
+function drawEnemyFlightWarning(e){
+ if(e.hp<=0||e.exited)return;
+ const x=e.x;
+ if(e.flight?.phase==='aim'){
+  const spread=18+14*clamp(e.flight.wait/aimedRushWindup,0,1);
+  c.beginPath();
+  for(const side of [-1,1]){
+   const edge=x+side*(e.w/2+spread);
+   c.moveTo(edge+side*8,e.y-12);c.lineTo(edge,e.y);c.lineTo(edge+side*8,e.y+12);
+  }
+  strokeFieldMark();
+ }
+}
 function drawGearDrop(drop){
  const {x,y,life,item}=drop;
  PfertArt.gearMedallion(c,x,y,item.slot,gearRarities[item.rarity].color,Math.min(1,life/gearDropDuration));
@@ -3434,6 +3534,7 @@ function render(still=false){
   c.fillStyle=e.leader?'#ffd05b':'#a6f7ed';c.font='bold 15px sans-serif';
   c.fillText(e.leader?'③ CHEF':'①② WACHE',e.x-28,e.y-e.h/2-5);
  }
+ for(const e of enemies)drawEnemyFlightWarning(e);
  drawFormationWarning();
  if(boss?.i===0&&!boss.breakChoice){
   c.fillStyle='#ffe6a6';c.font='14px sans-serif';

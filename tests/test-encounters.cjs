@@ -43,6 +43,7 @@ vm.runInContext(code('art.js'), sandbox);
 vm.runInContext(code('game.js').replace(/\}\)\(\);\s*$/, `
 globalThis.encounters = {
  testRules:${testPermute.toString()},
+ testFlights:${testEnemyFlights.toString()},
  cartridges:()=>cartridges,chooseCartridge:id=>{choices=[cardDefs.find(c=>c.id===id)];state='upgrade';chooseCard(0);xp=0},
  fireCharge,bullets:()=>bullets,beams:()=>beams,readyTime:time=>{runTime=time},damagePart,enemy,
  spawnsFrom:index=>{spawnIndex=index;nextRareEnemy=Infinity},
@@ -70,6 +71,75 @@ function advance(seconds) {
  for (let i = 0; i < Math.round(seconds * 20); i++) game.update(.05);
 }
 
+function testEnemyFlights(){
+ const near=(actual,expected)=>assert.ok(Math.abs(actual-expected)<1e-7,`${actual} ≠ ${expected}`);
+ const fresh=(time=160,pressure=1)=>{
+  reset();t=time;threat=pressure;spawn=drop=xpNeeded=Infinity;
+  player.autoCooldown=Infinity;nextRareEnemy=nextStarRoute=Infinity;
+ };
+ const regular=index=>{
+  spawnIndex=index;spawnRegularEnemy();return enemies.at(-1);
+ };
+ fresh(110);
+ const down=regular(1),up=regular(5);
+ assert.equal(down.i,1);assert.equal(up.i,1);
+ for(const e of [down,up]){
+  const x=e.x,y=e.y;
+  moveEnemyFlight(e,.1);near(e.x,x-e.speed*.1);near(e.y,y+9.4*e.flight.direction);
+ }
+ assert.equal(down.flight.direction,1);assert.equal(up.flight.direction,-1);
+ const wave=enemy(1,210);assert.equal(wave.flight,undefined);
+ assert.equal(regular(3).flight,undefined);
+ fresh(114,.8);assert.equal(regular(2).flight,undefined);
+ fresh(160,.2);assert.equal(regular(2).flight,undefined);
+ fresh(160,1);formation={};assert.equal(regular(2).flight,undefined);
+ fresh(160,1);
+ const rush=regular(2);assert.equal(rush.flight.phase,'approach');
+ assert.equal(rush.hp,rush.max);
+ const cooldown=player.nextAimedRush-t;assert.equal(cooldown,16);
+ assert.equal(regular(5).flight,undefined);
+ const x=rush.x;
+ rush.slow=.5;moveEnemyFlight(rush,.1);near(x-rush.x,11);rush.slow=0;
+ rush.x=656;rush.y=220;rush.fire=.001;
+ update(.05);assert.equal(rush.x,650);assert.equal(rush.flight.phase,'aim');
+ assert.equal(shots.length,0);
+ const wait=rush.flight.wait;
+ pauseGame();update(.4);assert.equal(rush.flight.wait,wait);resumeGame();
+ player.y=310;
+ for(let i=0;i<13;i++)update(.05);
+ assert.equal(rush.x,650);assert.equal(rush.flight.phase,'dash');assert.equal(shots.length,0);
+ const {vx,vy}=rush.flight;
+ near(Math.hypot(vx,vy),510);near(vy/vx,(310-rush.y)/(player.x-rush.x));
+ player.y=100;const oldY=rush.y;rush.slow=.5;rush.slowTime=1;
+ update(.05);near(rush.y-oldY,vy*.025);assert.equal(rush.flight.vy,vy);
+ rush.flight.remaining=.01;update(.05);assert.equal(rush.flight.phase,'exit');
+ rush.x=-rush.w;
+ update(.05);assert.ok(!enemies.includes(rush));assert.equal(score,0);
+ fresh(160,3);assert.equal(regular(2).flight.phase,'approach');assert.equal(player.nextAimedRush-t,12);
+ player.x=630;
+ const blocked=enemies[0];blocked.x=655;moveEnemyFlight(blocked,.05);
+ assert.equal(blocked.flight.phase,'exit');
+ fresh();
+ const nearAtLock=regular(2);nearAtLock.x=655;
+ moveEnemyFlight(nearAtLock,.05);assert.equal(nearAtLock.flight.phase,'aim');
+ player.x=620;moveEnemyFlight(nearAtLock,.65);assert.equal(nearAtLock.flight.phase,'exit');
+ fresh();
+ const crossing=enemy(2,player.y);
+ crossing.x=player.x+100;crossing.flight={phase:'dash',vx:-510,vy:0,remaining:1};
+ update(.4);assert.equal(hearts,MAX_HEARTS-1);
+ fresh();
+ const dodged=enemy(2,player.y-85);
+ dodged.x=player.x+100;dodged.flight={phase:'dash',vx:-510,vy:0,remaining:1};
+ update(.4);assert.equal(hearts,MAX_HEARTS);
+ dodged.y=H+dodged.h;update(.05);assert.ok(!enemies.includes(dodged));
+
+}
+if(process.argv.length===2||process.argv.includes('--flight-profiles')){
+ sandbox.assert=assert;
+ game.testFlights();
+ console.log('OK: Diagonalen, Ansturmphasen, Frost, Pause, Kontakt, Druckbegrenzung.');
+ if(process.argv.includes('--flight-profiles'))process.exit(0);
+}
 function testPermute(){
   const fresh=skill=>{reset(skill);player.autoCooldown=Infinity;spawn=drop=xpNeeded=Infinity};
   const pop=(i)=>drinkBottle({i,x:player.x,y:player.y});
