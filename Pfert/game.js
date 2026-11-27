@@ -2417,17 +2417,24 @@ function setupSegments(b){
  b.hp=b.parts.reduce((sum,p)=>sum+p.hp,0);b.max=b.hp;return b;
 }
 function partHit(rect,b,part){
- const x=rect.x-b.x,y=rect.y-b.y,rotated=!!rect.angle;
- const left=(rotated?0:x)-rect.w/2,right=left+rect.w,top=(rotated?0:y)-rect.h/2,bottom=top+rect.h;
- if(!rotated&&(right<part.dx-part.w/2||left>part.dx+part.w/2||bottom<part.dy-part.h/2||top>part.dy+part.h/2))return false;
- let polygon=part.points;
- if(rotated){
-  const {cos,sin}=rect;
-  polygon=polygon.map(([px,py])=>[(px-x)*cos+(py-y)*sin,(py-y)*cos-(px-x)*sin]);
+ const cx=rect.x-b.x,cy=rect.y-b.y,hw=rect.w/2,hh=rect.h/2;
+ if(!rect.angle&&(Math.abs(cx-part.dx)>hw+part.w/2||Math.abs(cy-part.dy)>hh+part.h/2))return false;
+ const cos=rect.angle?rect.cos:1,sin=rect.angle?rect.sin:0;
+ // Test the outline against the box in shot coordinates. A concave handle can surround empty air.
+ const local=([x,y])=>[(x-cx)*cos+(y-cy)*sin,(y-cy)*cos-(x-cx)*sin];
+ let [ax,ay]=local(part.points.at(-1)),inside=false;
+ for(const point of part.points){
+  const [bx,by]=local(point);
+  if((ay>0)!==(by>0)&&ax-ay*(bx-ax)/(by-ay)>0)inside=!inside;
+  if(Math.abs(bx)<=hw&&Math.abs(by)<=hh)return true;
+  if(Math.max(ax,bx)>=-hw&&Math.min(ax,bx)<=hw&&Math.max(ay,by)>=-hh&&Math.min(ay,by)<=hh){
+   // Project onto the edge normal; the other separating axes are the two box axes above.
+   const dx=bx-ax,dy=by-ay;
+   if(Math.abs(ax*dy-ay*dx)<=hw*Math.abs(dy)+hh*Math.abs(dx))return true;
+  }
+  ax=bx;ay=by;
  }
- for(const [axis,edge,sign] of [[0,left,1],[0,right,-1],[1,top,1],[1,bottom,-1]]){
-  const clipped=[];for(let i=0;i<polygon.length;i++){const a=polygon[i],b=polygon[(i+1)%polygon.length],insideA=(a[axis]-edge)*sign>=0,insideB=(b[axis]-edge)*sign>=0;if(insideA)clipped.push(a);if(insideA!==insideB){const t=(edge-a[axis])/(b[axis]-a[axis]);clipped.push([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t])}}polygon=clipped;if(!polygon.length)return false;
- }return true;
+ return inside;
 }
 function beamHitsBox(rect,box){
  const dx=box.x-rect.x,dy=box.y-rect.y;

@@ -476,7 +476,7 @@ testRocketPickup();
 function testBossRocketTarget(){
  for(let phase=0;phase<6;phase++){
   reset();a.startBoss();a.setRunTime(phase*Math.PI/9);
-  const {boss,player}=a.get(),armor=boss.parts.find(part=>part.role===1);
+  const {boss,player}=a.get(),armor=boss.parts.find(part=>part.name==='Linker Arm');
   boss.fire=999;
   player.x=boss.x-195;player.y=boss.y+armor.aim[1];
   const power=player.fieldPower,nextPickup=power.dropIn;
@@ -630,7 +630,7 @@ reset();a.get().shots.push({x:700,y:160,vx:-60,vy:20,w:10,h:10,life:4});for(let 
 for(const age of [.02,.12,.28,.5,.65]){reset();e=placeTarget(400,268,.5);shoot();a.get().bullets[0].x=400;a.update(.01);a.get().deaths[0].age=age;a.render()}
 reset();a.startBoss();for(const part of a.get().boss.parts)part.hp=part.max*.2;a.render();
 // Boss body layouts have different counts and isolated hit reactions.
-for(let i=0;i<7;i++){reset();for(let j=0;j<=Math.min(i,4);j++)a.startBoss();let boss=a.get().boss;if(i>=5){boss.i=i;const layout=vm.runInContext('PfertArt.bossLayout('+i+')',sandbox);boss.parts=layout.map(p=>{const xs=p.points.map(v=>v[0]),ys=p.points.map(v=>v[1]);return {...p,dx:(Math.min(...xs)+Math.max(...xs))/2,dy:(Math.min(...ys)+Math.max(...ys))/2,w:Math.max(...xs)-Math.min(...xs),h:Math.max(...ys)-Math.min(...ys),hp:20,max:20,flash:0}})}assert.equal(boss.parts.length,[3,4,2,3,5,4,5][i]);for(const part of boss.parts){assert.ok(a.partHit({x:boss.x+part.aim[0],y:boss.y+part.aim[1],w:2,h:2},boss,part),'Treffpunkt liegt im Bereich '+i+':'+part.name);assert.equal(a.partHit({x:boss.x-300,y:boss.y,w:2,h:2},boss,part),false)}const target=boss.parts[0],before=boss.parts.map(p=>p.hp);a.get().bullets.push(bullet(boss.x+target.aim[0],boss.y+target.aim[1]));a.update(.01);assert.ok(target.hp<before[0]&&target.flash>0,'getroffene Fläche blitzt');for(let j=1;j<boss.parts.length;j++)assert.equal(boss.parts[j].hp,before[j],'andere Bereiche bleiben unbeschädigt');a.render()}
+for(let i=0;i<7;i++){reset();for(let j=0;j<=Math.min(i,4);j++)a.startBoss();let boss=a.get().boss;if(i>=5){boss.i=i;const layout=vm.runInContext('PfertArt.bossLayout('+i+')',sandbox);boss.parts=layout.map(p=>{const xs=p.points.map(v=>v[0]),ys=p.points.map(v=>v[1]);return {...p,dx:(Math.min(...xs)+Math.max(...xs))/2,dy:(Math.min(...ys)+Math.max(...ys))/2,w:Math.max(...xs)-Math.min(...xs),h:Math.max(...ys)-Math.min(...ys),hp:20,max:20,flash:0}})}assert.equal(boss.parts.length,[5,4,2,3,5,6,5][i]);for(const part of boss.parts){assert.ok(a.partHit({x:boss.x+part.aim[0],y:boss.y+part.aim[1],w:2,h:2},boss,part),'Treffpunkt liegt im Bereich '+i+':'+part.name);assert.equal(a.partHit({x:boss.x-300,y:boss.y,w:2,h:2},boss,part),false)}const target=boss.parts[0],before=boss.parts.map(p=>p.hp);a.get().bullets.push(bullet(boss.x+target.aim[0],boss.y+target.aim[1]));a.update(.01);assert.ok(target.hp<before[0]&&target.flash>0,'getroffene Fläche blitzt');for(let j=1;j<boss.parts.length;j++)assert.equal(boss.parts[j].hp,before[j],'andere Bereiche bleiben unbeschädigt');a.render()}
 // Elemental powerups apply to taps, charge shots, echoes, shards and beams.
 for(const [weapon,element] of [[0,'fire'],[1,'frost'],[3,'lightning'],[6,'earth']]){equip(weapon);shoot();const attack=a.get().bullets[0]||a.get().beams[0];assert.ok(attack.elements[element],'Powerup verleiht '+element)}
 equip(0);e=placeTarget(400,268,100);shoot();a.get().bullets[0].x=400;a.update(.01);assert.ok(e.burnLife>0&&e.burnDps>0,'Rotwein brennt ohne Karte');hp=e.hp;a.update(.1);assert.ok(e.hp<hp,'Feuer verursacht Folgeschaden');
