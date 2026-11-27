@@ -149,6 +149,7 @@ for(let index=0;index<9;index++){
  a.defeatSegment(parts.at(-1));
  assert.equal(scene().gearDrops.length,1);
  const [loot]=scene().gearDrops;
+ if(index===2){assert.equal(scene().state,'encore');element('encore').click()}
  if(returning){
   assert.equal(scene().state,'transition');
   assert.equal(loot.returning,true);

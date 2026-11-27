@@ -42,6 +42,7 @@ vm.createContext(sandbox);
 vm.runInContext(code('art.js'), sandbox);
 vm.runInContext(code('game.js').replace(/\}\)\(\);\s*$/, `
 globalThis.encounters = {
+ testRules:${testPermute.toString()},
  cartridges:()=>cartridges,chooseCartridge:id=>{choices=[cardDefs.find(c=>c.id===id)];state='upgrade';chooseCard(0);xp=0},
  fireCharge,bullets:()=>bullets,beams:()=>beams,readyTime:time=>{runTime=time},damagePart,enemy,
  spawnsFrom:index=>{spawnIndex=index;nextRareEnemy=Infinity},
@@ -69,6 +70,109 @@ function advance(seconds) {
  for (let i = 0; i < Math.round(seconds * 20); i++) game.update(.05);
 }
 
+function testPermute(){
+  const fresh=skill=>{reset(skill);player.autoCooldown=Infinity;spawn=drop=xpNeeded=Infinity};
+  const pop=(i)=>drinkBottle({i,x:player.x,y:player.y});
+  const step=()=>update(.01);
+  const bossPart=(role)=>boss.parts.find(part=>part.role===role);
+  for(const first of [1,2]){
+   fresh();startBoss();const core=bossPart(0);
+   damagePart(bossPart(first),Infinity,0,0);
+   const hp=core.hp;damagePart(core,10,0,0);
+   assert.equal(Math.round(hp-core.hp),first===1?16:10);
+   boss.volleyIndex=2;bossVolley(boss);updateBossSpecial(boss,1);
+   const count=shots.filter(s=>!s.bonus).length;
+   assert.equal(count,first===1?6:3);
+  }
+  for(const [wine,id] of [[6,'element'],[9,'laser']]){
+   fresh(baseSkills.find(s=>s.id===id));pop(wine);player.effects[wine]=.005;step();
+   for(let n=3;n>0;n--){
+    assert.equal(player.echoVolleys,n);fireCharge();
+    if(wine===6){
+     const shot=bullets.at(-1);const target=enemy(0,180);
+     onHit(shot,target,300,180);
+     assert.ok(bullets.some(b=>b.generation===1&&b.elements.fire>0));
+    }else{assert.ok(player.moonPulses[0]>runTime);update(.15);update(.015);assert.ok(beams.some(b=>b.moon))}
+   }
+   assert.equal(player.echoVolleys,0);bullets=[];beams=[];fireCharge();
+   assert.ok(!player.moonPulses?.length&&!bullets.some(b=>b.split));
+  }
+  fresh();player.contract=1;runTime=119.995;step();assert.equal(score,250);step();assert.equal(score,250);
+  fresh();player.contract=1;pop(6);runTime=120;step();assert.equal(score,0);
+  for(const hp of [3,4]){
+   fresh();hearts=hp;player.contract=2;startBoss();
+   const parts=boss.parts;for(const part of parts)damagePart(part,Infinity,0,0);
+   assert.equal(score,500*parts.length+2000+(hp>=4?250:0));assert.equal(player.contract,0);
+  }
+  function formationScore(leaderFirst){
+   fresh();levelIndex=1;t=districtDuration+27;updateFormation(t-.01);
+   t=formation.releaseAt;updateFormation(t-.01);const units=enemies.slice();
+   units.sort((a,b)=>(Number(a.leader)-Number(b.leader))*(leaderFirst?-1:1));
+   for(const e of units){e.elite=false;e.i=1;e.hp=0;death(e)}
+   return score;
+  }
+  assert.equal(formationScore(false)-formationScore(true),250);
+  fresh();secret=true;const diver=enemy(5,200);
+  Object.assign(diver,{machine:'diver',fire:Infinity,speed:0,x:player.x+55});
+  for(let i=0;i<41;i++){diver.y=player.y;update(.05)}
+  assert.equal(player.scrap,true);upgrades.sunLance=1;dischargeCartridge();
+  const enhanced=beams.at(-1).damage;assert.equal(player.scrap,false);
+  runTime+=10;dischargeCartridge();assert.equal(enhanced,beams.at(-1).damage*1.5);
+  fresh();secretType=2;startRuhrBoss();boss.fire=.8;
+  updateBoss(.01);assert.match(boss.cue,/1\/3/);updateBoss(.26);assert.match(boss.cue,/2\/3/);
+  updateBoss(.26);assert.match(boss.cue,/3\/3/);updateBoss(.4);
+  boss.fire=.8;updateBoss(.01);assert.match(boss.cue,/DAMPF/);
+  fresh();hearts=1;hurt('projectile',90,100,{x:140,y:270,w:10,h:8,vx:-90,vy:15});
+  assert.equal(state,'over');assert.equal(player.fatalFrame.shot.vx,-90);
+  showHitFrame();assert.equal(state,'inspect');closeHitFrame();assert.equal(state,'over');
+  fresh();pop(6);keys.add('KeyR');pickups.push({i:9,x:player.x,y:player.y,w:30,h:42,age:0});step();
+  assert.equal(player.reserve,9);assert.equal(activeWeapon(),6);recallBottle();assert.equal(activeWeapon(),9);
+  const duration=player.effects[9];step();recallBottle();assert.ok(player.effects[9]<duration);
+  for(const wait of [.2,.3]){
+   fresh();startBoss();boss.volleyIndex=2;bossVolley(boss);boss.special.wait=wait;
+   player.rage=100;activateRage();updateBossSpecial(boss,1);
+   assert.equal(orbs.length,wait===.2?4:0);assert.equal(shots.length===0,wait===.2);
+   assert.equal(activateRage(),false);
+  }
+  for(const encore of [false,true]){
+   fresh();bossCount=2;startBoss();for(const part of boss.parts)damagePart(part,Infinity,0,0);
+   assert.equal(state,'encore');const frozen=runTime;update(1);assert.equal(runTime,frozen);
+   if(encore){continueEncore();assert.equal(state,'playing');assert.equal(player.encore,true)}
+   else{end(false,true);assert.equal(state,'over');const scores=recentScores.length;end(false,true);assert.equal(recentScores.length,scores)}
+  }
+  // A full projectile pool and unrelated shots cannot mint XP for an unspawned wave.
+  fresh();startBoss();boss.volleyIndex=2;bossVolley(boss);boss.special.wait=.1;
+  for(let i=0;i<216;i++)shots.push(hostileProjectile(-50,200,0,0));
+  player.rage=100;activateRage();updateBossSpecial(boss,1);
+  assert.equal(shots.length,216);assert.equal(orbs.length,0);
+  for(const front of [true,false]){
+   fresh();pop(2);player.effects[2]=4;player.podCooldown=100;corkBlock();
+   shots.push(hostileProjectile(player.x+(front?6:-6),player.y,front?-1:1,0,'pink',12,{bossSpecial:'Teppichwand'}));
+   step();assert.equal(hearts,front?5:4);assert.equal(player.effects[2]>4,front);
+  }
+  fresh();levelIndex=1;t=bazaarStart+4;updateStarRoute(0);assert.equal(starRoute.fork,true);
+  assert.ok(pickups.find(p=>p.forkJuice));const route=starRoute;
+  for(const gate of route.gates){gate.x=player.x;player.y=gate.y;updateStarRoute(0)}
+  assert.equal(gearDrops.length,1);assert.equal(starRoute,null);assert.ok(pickups.find(p=>p.forkJuice).dead);
+  fresh();t=bazaarStart+4;levelIndex=1;updateStarRoute(0);
+  const most=pickups.find(p=>p.forkJuice);most.x=player.x;player.y=136;hearts=3;step();
+  assert.equal(hearts,4);assert.ok(starRoute.upper);
+  Object.assign(starRoute.gates[0],{x:player.x,y:player.y});updateStarRoute(0);assert.equal(starRoute.index,0);
+  fresh();t=districtDuration*4+110-.01;nextBoss=t+100;goldenAppeared=secondAppeared=true;update(.02);
+  assert.ok(arcadeFire);keys.add('ArrowRight');let x=player.x;step();const normal=player.x-x;
+  keys.add('ShiftLeft');x=player.x;step();assert.ok(Math.abs(player.x-x-normal/2)<1e-8);
+  keys.delete('ShiftLeft');x=player.x;step();assert.ok(Math.abs(player.x-x-normal)<1e-8);
+  fresh();bossCount=1;startBoss();
+  const inside=(x,y)=>boss.parts.filter(part=>partHit({x:boss.x+x,y:boss.y+y,w:1,h:1},boss,part)).map(p=>p.name).join();
+  assert.equal(inside(0,30),'Kannenkörper');assert.equal(inside(101,-24),'Henkel');
+  assert.equal(inside(78,-21),'');assert.equal(inside(-60,18),'Ausguss');
+}
+if(process.argv.length===2||process.argv.includes('--permute')){
+ sandbox.assert=assert;
+ game.testRules();
+ console.log('OK: 13 Permute-Spielregeln und getrennte Trefferkonturen.');
+ if(process.argv.includes('--permute'))process.exit(0);
+}
 if(process.argv.length===2||process.argv.includes('--arcade')){
  function approachArcade(time=169,bosses=0){
   setup(time-.02,bosses);

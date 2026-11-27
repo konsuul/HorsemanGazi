@@ -10,4 +10,10 @@ result=sandbox.api.saveScore(25,7);assert.equal(result.ranked.findIndex(e=>e.cur
 result=sandbox.api.saveScore(25,8);assert.ok(result.ranked.findIndex(e=>e.current)<result.ranked.findIndex(e=>e.points===25&&!e.current));
 sandbox.window.localStorage={getItem(){throw Error('blocked')},setItem(){throw Error('blocked')}};result=sandbox.api.saveScore(500,2);assert.equal(result.available,false);assert.equal(result.ranked[0].points,500);assert.match(sandbox.api.scoreTable(result),/Speicherung nicht verfügbar/);
 sandbox.window.localStorage=storage;sandbox.api.saveScore(30,1);saved='{';result=sandbox.api.saveScore(20,1);assert.equal(result.available,false);assert.ok(result.ranked.some(e=>e.current));
+saved=JSON.stringify([{points:999,seconds:100}]);
+result=sandbox.api.saveScore(210,80,'Abspann');
+assert.equal(result.ranked.length,1);assert.match(sandbox.api.scoreTable(result),/999 Punkte/);
+result=sandbox.api.saveScore(2500,900,'Zugabe');
+assert.equal(result.ranked.length,1);assert.equal(result.history.length,2);
+result=sandbox.api.saveScore(200,70,'Arcade');assert.equal(result.ranked.length,2);
 console.log('OK: Scoreboard speichert zehn letzte Runden, sortiert Punkte, markiert Platzierung und behandelt Speicherfehler.');

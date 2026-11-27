@@ -47,6 +47,16 @@ for(const id of PfertMeta.nodes){
  events.pagehide();events.pagehide();
  assert.ok(Math.abs(saved().seconds-priorSeconds-.2)<1e-8,'Beim Seitenwechsel wird Spielzeit genau einmal gespeichert');
 }
+for(const ending of ['credits','encore']){
+ a.setData({...PfertMeta.fresh(),seconds:599.8});a.reset();a.update(.25);
+ a.startBoss();a.startBoss();a.startBoss();
+ const boss=a.get().boss;for(const p of boss.parts)a.damagePart(p,Infinity,boss.x,boss.y);
+ assert.equal(PfertMeta.load(localStorage).data.points,2);
+ elements[ending].click();
+ if(ending==='encore')a.end();
+ events.pagehide();
+ assert.equal(PfertMeta.load(localStorage).data.points,2,'Zeit und Pascha genau einmal: '+ending);
+}
 {const initial={x:40,y:-20},x=200,y=120,zoom=.3;const result=a.talentWheelZoom(zoom,initial,x,y,-37);assert.ok(result.zoom>zoom&&result.zoom<.4);assert.ok(Math.abs((x-result.pan.x)/result.zoom-(x-initial.x)/zoom)<1e-9);assert.ok(Math.abs((y-result.pan.y)/result.zoom-(y-initial.y)/zoom)<1e-9);assert.equal(a.talentWheelZoom(zoom,initial,x,y,1e6).zoom,.15);assert.equal(a.talentWheelZoom(zoom,initial,x,y,-1e6).zoom,1.5);}
 assert.equal(a.talentWheelZoom(.4,{x:0,y:0},100,100,1e6,.25).zoom,.25,'Herauszoomen bleibt bei der bildfüllenden Übersicht stehen');
 {
