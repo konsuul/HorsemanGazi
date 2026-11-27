@@ -587,6 +587,8 @@ reset();a.get().upgrades.execute=1;e=placeTarget(400,268);e.hp=30;shoot();a.get(
  a.render();
  a.get().player.y=450;
  for(let i=0;i<10;i++)a.update(.05);
+ assert.equal(a.get().shots.length,0,'Normaler Feuertimer läuft mit Faktor 0,7');
+ for(let i=0;i<4;i++)a.update(.05);
  const dart=a.get().shots[0];
  assert.ok(dart);
  const expectedAngle=Math.atan2(270-220,135-(700-22));
