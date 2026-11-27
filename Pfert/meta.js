@@ -27,9 +27,9 @@
  edges.splice(0,edges.length);const pairs=new Set();for(const [a,b] of legacyEdges){const x=canonical(a),y=canonical(b),key=[x,y].sort().join('|');if(x!==y&&!pairs.has(key)){pairs.add(key);edges.push([x,y])}}
  function rank(data,id){const group=members.get(canonical(id));return group?group.reduce((n,x)=>n+Number(data.purchased.includes(x)),0)+extras(group).reduce((n,x)=>n+Number(data.purchased.includes(x)),0):Number(data.purchased.includes(id))}
  function limit(id){return members.has(canonical(id))?5:1}
- function describe(data,id,description){
+ function describe(data,id,description,current=rank(data,id)){
   if(limit(id)===1)return description;
-  const current=rank(data,id),base=String(description);
+  const base=String(description);
   if(!current)return base+' pro Rang · Rang 0/'+limit(id);
   const total=base.replace(/([+−-])(\d+(?:[,.]\d+)?)\s*(%|Prozentpunkte)/,(_,sign,value,unit)=>sign+String(Math.round(Number(value.replace(',','.'))*current*10000)/10000).replace('.',',')+' '+unit);
   return total+' insgesamt · Rang '+current+'/'+limit(id);

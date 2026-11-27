@@ -129,7 +129,7 @@ a.offerCards();
 assert.equal(a.get().choices.length,3);
 assert.ok(a.get().choices.every(card=>card.repeatable));
 assert.match(dom.overlay.innerHTML,/Rang 0 → 1 · unbegrenzt/);
-assert.match(dom.overlay.innerHTML,/\+0 % Waffenschaden → \+1 % Waffenschaden/);
+assert.match(dom.overlay.innerHTML,/\+0 % Waffenschaden → \+2 % Waffenschaden/);
 
 // A fraction of a heart and all named synergy prerequisites are visible.
 a.reset();
@@ -140,8 +140,8 @@ assert.match(dom.overlay.innerHTML,/4,5 → 5 Herzen/);
 a.reset();a.setTime(121);a.get().upgrades.frost=1;a.get().upgrades.ember=1;a.offerCards();
 assert.equal(a.get().choices[0].id,'shatter');
 assert.match(dom.overlay.innerHTML,/Benötigt Kühlkette \+ Räucherkammer/);
-assert.match(dom.overlay.innerHTML,/0 % Trefferschaden als Explosion → 40 % Trefferschaden als Explosion/);
-assert.equal(a.cardEffect('damage',2),'+25,44 % Schaden');
+assert.match(dom.overlay.innerHTML,/0 % Trefferschaden als Explosion → 80 % Trefferschaden als Explosion/);
+assert.equal(a.cardEffect('damage',2),'+53,76 % Schaden');
 
 // A build-specific choice complements a rare offer and one general offer.
 assert.ok(a.get().choices.some(card=>a.get().player.skill.cards.includes(card.id)));
