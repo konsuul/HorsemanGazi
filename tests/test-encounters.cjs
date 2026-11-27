@@ -205,7 +205,7 @@ if(process.argv.includes('--telegraphs')){
   Object.assign(enemy,{x:600,speed:0,fire:.4});
   game.update(.02);
   const tracks=drawTracks().filter(([color])=>color==='#ffb382');
-  advance(.4);
+  advance(.6); // Normal enemies advance their fire timer at 70% speed.
   const shot=game.state().shots.find(s=>s.kind==='pulse');
   assert.equal(shot.w,175);
   assert.deepEqual(tracks,[]);
