@@ -1575,7 +1575,7 @@ function activeOrbiters(){
  return player.orbiters.filter(Boolean);
 }
 function updateOrbiters(dt){
- if(styles[activeWeapon()]!=='orbit')player.orbiters.length=Math.min(1,player.orbiters.length);
+ if(styles[activeWeapon()]!=='orbit')player.orbiters.length=player.orbiters[0]?1:0;
  const turn=Math.floor(runTime/orbitRevolution);
  for(const orb of activeOrbiters()){
   if(turn!==orb.turn){orb.turn=turn;orb.hit.clear();orb.fragmented=false}
