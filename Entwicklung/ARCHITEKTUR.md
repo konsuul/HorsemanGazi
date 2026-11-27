@@ -63,14 +63,14 @@ Hauptbosse sind erstmals ab 5:00 und danach im Raster von 300 s Hauptspielzeit f
 
 | ID | Boss | Erste Begegnung laut Zeitplan | Segmentgewichte in Layout-Reihenfolge | Gesamt-HP bei `threat = 0` |
 | --- | --- | --- | --- | ---: |
-| 0 | Großwesir der Teppiche | 5:00 | 1 / 1,5 / 1 | 427,2 |
+| 0 | Großwesir der Teppiche | 5:00 | 1 / 1,2 / 0,55 / 0,65 / 0,55 | 428,4 |
 | 1 | Sultan der Kaffeekessel | 10:00 | 1 / 1 / 2 / 1 | 556,8 |
 | 2 | Pascha der Sucuk | 15:00 | 1 / 1 | 1.620 |
 | 3 | Dschinn der Gewürzmühle | 20:00 | 1 / 1,5 / 1 | 1.822,8 |
 | 4 | Großmeister der Basarkarawane | 25:00 | 1 / 1 / 1 / 1 / 1 | 2.028 |
 | 7 | Prisma-Observatorium | 30:00 | 1 / 1 / 1 / 1 | 2.635,2 |
 | 8 | Gezeitenwerft | 35:00 | 1 / 1 / 1 / 1 | 2.836,8 |
-| 5 | Krasser Schalke-04-Fan | Ruhrpott 1 nach 45 s | 1 / 1 / 1 / 2 | 972 |
+| 5 | Krasser Schalke-04-Fan | Ruhrpott 1 nach 45 s | 1 / 1 / 1 / 1,2 / 0,4 / 0,4 | 972 |
 | 6 | Hochofen-Horst | Ruhrpott 2 nach 60 s | 1 / 1 / 2 / 1 / 1 | 330 |
 
 ```text
@@ -84,9 +84,9 @@ Segment-HP       = ceil(HP-Topf × Segmentgewicht / Summe der Gewichte)
 Boss-HP          = Summe aller Segment-HP
 ```
 
-Die Aufrundung erfolgt pro Segment vor den letzten Multiplikatoren. Beispiel Großwesir im ersten Zyklus bei `threat = 1`: Rohwert 108, HP-Topf 425,25, Segmente 146,4 / 219,6 / 146,4, zusammen 512,4 HP. Der Wert `boss.max` wird beim Aufbau vom Rohwert zur Summe der Segment-Maxima. Änderungen an Segmentgewichten oder Segmentzahl beeinflussen auch die Rundung und damit die Summe.
+Die Aufrundung erfolgt pro Segment vor den letzten Multiplikatoren. Beispiel Großwesir im ersten Zyklus bei `threat = 1`: Rohwert 108, HP-Topf 425,25, Segmente 129,6 / 156 / 72 / 84 / 72, zusammen 513,6 HP. Der Wert `boss.max` wird beim Aufbau vom Rohwert zur Summe der Segment-Maxima. Änderungen an Segmentgewichten oder Segmentzahl beeinflussen auch die Rundung und damit die Summe.
 
-`PfertArt.bossLayout` liefert lokale Polygone, Zielpunkte `aim`, Rollen und Gewichte. `setupSegments` ergänzt Kollisionsgrenzen und HP. `partHit` schneidet die Segmentpolygone gegen das Trefferrechteck, bei gedrehten Strahlen nach Koordinatentransformation. Zerstörte Segmente können weder feuern noch Kontakt- oder Schusstreffer auslösen. Das letzte zerstörte Segment beendet den Kampf. Beim Start werden Flaschen zwischengespeichert und normale Gegner und Feindgeschosse entfernt. Nach dem Sieg kehren die Flaschen zurück, im Ruhrpott startet zusätzlich der Rückübergang.
+`PfertArt.bossLayout` liefert lokale Polygone, Zielpunkte `aim`, Rollen und Gewichte. `setupSegments` ergänzt Kollisionsgrenzen und HP. `partHit` prüft Kanten und Innenraum gegen das Trefferrechteck, bei gedrehten Strahlen in dessen lokalem Koordinatensystem. Zerstörte Segmente können weder feuern noch Kontakt- oder Schusstreffer auslösen. Das letzte zerstörte Segment beendet den Kampf. Beim Start werden Flaschen zwischengespeichert und normale Gegner und Feindgeschosse entfernt. Nach dem Sieg kehren die Flaschen zurück, im Ruhrpott startet zusätzlich der Rückübergang.
 
 `bossAttackPatterns` und `bossSpecials` definieren die Reihenfolge der normalen Angriffe und zwei Spezialangriffe je Boss. `bossVolley` wechselt zwischen lebenden Segmenten und speichert die Spezialwellen beim Warnsignal. Der Feuerabstand ist `Phasenintervall / ((1 + threat × 0,12) × attackRate)`. Die normale Basis beträgt 2,5 s, beim Großmeister 1,8 s und beim Sultan gilt `attackRate = 1,5`. Der Basar-Großwesir, der Sultan, beide Ruhrpott-Bosse sowie Prisma-Observatorium und Gezeitenwerft wechseln bei höchstens halben Gesamt-HP in Phase 2. Die Folge aus Warnung (1,1 s), Positionswechsel (0,65 s) und profilspezifischem Angriffsfenster steht in `updateBossEncounter`.
 
@@ -110,7 +110,7 @@ Ausrüstungsfaktor = 1 + Angriffstyp-Bonus + aktiver Rauschbonus
 
 S1 gibt ×1,03. Käserausch gibt aktiv ×1,35 vor weiteren Talenten, Q10 im Rausch zusätzlich ×1,5. Der normale Krit-Faktor ist 2 bei Erfolg und 1 sonst. A2-Talente und Ausrüstung können ihn ändern, A2-23 setzt den Faktor ohne Krit auf 0,85. Der Basiswert ist 1 für den Hauptschuss des Eisfächers und vor Stilfaktoren 6,5 für ein Standardprojektil aus dem Sonderangriff. Der Erdbolzen multipliziert den Hauptschuss mit 1,77 (50 % mehr als zuvor 1,18) vor seinen Talentboni, der Glutkern mit 0,9 plus Nachbrennen. `fireCharge` ergänzt Angriffsmuster, den Indexfaktor für automatisches Weinfeuer, den Weinbonus ×1,15 und bei Sonderangriffen den Faktor `1 + 0,09 × Schnellgärung + 0,01 × Fingerfertigkeit` vor Sonderangriffstalenten. Die Lichtlanze startet mit `Basis = 1,22 × 1,6` vor Boni. Mehr Laserdauer erhöht bei ihr zusätzlich Schaden und Lebensdauer.
 
-**3. Treffer auswerten.** Ein direkter Treffer startet mit dem gespeicherten Schaden des Angriffs. Bei Bossen erhalten geladene Projektile und Laser davor einen Faktor 0,35, mit Q8 zusätzlich ×1,075. `modifyDirectHit` berechnet direkte Zielboni, etwa Ersttreffer, hohe HP, Krit am Boss, Zielserie und vorhandene Elemente. Die Basarlaterne erhält für Treffer aus ihrer gepanzerten Vorderseite ×0,55. Beim Großwesir bekommt `Arme & Gewand` während Vorwarnung und Vorstoß ×0,65. `damageEnemy` und `damagePart` ergänzen bei weniger als 35 % Ziel-HP den Faktor `1 + 0,10 × Letzter Bissen`. Am Boss greift zusätzlich der gespeicherte Ausrüstungsfaktor `1 + bossDamage`. HP bleiben gebrochen. Der Kampf zeigt Trefferzustände und Balken über HUD und Effekte an.
+**3. Treffer auswerten.** Ein direkter Treffer startet mit dem gespeicherten Schaden des Angriffs. Bei Bossen erhalten geladene Projektile und Laser davor einen Faktor 0,35, mit Q8 zusätzlich ×1,075. `modifyDirectHit` berechnet direkte Zielboni, etwa Ersttreffer, hohe HP, Krit am Boss, Zielserie und vorhandene Elemente. Die Basarlaterne erhält für Treffer aus ihrer gepanzerten Vorderseite ×0,55. Beim Großwesir bekommt die Brustrüstung während Vorwarnung und Vorstoß ×0,65. `damageEnemy` und `damagePart` ergänzen bei weniger als 35 % Ziel-HP den Faktor `1 + 0,10 × Letzter Bissen`. Am Boss greift zusätzlich der gespeicherte Ausrüstungsfaktor `1 + bossDamage`. HP bleiben gebrochen. Der Kampf zeigt Trefferzustände und Balken über HUD und Effekte an.
 
 **Vergleichswerte ohne Talente oder Ausrüstung.** Ein unverstärkter Eisfächer-Schuss trifft für 0,8625 und liefert theoretisch rund 5,39 Schaden/s auf ein durchgehend getroffenes Ziel. Zwei Ränge Käsereifung ergeben 1,08192 pro Hauptschuss. Der Lichtlanzen-Impuls trifft vor Boni für 1,6836 pro erfasstem Ziel. Beim Balancing einer Waffe zählen zusätzlich Trefferfläche, Anzahl der Ziele, Zweiteffekte und nutzbare Zeit mit Wein.
 
@@ -166,6 +166,16 @@ Direkttreffer, Brennen, Splitter, Ketten und Flächenschaden haben eigene Pfade.
 - `debugBossJump` benutzt dieselben Startfunktionen wie reguläre Begegnungen. Der Debug-Einstieg setzt den Bosszähler für die jeweilige Begegnung und die Runde wertet Ergebnisse separat aus. Die Tasten für direkte Boss-Sprünge stehen in der [Spielanleitung](README.md#fortschritt-und-geheimnisse).
 
 [Canvas-Renderer und HUD-Daten](../Pfert/game.js#L3072) · [Debug-Einstieg](../Pfert/game.js#L1015)
+
+## Spielregeln ab 1.1.2
+
+- Die Polygone in `PfertArt.bossLayout` steuern Kollision, weißen Trefferblitz, Segment-HP und Zielpunkte. `partHit` prüft die Umrisskanten im Koordinatensystem des Schusses und erkennt vollständig eingeschlossene Schüsse. So bleibt der Innenraum des Kannenhenkels frei. Beim Schalke-Fan sind Kopf, beide Arme, Bauch und beide Beine einzeln treffbar.
+- Beim Großwesir entscheidet das erste gebrochene Arm- oder Rüstungssegment. Ein Arm halbiert die Grundgeschosse der Teppichwand (aufgerundet). Die Rüstung erhöht stattdessen den Schaden am Turbankern auf das 1,6-Fache. Rosé erlaubt alle 1,5 s ein Blockfenster von 0,38 s gegen die Teppichwand. Der erste frontale Treffer gibt 0,9 s Weinzeit zurück. Ein Treffer von hinten durchdringt dort auch den Rosé-Schutz. Horst signalisiert Mörser durch drei Hammerschläge und Sichel durch ein langes Zischen.
+- Nach Riesling erzeugen die nächsten drei Glutkern-Salven Brandsplitter. Nach Muskat folgt jeder der drei Lichtlanzen nach 0,16 s ein kurzer Mondstrahl. Eingelagerte Flaschen starten ihre Effekte erst beim Abruf.
+- Der Käsezettel vergibt einmalig 250 Punkte für 120 s ohne getrunkenen Wein oder mindestens vier Herzen beim ersten Boss-Sieg. Die zwei markierten Basarwachen vor ihrem Chef zu besiegen bringt zusätzlich 250 Punkte. Im Ruhrpott liefern zwei zusammenhängende Sekunden innerhalb von 78 px eines lebenden Kieltauchers ein Bauteil für 50 % mehr Schaden der nächsten tatsächlich abgefeuerten Patrone.
+- In den letzten 0,24 s vor der angekündigten Spezialwelle merkt sich der Käserausch diese Welle. Beim Abschuss räumt er ihre neu erzeugten sichtbaren Geschosse ab. Bis zu vier davon geben je einen EP-Orb. Frühere, spätere und fremde Geschosse erzeugen keine Zusatz-EP.
+- Der Abzweig ab 4:04 nutzt die vorhandene Basarkulisse. Die breite obere Spur liefert Most, drei untere Siegel liefern ein Ausrüstungsteil aus dem verfügbaren Katalog. Im Palastgitter halbiert Feinflug ausschließlich den Bewegungsschritt. Die Windschattenprüfung läuft wie zuvor.
+- Der erste reguläre Pascha-Sieg friert die Runde zur Ergebniswahl ein. Abspann speichert den Arcade-Wert, Zugabe setzt die bestehende Runde fort. Zeit und Bossgutschriften laufen über denselben Talent-Checkpoint. Der zusätzliche Modus im lokalen Ergebnisdatensatz trennt die Ranglisten. Die Trefferlupe hält nur beim letzten Herzverlust das Bild, die Kollisionsmaße und gegebenenfalls die Geschossbewegung fest.
 
 ## Änderungen vorbereiten
 

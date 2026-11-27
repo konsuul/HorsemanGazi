@@ -4,6 +4,12 @@ Unter goldenen Kuppeln zieht etwas seine Kreise, das besser nie hätte fliegen l
 
 [Pfert/index.html](../Pfert/index.html) im Browser öffnen. Keine Installation und kein Build nötig. Zum Verschicken den gesamten Ordner `Pfert` zippen.
 
+### Neue Flugoptionen in 1.1.2
+
+Vor der Skillwahl schaltet **C / X** den freiwilligen Käsezettel um. **R / LB** beim Einsammeln halten, um eine Weinflasche einzulagern. Erneutes Drücken trinkt den Vorrat. **F / RB** blockt mit Rosé ein frontal eintreffendes Geschoss der Teppichwand. Im Palastgitter halbiert **Shift / LT** das Tempo, solange die Taste gedrückt ist.
+
+Nach dem letzten Herz zeigt **L / Y** die Trefferlupe. Klick, Esc oder B führen zum Ergebnis zurück. Nach dem ersten Pascha-Sieg wählt man den Abspann oder spielt mit demselben Build die Zugabe.
+
 - [Spielarchitektur](ARCHITEKTUR.md) mit Spielablauf, Berechnungen und Einstiegspunkten im Code
 - [Roadmap](ROADMAP.md) mit Anforderungen, Spieltest-Feedback und offenen Aufgaben
 - [Talentbaum-Entwurf](Meta%20progression.md) und [Grafikrichtlinie](ARTWORK.md)

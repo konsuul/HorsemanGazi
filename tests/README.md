@@ -8,6 +8,7 @@ GitHub Actions führt die Prüfungen vom Projektstamm aus.
 
 Tests passend zur Änderung auswählen; mehrere Bereiche bei Wechselwirkungen gemeinsam prüfen:
 
+- `node tests/test-encounters.cjs --permute` prüft die 13 neuen Regeln und die getrennten Trefferzonen der Kanne. Der reguläre Begegnungstest enthält diese Fälle ebenfalls.
 - `node tests/test-scoreboard.cjs`: Punktetafel, Sortierung und Speicherung.
 - `node tests/test-game.cjs`: Kampf, Waffen, Rückwärtsschaden, Suchraketenmaße, Unsterblichkeitsschalter, normale und spezielle Feuertimer, Karten, Gegner, Bosssegmente und Geheimlevel sowie Musikrotation (alle MP3-Dateien, neu gemischte Durchläufe und keine direkte Wiederholung am Rundenwechsel).
 - `node tests/test-game.cjs --boomerang` prüft Durchschläge vor der Umkehr und erneute Treffer auf dem Rückflug.
