@@ -15,7 +15,7 @@ Unter goldenen Kuppeln zieht etwas seine Kreise, das besser nie hätte fliegen l
 - Eine aktive Weinwaffe ermöglicht Sonderangriffe, die ihren Weinbalken verbrauchen. Der goldene Sonderwein füllt den Balken wieder auf. Ohne aktive Weinwaffe verleiht er dem Standardschuss zehn Sekunden lang zusätzliche Projektile nach oben und unten.
 - Fünf Herzen zum Rundenstart. Ausrüstung kann das Maximum erhöhen. Die Bewegung ist gegenüber der vorigen Version weitere 5 % schneller.
 - N schaltet die Musik ein oder aus. M schaltet die Soundeffekte separat.
-- Esc oder die Menü-Taste am Controller öffnet die Pause mit gesammelten Power-ups, Ausrüstung, Musiklautstärke und bestätigbarem Rundenende. Freiwillig beendete Runden zeigen die Auswertung und zählen nicht für die Punktetafel.
+- Esc oder die Menü-Taste am Controller öffnet die Pause mit direkt sichtbaren gesammelten Power-ups, Ausrüstung, Musiklautstärke und bestätigbarem Rundenende. Freiwillig beendete Runden zeigen die Auswertung und zählen nicht für die Punktetafel.
 - Q: Käserausch auslösen, sobald die Anzeige voll ist. Abschüsse, Schutzblocks und einmalig gewertete knappe Ausweichmanöver laden sie auf. Zwölf Sekunden Grunddauer mit mehr Schaden und zusätzliche Seitenangriffe; bei Aktivierung werden sichtbare reguläre Gegner besiegt; ihre Belohnungen und Orbs sowie vorhandene Gegenstände bleiben erhalten. Sichtbare feindliche Geschosse werden entfernt. Bosse bleiben.
 - Besiegte Gegner hinterlassen Leuchtkugeln mit Erfahrungspunkten. Bei jedem Stufenaufstieg pausiert das Spiel zur Kartenauswahl. Die erste Stufe benötigt 10 Punkte; der Bedarf steigt zunächst auf das aufgerundete 1,5-Fache, ab Stufe 10 um 12 % und höchstens auf 1500. Stärkere Gegner und Bosse geben mehr Punkte. Orbs driften mit dem Spielfeld nach links und fliegen erst in Magnetreichweite zum Pferd. Der Grundradius beträgt 78 Pixel, Korkenzieher erweitert ihn um 12 Pixel pro Rang; der Balken am unteren Spielfeldrand zeigt den Stufenfortschritt. Aufgesammelte Orbs geben vor Talent- und Ausrüstungsboni das 1,875-Fache ihres XP-Werts. Klicken, 1 / 2 / 3 oder mit Pfeiltasten oder A / D wählen und mit Enter bestätigen. Die Verbesserung gilt für die laufende Runde. Sind im späten Spiel nur noch zwei passende Karten verfügbar, zeigt die Auswahl beide.
 - Türkis gerahmte Flaschen mit Pluszeichen sind Powerups. Rot umrandete, hohle Projektile sind gefährlich. Getroffene Gegner blitzen weiß auf.
@@ -93,7 +93,7 @@ Käsereifung multipliziert den Schaden je Rang mit 1,12. Die Boni wirken zusamme
 
 Im Hauptspiel erscheint außerhalb von Bosskämpfen alle 45 bis 65 Sekunden eines von drei Power-ups. Alle drei kommen pro Durchgang in gemischter Reihenfolge vor.
 
-- **Suchraketen** füllen auf fünf kreisende Raketen auf. Jede Rakete verursacht vor weiteren Boni das Sechsfache des Standardschadens. Sobald ein sichtbarer Gegner oder ein lebendes Bosssegment höchstens 200 Pixel entfernt ist, startet eine Rakete. Zwischen Starts liegen mindestens 0,6 Sekunden. Ladungen bleiben bei Gebietswechseln erhalten.
+- **Suchraketen** füllen auf fünf kreisende Raketen auf. Sie sind doppelt so breit und hoch und besitzen eine Raketensilhouette mit Spitze und Heckflossen. Jede Rakete verursacht vor weiteren Boni das Sechsfache des Standardschadens. Sobald ein sichtbarer Gegner oder ein lebendes Bosssegment höchstens 200 Pixel entfernt ist, startet eine Rakete. Zwischen Starts liegen mindestens 0,6 Sekunden. Ladungen bleiben bei Gebietswechseln erhalten.
 - **Schutzschild** fängt zwei feindliche Geschosse innerhalb von acht Sekunden ab. Kontakt mit Gegnern bleibt gefährlich.
 - **Räumstrahl** bleibt vier Sekunden aktiv, schmilzt feindliche Geschosse entlang des Strahls und beschädigt das aktuell markierte Ziel. Klicke einen Gegner oder ein Bosssegment an oder wechsle mit E bzw. Y (PlayStation △) zum nächsten Ziel. Der Strahl wählt beim Einsammeln und nach einem Abschuss automatisch ein lebendes Ziel in der Nähe.
 
@@ -107,7 +107,7 @@ Die obere Leiste zählt die Talentpunkte dieser Runde. Ein besiegter Boss oder z
 
 Der Talentbaum zeigt fünf Bereiche mit 15 benannten Clustern. Große Abschlussknoten markieren die stärksten Spezialisierungen. Gestrichelte Querverbindungen erlauben Mischungen zwischen den Bereichen. Käufe geben benachbarte Knoten frei. Inspiriert von den Notables und Keystones im [passiven Talentbaum von Path of Exile 1](https://www.pathofexile.com/passive-skill-tree).
 
-**Debug:** Numpad 1 gibt im Menü und regulären Talentbaum 360 dauerhaft gespeicherte Talentpunkte. Während einer Runde gehen die Zusatzpunkte in den getrennten Debug-Stand. Numpad 2–8 starten direkt einen Debug-Kampf gegen Großwesir, Sultan, Pascha, Dschinn, Großmeister, Schalke-Fan und Hochofen-Horst. Umschalt + Numpad 2 startet das Prisma-Observatorium, Umschalt + Numpad 3 die Gezeitenwerft. Numpad 9 startet die Basar-Variante des Großwesirs mit zweiter Phase. Die Kürzel funktionieren im Hauptmenü und während des Spiels.
+**Debug:** Numpad 0 schaltet im Hauptmenü die Unsterblichkeit für neue Runden an oder aus; der Status steht im Menü und bleibt bis zum Neuladen erhalten. Numpad 1 gibt im Menü und regulären Talentbaum 360 dauerhaft gespeicherte Talentpunkte. Während einer Runde gehen die Zusatzpunkte in den getrennten Debug-Stand. Numpad 2–8 starten direkt einen Debug-Kampf gegen Großwesir, Sultan, Pascha, Dschinn, Großmeister, Schalke-Fan und Hochofen-Horst. Umschalt + Numpad 2 startet das Prisma-Observatorium, Umschalt + Numpad 3 die Gezeitenwerft. Numpad 9 startet die Basar-Variante des Großwesirs mit zweiter Phase. Die Kürzel funktionieren im Hauptmenü und während des Spiels.
 
 Ab drei Abschüssen in Folge zeigt ein Balken unter der Käsekette, wie lange du Zeit für den nächsten Abschuss hast.
 
@@ -145,7 +145,7 @@ Kampflicht reagiert lokal auf geladene Geschosse und Treffer. Die Bosskörper be
 
 ## Die mechanische Karawane
 
-Die Karten AK–AT laden beim Spielen je nach Patrone alle rund 1,85 bis 4,92 Sekunden eine eigene Patrone. Der nächste automatische Angriff mit dem Basisskill löst eine bereite Patrone zusätzlich aus. Die Sonnenlanze durchschlägt ihre Spur sofort als Laserimpuls. Bei mehreren bereiten Karten wechselt die Reihenfolge. Während eines Waffenweins sammeln die Patronen weiter Ladezeit.
+Die Karten AK–AT laden beim Spielen je nach Patrone alle rund 0,92 bis 2,46 Sekunden eine eigene Patrone. Der nächste automatische Angriff mit dem Basisskill löst eine bereite Patrone zusätzlich aus. Die Sonnenlanze durchschlägt ihre Spur sofort als Laserimpuls. Bei mehreren bereiten Karten wechselt die Reihenfolge. Während eines Waffenweins sammeln die Patronen weiter Ladezeit.
 
 Ab 1:40 tauchen in den regulären Wellen drei Maschinen auf. Beim **Spurweber** kreuzen sich zwei Nadeln vor seinem Bug. Der **Kieltaucher** schießt eine an den Feldrändern abprallende Kugel. Die **Splitterbake** legt zwei zeitversetzt zum Abschuss aufplatzende Ladungen.
 

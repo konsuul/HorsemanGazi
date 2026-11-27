@@ -64,20 +64,18 @@ assert.equal(storage.get('pfert-music-volume'),'0.63');
 press('Enter');assert.equal(a.get().state,'paused');
 press('Escape');
 
-// The pause list starts collapsed and follows the keyboard's existing menu order.
+// Power-ups are visible immediately; keyboard navigation goes straight to volume.
 a.reset();a.get().upgrades.damage=2;a.get().upgrades.pierce=1;
 press('Escape');
-assert.match(dom.overlay.innerHTML,/aria-expanded="false" aria-controls="pause-build-list">Power-ups <span>2/);
+assert.match(dom.overlay.innerHTML,/id="pause-build-title">Power-ups <span>2/);
+assert.match(dom.overlay.innerHTML,/<div id="pause-build-list">/);
+assert.doesNotMatch(dom.overlay.innerHTML,/pause-build-toggle|aria-expanded|id="pause-build-list" hidden/);
 assert.match(dom.overlay.innerHTML,/Käsereifung<\/span><small>Rang 2/);
 assert.match(dom.overlay.innerHTML,/Harte Kruste<\/span><small>Rang 1/);
-dom['pause-build-list']={hidden:true};
 for(let i=0;i<3;i++)press('ArrowRight');
-assert.equal(focused.id,'pause-build-toggle');
+assert.equal(focused.id,'music-volume');
 press('Enter');
-assert.equal(dom['pause-build-list'].hidden,false);
-assert.equal(focused['aria-expanded'],'true');
-press('Enter');
-assert.equal(dom['pause-build-list'].hidden,true);
+assert.equal(a.get().state,'paused');
 press('Escape');
 
 // Visibility and focus pauses freeze gameplay and require an explicit resume.

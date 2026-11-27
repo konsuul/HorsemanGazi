@@ -31,7 +31,7 @@ const weaponNames = ['GLUTSALVE','PERLMUTT-FÄCHER','ROSEN-SUCHER','PORT-LASER',
 const weaponElements=['fire','frost','fire','lightning','lightning',null,'earth','earth','lightning','earth','earth','frost','frost','earth','lightning','fire'];
 const styles=['red','white','rose','port','speed',null,'prism','saw','chain','orbit','mortar','wave','frost','vortex','storm','phoenix'];
 const colors=['#ffb06e','#9effe8','#ffa7d8','#c499ff','#75d9ff','#d3a9ed','#c7eeff','#e5f6b4','#83e5ff','#c2c0ff','#ffd386','#a5f8d5','#a6eaff','#b6a0ff','#e4f7ff','#ffc48e'];
-const cartridgeRate=1.3;
+const cartridgeRate=2.6;
 const cartridges=[
  ['sunLance','Sonnenlanze','☀','AK',3.2*laserIntervalScale,'Ein schmaler Laser durchdringt die ganze Spur.'],
  ['fuseRocket','Zündrakete','➤','AL',4.6,'Eine Suchrakete explodiert beim Einschlag.'],
@@ -71,7 +71,7 @@ const cardDefs = [
  {id:'frost',icon:'❄',title:'Kühlkette',desc:'Treffer bremsen Gegner kurz um zusätzliche 4 %.',max:5},
  {id:'ember',icon:'✹',title:'Räucherkammer',desc:'Treffer glimmen nach: +8 % Schaden pro Sekunde.',max:5},
  {id:'echo',icon:'»',title:'Doppelter Boden',desc:'Jeder sechste Angriff sendet zwei schwache Echo-Schüsse.',max:4},
- {id:'rear',icon:'↤',title:'Rückendeckung',desc:'Ein Rückwärtsschuss mit 20 % Stärke je Rang.',max:4},
+ {id:'rear',icon:'↤',title:'Rückendeckung',desc:'Ein Rückwärtsschuss mit 120 % Stärke je Rang.',max:4},
  {id:'guard',icon:'◈',title:'Wachsamer Mond',desc:'Schutzimpuls lädt 8 % schneller nach.',max:5},
  {id:'execute',icon:'✧',title:'Letzter Bissen',desc:'+10 % Schaden gegen Ziele unter 35 % Leben.',max:6},
  {id:'fork',icon:'⋏',title:'Splittergelage',desc:'Splitter erben Treffer-Effekte. Pro Treffer sind höchstens sieben Splitter möglich.',max:2,rare:true,requires:[['spread','pierce']]},
@@ -121,7 +121,7 @@ const cardValues={
  frost:r=>r*.04,
  ember:r=>r*.08,
  echo:r=>r?.3+r*.05:0,
- rear:r=>r*.2,
+ rear:r=>r*1.2,
  guard:r=>Math.pow(.92,r),
  execute:r=>r*.10,
  fork:r=>r*2,
@@ -385,7 +385,7 @@ function refreshPadHints(){
  }
 }
 const startMenuMarkup=overlay.innerHTML;
-let runMode='regular',debugSelection=0,debugOptions=[];
+let runMode='regular',debugSelection=0,debugOptions=[],immortalMode=false;
 const metaAvailable=typeof PfertMeta!=='undefined';
 let metaData=metaAvailable?PfertMeta.fresh():null, metaWarning='', metaBosses=0, metaReturn='menu', metaOverlay='', metaSelected='S1', metaZoom=.3, metaPositions={}, metaPan={x:0,y:0}, metaPanReady=false;
 let metaTimePoints=0,metaSavedAt=0;
@@ -818,6 +818,7 @@ function startRun(mode,skill=baseSkills[0]){
  buildCards=null;
  upgrades=Object.fromEntries(cardDefs.map(card=>[card.id,0]));
  player={skill,orbiters:[],x:135,y:H/2,w:40,h:29,inv:0,effects:Array(16).fill(0),weapon:-1,charge:0,charging:false,specials:owns('W1-23')?2:3,specialCount:0,freeSpecialUsed:false,bossSpecialUsed:false,autoCooldown:0,autoAttacks:0,podSide:1,podCooldown:0,muzzle:0,guardFlash:0,attacks:0,rage:owns('K2-13')?15:0,overdrive:0,metaAfterglow:0,chargeCue:false,readyCue:false};
+ player.immortal=immortalMode;
  player.fieldPower={dropIn:rand(45,65),queue:[],rockets:0,launchCooldown:0,shield:0,shieldTime:0,beamTime:0};
  enemies=[];bullets=[];shots=[];pickups=[];bossPickups=[];particles=[];deaths=[];rings=[];beams=[];
  hostileShotCount=0;enemyShotBudget=3;bossShotCount=0;
@@ -842,13 +843,8 @@ function pauseGame(){
 function pausePowerUps(){
  const cards=collectedCards();
  const rows=cards.map(({code,title,rank})=>'<li><b>'+code+'</b><span>'+title+'</span><small>Rang '+rank+'</small></li>').join('');
- return '<section class="pause-build"><button id="pause-build-toggle" aria-expanded="false" aria-controls="pause-build-list">Power-ups <span>'+cards.length+'</span></button>'+
-  '<div id="pause-build-list" hidden>'+(rows?'<ul tabindex="0">'+rows+'</ul>':'<p>In dieser Runde bisher keine Power-ups gesammelt.</p>')+'</div></section>';
-}
-function togglePausePowerUps(){
- const list=document.getElementById('pause-build-list');
- list.hidden=!list.hidden;
- document.getElementById('pause-build-toggle').setAttribute('aria-expanded',String(!list.hidden));
+ return '<section class="pause-build" aria-labelledby="pause-build-title"><h3 id="pause-build-title">Power-ups <span>'+cards.length+'</span></h3>'+
+  '<div id="pause-build-list">'+(rows?'<ul tabindex="0">'+rows+'</ul>':'<p>In dieser Runde bisher keine Power-ups gesammelt.</p>')+'</div></section>';
 }
 function renderPauseMenu(){
  pauseView='main';
@@ -864,7 +860,7 @@ function renderPauseMenu(){
  volume.addEventListener('input',()=>applyMusicVolume(volume));
  bindGearActions([
   {id:'resume',run:resumeGame},{id:'gear-open',run:renderGearInventory},
-  {id:'end-run',run:confirmEndRun},{id:'pause-build-toggle',run:togglePausePowerUps},{id:'music-volume'}
+  {id:'end-run',run:confirmEndRun},{id:'music-volume'}
  ]);
 }
 function applyMusicVolume(volume){
@@ -1007,8 +1003,12 @@ function closeBaseSkills(){
  padBlocked=true;bindHomeControls();
  document.getElementById(state==='menu'?'start':'again')?.focus?.({preventScroll:true});
 }
+function bindHomeStatus(){
+ const immortalStatus=document.getElementById('immortal-status');
+ if(immortalStatus)immortalStatus.textContent='Numpad 0 · Unsterblichkeit: '+(immortalMode?'AN':'AUS');
+}
 function bindHomeControls(){
- refreshPadHints();
+ refreshPadHints();bindHomeStatus();
  document.getElementById(state==='menu'?'start':'again')?.addEventListener('click',showBaseSkills);
  document.getElementById('talents')?.addEventListener('click',showTalents);
 }
@@ -1077,6 +1077,13 @@ function finishUnranked(){
 bindHomeControls();
 window.addEventListener('keydown',e=>{
  if(e.altKey||e.ctrlKey||e.metaKey)return;
+ if(e.code==='Numpad0'){
+  if(state==='menu'){
+   e.preventDefault();
+   if(!e.repeat){immortalMode=!immortalMode;bindHomeStatus()}
+  }
+  return;
+ }
  if(/^Numpad[1-9]$/.test(e.code)){
   e.preventDefault();
   if(e.repeat)return;
@@ -1377,7 +1384,7 @@ function launchOrbitRocket(){
  const origin=rocketOrbitPosition(--power.rockets),aim=rocketAim(target);
  const angle=Math.atan2(aim.y-origin.y,aim.x-origin.x);
  const amount=damage(6,false);
- bullets.push({x:origin.x,y:origin.y,vx:620*Math.cos(angle),vy:620*Math.sin(angle),w:12,h:10,
+ bullets.push({x:origin.x,y:origin.y,vx:620*Math.cos(angle),vy:620*Math.sin(angle),w:24,h:20,
   style:'rocket',target,damage:amount,bossFactor:gearFactor('bossDamage'),metaCritical:metaLastCritical,hit:new Set(),age:0,life:1.35});
  power.launchCooldown=.6;
  sound('rocket',{x:origin.x});
@@ -2327,6 +2334,7 @@ function showProtection(label){
 }
 function hurt(source,sourceX=player.x,sourceY=player.y){
  if(state!=='playing')return;
+ if(player.immortal){showProtection('UNSTERBLICH');return}
  if(player.inv>0){showProtection('UNVERWUNDBAR');return}
  player.metaLastHit=runTime;if(owns('V1-16'))player.metaHitSpeed=2;
  if(owns('Q2'))player.metaRevenge=5;
@@ -2975,8 +2983,9 @@ function updateGameplay(dt){
    }
   }
   if(!e.patrol&&e.x-e.w/2<W&&e.x+e.w/2>0){
-   e.fire-=dt*(1-(e.slow||0)*.4);
-   if(e.fire<=.55&&!e.aimTarget)e.aimTarget={x:player.x,y:player.y};
+   const fireRate=e.formation||e.machine||e.rareEnemy||e.rear||e.blocker?1:.7;
+   e.fire-=dt*(1-(e.slow||0)*.4)*fireRate;
+   if(e.fire<=.55*fireRate&&!e.aimTarget)e.aimTarget={x:player.x,y:player.y};
    if(e.fire<=0){
     enemyAttack(e);e.aimTarget=null;
     if(e.formation)e.fire=e.formationVolleys>0?1.25:Infinity;
@@ -3064,17 +3073,28 @@ function drawFieldPickup(p){
 }
 function drawRocket(x,y,angle,launched){
  c.save();c.translate(Math.round(x),Math.round(y));c.rotate(angle);
+ c.scale(2,2);
  if(launched){
   const plume=12+Math.round(3*Math.sin(runTime*48));
   c.fillStyle='#d9714e';c.fillRect(-7-plume,-2,plume,4);
   c.fillStyle='#ffde83';c.fillRect(-13,-1,7,2);
  }
- c.fillStyle='#342a39';c.fillRect(-8,-4,15,8);c.fillRect(-8,-6,5,12);c.fillRect(7,-2,3,4);
- c.fillStyle='#a75b49';c.fillRect(-7,-5,4,10);
- c.fillStyle='#c89b58';c.fillRect(-6,-3,12,6);
- c.fillStyle='#ffdfa0';c.fillRect(-5,-3,11,2);c.fillRect(6,-1,3,2);
- c.fillStyle='#486980';c.fillRect(1,-2,3,3);
- c.fillStyle='#cbffff';c.fillRect(1,-2,2,1);c.restore();
+ // Pointed nose, swept tail fins and a shaded metal fuselage.
+ c.fillStyle='#243342';c.beginPath();
+ for(const [i,[px,py]] of [[-9,-3],[-9,-7],[-4,-5],[5,-4],[11,0],[5,4],[-4,5],[-9,7],[-9,3],[-11,2],[-11,-2]].entries()){
+  if(i)c.lineTo(px,py);else c.moveTo(px,py);
+ }
+ c.closePath();c.fill();
+ c.fillStyle='#b34e43';c.beginPath();c.moveTo(-8,-6);c.lineTo(-3,-3);c.lineTo(-8,-3);c.closePath();c.fill();
+ c.beginPath();c.moveTo(-8,6);c.lineTo(-3,3);c.lineTo(-8,3);c.closePath();c.fill();
+ c.fillStyle='#6e8c9b';c.fillRect(-8,-3,13,6);
+ c.fillStyle='#d9eef0';c.fillRect(-7,-3,11,2);
+ c.fillStyle='#466072';c.fillRect(-7,2,11,1);
+ c.fillStyle='#d96751';c.beginPath();c.moveTo(5,-3);c.lineTo(10,0);c.lineTo(5,3);c.closePath();c.fill();
+ c.fillStyle='#ffb981';c.fillRect(5,-2,2,1);
+ c.fillStyle='#263b50';c.fillRect(0,-1,3,3);
+ c.fillStyle='#9ceaf2';c.fillRect(0,-1,2,1);
+ c.fillStyle='#e2b771';c.fillRect(-6,-2,1,4);c.restore();
 }
 function drawFieldPowerEffects(){
  const power=player.fieldPower;

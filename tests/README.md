@@ -9,7 +9,7 @@ GitHub Actions führt die Prüfungen vom Projektstamm aus.
 Tests passend zur Änderung auswählen; mehrere Bereiche bei Wechselwirkungen gemeinsam prüfen:
 
 - `node tests/test-scoreboard.cjs`: Punktetafel, Sortierung und Speicherung.
-- `node tests/test-game.cjs`: Kampf, Waffen, Karten, Gegner, Bosssegmente und Geheimlevel sowie Musikrotation (alle MP3-Dateien, neu gemischte Durchläufe und keine direkte Wiederholung am Rundenwechsel).
+- `node tests/test-game.cjs`: Kampf, Waffen, Rückwärtsschaden, Suchraketenmaße, Unsterblichkeitsschalter, normale und spezielle Feuertimer, Karten, Gegner, Bosssegmente und Geheimlevel sowie Musikrotation (alle MP3-Dateien, neu gemischte Durchläufe und keine direkte Wiederholung am Rundenwechsel).
 - `node tests/test-game.cjs --boomerang` prüft Durchschläge vor der Umkehr und erneute Treffer auf dem Rückflug.
 - `node tests/test-encounters.cjs --boss-attacks`: Angriffsfolgen aller neun Bosse inklusive Warnungen und Wellen der 18 Sonderangriffe.
 - `node tests/test-encounters.cjs --telegraphs` prüft beim Teppich und bei Impulsangriffen dass die Geschosse ohne sichtbare Warnlinien abgefeuert werden.
@@ -18,6 +18,7 @@ Tests passend zur Änderung auswählen; mehrere Bereiche bei Wechselwirkungen ge
 - `node tests/test-encounters.cjs --formation`: Fünf Formationen, Vorwarnung, Einflugspuren, Salven, Pause und Ausschluss bei Bossen und im Ruhrpott.
 - `node tests/test-encounters.cjs --caravan`: Munitionskarten, Nachladung, Maschinen und Abschluss der neuen Hauptbosse.
 - `node tests/test-encounters.cjs --wind`: Windschatten, Nachladeschub, Pausen und Sternenpost.
+- `node tests/test-pause-cards.cjs`: Pause mit direkt sichtbaren Power-ups, Musikregler, Tastatur/Controller und Karten.
 - `node tests/test-input.cjs`: Controller, Tastatur, Basisskills, Karten und Laserzielwahl.
 - `node tests/test-items.cjs`: Ausrüstungskatalog, Beute, Boss-Rückwege, Rucksack, Bedienung, Werte und Run-Reset.
 - `node tests/test-progress.cjs`: Orbs, Stufenaufstieg, Fortschrittsanzeige und Käserausch.

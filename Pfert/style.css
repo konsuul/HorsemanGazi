@@ -234,11 +234,8 @@ button:focus-visible { outline: 2px solid #abf4f3; outline-offset: 3px; }
 .gear-details small{font-size:.9em}
 .gear-panel .hint{text-align:center}
 .pause-build{width:min(79%,36rem);text-align:left;border:1px solid #4c657a;background:#132135}
-.pause-build button{width:100%;display:flex;justify-content:space-between;align-items:center;padding:.5em .8em;line-height:1.2;box-shadow:none}
-.pause-build button span{min-width:2ch;text-align:right;color:#a5ddce}
-.pause-build button:after{content:'▾';color:#a5ddce;margin-left:.7em}
-.pause-build button[aria-expanded="true"]:after{content:'▴'}
-.pause-build button span{margin-left:auto}
+.pause-build h3{display:flex;justify-content:space-between;align-items:center;padding:.5em .8em;margin:0;font-size:1em;line-height:1.2}
+.pause-build h3 span{min-width:2ch;text-align:right;color:#a5ddce}
 .pause-build p{margin:.55em .8em;color:#bfd2db;font-size:.8em}
 .pause-build ul{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15em),1fr));gap:.28em .55em;margin:.55em;max-height:clamp(48px,21vh,120px);overflow:auto;overscroll-behavior:contain;padding:0;list-style:none}
 .pause-build li{display:grid;grid-template-columns:2.15em minmax(0,1fr) auto;align-items:start;gap:.4em;padding:.35em .45em;background:#1e3045;font:clamp(9px,1vw,12px)/1.3 monospace;color:#f0e8ce}

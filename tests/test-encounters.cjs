@@ -351,7 +351,7 @@ if(process.argv.includes('--caravan')){
  assert.equal(new Set(ids).size,10);
  const original=[6.4,4.6,3.6,3.1,2.7,3.8,3.4,2.9,2.4,4.8];
  for(const [index,{id,reload}] of game.cartridges().entries()){
-  assert.ok(Math.abs(reload*1.3-original[index])<1e-9,id+' feuert 30 Prozent häufiger');
+  assert.ok(Math.abs(reload*2.6-original[index])<1e-9,id+' hat halbierte bisherige Nachladezeit');
   setup();game.chooseCartridge(id);
   game.fireCharge();game.fireCharge();
   const fired=()=>[...game.bullets(),...game.beams()].filter(b=>b.cartridge===id);

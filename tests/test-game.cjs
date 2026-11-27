@@ -10,7 +10,7 @@ const sandbox={navigator:{getGamepads:()=>gamepad?[gamepad]:[]},console,Math,Set
 vm.createContext(sandbox);vm.runInContext(fs.readFileSync(__dirname+'/../Pfert/art.js','utf8'),sandbox);
 const source=fs.readFileSync(__dirname+'/../Pfert/game.js','utf8').replace('})();',
  'globalThis.testApi={reset,update,render,renderTransition,pollGamepad,offerCards,enemy,enemyAttack,startBoss,partHit,activateRage,hurt,keys,chooseCard,cardDefs,fireCharge,get:()=>({selectedCard,lastRare,t,runTime,level,xp,xpNeeded,orbs,choices,upgrades,hearts,score,player,enemies,bullets,beams,shots,pickups,boss,nextBoss,bossCount,state,transition,levelIndex,secret,secretTime,golden,goldenAppeared,secondAppeared,secretType,particles,deaths,arcs,flashes,threat}),setXp:v=>xp=v,setTime:v=>t=v,setFirstSeen:v=>goldenAppeared=v,setRunTime:v=>runTime=v,setNextBoss:v=>nextBoss=v,setSecretTime:v=>secretTime=v,setSpawn:v=>spawn=v,setDrop:v=>drop=v};})();');
-vm.runInContext(source.replace('globalThis.testApi={','globalThis.testApi={shouldSpawnPickup,damagePart,art:PfertArt,startDebugRun,modifyDirectHit,updateFieldPowerupSpawns,getElementalBursts:()=>elementalBursts,'),sandbox);const a=sandbox.testApi;
+vm.runInContext(source.replace('globalThis.testApi={','globalThis.testApi={goToStartMenu,shouldSpawnPickup,damagePart,art:PfertArt,startDebugRun,modifyDirectHit,updateFieldPowerupSpawns,getElementalBursts:()=>elementalBursts,'),sandbox);const a=sandbox.testApi;
 for(let i=0;i<17;i++){const count=Array.from({length:100},(_,n)=>a.shouldSpawnPickup(i,(n+.5)/100)).filter(Boolean).length;assert.equal(count,i===5||i===16?100:12,'Dropchance Flasche '+i)}
 function reset(){a.reset();a.setSpawn(999);a.setDrop(999);a.get().player.autoCooldown=Infinity}
 function debugReset(){a.startDebugRun();a.setSpawn(999);a.setDrop(999);a.get().player.autoCooldown=Infinity}
@@ -18,6 +18,28 @@ function press(){events.keydown({code:'Space',repeat:false,preventDefault:noop})
 function release(){events.keyup({code:'Space',preventDefault:noop});a.get().player.autoCooldown=Infinity}
 function shoot(duration=0){a.fireCharge(duration>0);a.get().player.autoCooldown=Infinity}
 function bullet(x,y){return {x,y,vx:0,vy:0,w:10,h:10,pierce:false,damage:1,hit:new Set(),life:1}}
+// Numpad 0 is a menu-only toggle, ignores repeats and protects every damage source.
+{
+ const toggle=(repeat=false)=>events.keydown({code:'Numpad0',repeat,preventDefault:noop});
+ toggle();toggle(true);reset();
+ assert.equal(a.get().player.immortal,true);
+ for(const source of ['projectile','contact','boss','arcade']){
+  a.get().player.inv=0;a.hurt(source);
+  assert.equal(a.get().hearts,5,source+' wird durch Unsterblichkeit abgefangen');
+ }
+ toggle();assert.equal(a.get().player.immortal,true,'Im Spiel kein Umschalten');
+ a.goToStartMenu();toggle();reset();
+ assert.equal(a.get().player.immortal,false);
+ a.hurt('contact');assert.equal(a.get().hearts,4,'Nach Abschalten wieder normaler Schaden');
+}
+// Normal enemy timers run at 70%; special encounters retain their rate.
+for(const special of [null,'machine','formation','rareEnemy','rear','blocker']){
+ reset();
+ const unit=a.enemy(3,170);Object.assign(unit,{x:700,fire:2,speed:0});
+ if(special)unit[special]=special==='machine'?'weaver':true;
+ a.update(.1);
+ assert.ok(Math.abs(unit.fire-(special?1.9:1.93))<1e-9,'Feuertimer '+special);
+}
 function testSeekingAfterHit(){
  reset();
  const first=placeTarget(400,270),second=placeTarget(620,420);
@@ -438,6 +460,7 @@ function testRocketPickup(){
  player.weapon=1;player.effects[1]=18;
  a.update(.01);
  const rocket=a.get().bullets.find(b=>b.style==='rocket');
+ assert.equal(rocket.w,24);assert.equal(rocket.h,20,'Doppelte Raketengröße');
  assert.equal(rocket.target,near);assert.ok(Math.abs(rocket.damage-.8625*6)<1e-9);assert.equal(power.rockets,4);
  a.render();
  for(let i=0;i<6;i++)a.update(.05);
@@ -527,7 +550,11 @@ reset();a.get().upgrades.chain=1;first=placeTarget(400,268,1);second=placeTarget
 reset();a.get().upgrades.frost=1;e=placeTarget(400,268);shoot();a.get().bullets[0].x=400;a.update(.01);assert.ok(e.slow>=.04);
 reset();a.get().upgrades.ember=1;e=placeTarget(400,268);shoot();a.get().bullets[0].x=400;a.update(.01);hp=e.hp;a.update(.2);assert.ok(e.hp<hp&&e.burnLife>0);
 reset();a.get().upgrades.echo=1;for(let i=0;i<6;i++)shoot();assert.equal(a.get().bullets.length,8,'Sechster Angriff erzeugt Echo');
-reset();a.get().upgrades.rear=1;shoot();assert.ok(a.get().bullets.some(b=>b.vx<0));
+for(const rank of [1,2,3,4]){
+ reset();a.get().upgrades.rear=rank;shoot();
+ const front=a.get().bullets.find(b=>b.vx>0),rear=a.get().bullets.find(b=>b.vx<0);
+ assert.ok(Math.abs(rear.damage-front.damage*1.2*rank)<1e-9,'Rückwärtsschuss: sechsfacher bisheriger Schaden je Rang');
+}
 reset();a.get().upgrades.guard=1;pl=a.get().player;a.get().shots.push({x:pl.x+25,y:pl.y,vx:0,vy:0,w:10,h:10,life:1});a.update(.01);assert.ok(pl.podCooldown<2.5);
 reset();a.get().upgrades.execute=1;e=placeTarget(400,268);e.hp=30;shoot();a.get().bullets[0].x=400;a.update(.01);assert.ok(Math.abs(e.hp-(30-.8625*1.10))<1e-9,'Letzter Bissen wirkt');
 // An aimed shot keeps its locked direction even if the player moves before it fires.
