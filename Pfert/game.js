@@ -85,8 +85,8 @@ const cardDefs = [
 ];
 const baseSkills=[
  {id:'salvo',icon:'❄',title:'Eisfächer',desc:'Breite Eiskristalle bremsen Gegner. Zusatzschüsse decken mehr Fläche ab.',cards:['multiShot','frost','fanShot','spread','bounceCrust','breakShot','iceSpindle'],talents:['A1-5','A1-23']},
- {id:'precision',icon:'◆',title:'Erdbolzen',desc:'Ein schwerer Steinbolzen verursacht 18 % mehr Grundschaden gegen Einzelziele.',cards:['damage','critical','execute','pierce','velocity','seekShot'],talents:['A2-5','A2-23']},
- {id:'element',icon:'✹',title:'Glutkern',desc:'Eine flackernde Glut setzt Gegner beim ersten Treffer in Brand.',cards:['ember','chain','damage','pierce','sparkBobbin'],talents:['A3-5','A3-23']},
+ {id:'precision',icon:'◆',title:'Erdbolzen',desc:'Ein schwerer Steinbolzen verursacht 77 % mehr Grundschaden gegen Einzelziele.',cards:['damage','critical','execute','pierce','velocity','seekShot'],talents:['A2-5','A2-23']},
+ {id:'element',icon:'✹',title:'Glutkern',desc:'Eine flackernde Glut stapelt Brand bis zu dreimal.',cards:['ember','chain','damage','pierce','sparkBobbin'],talents:['A3-5','A3-23']},
  {id:'laser',icon:'ϟ',title:'Lichtlanze · Wind',desc:'Ein gebündelter Windstrahl durchdringt alle Ziele in seiner Spur.',cards:['damage','size','duration','sunLance','chain','echo','carousel','fanShot','multiShot'],talents:['A1-5','A3-23']}
 ];
 function extraShotScale(index,hasWine=false){
@@ -1647,7 +1647,7 @@ function fireCharge(special=false){
   if(primary){
    if(id==='precision'){
     primary.vx*=.9;
-    primary.damage*=1.18*(1+.04*Number(owns('A2-5'))+.08*Number(owns('A2-23')));
+    primary.damage*=1.77*(1+.04*Number(owns('A2-5'))+.08*Number(owns('A2-23')));
    }else if(id==='salvo'){
     primary.w*=1.2;primary.h*=1.2;
    }else if(id==='element'){
@@ -2563,7 +2563,17 @@ function applyAilment(b,e){
   e.slowTime=Math.max(e.slowTime||0,1.8*duration);
  }
  const burnBonus=1+.03*(metaCount('A3',[11,12,14,15,17,18,19])+2*Number(owns('A3-21')))+(owns('Q3')&&player.overdrive>0?.12:0)+(owns('Q9')&&activeWeapon()>=0?.12:0);
- if(elements.fire>0){e.burnLife=1.8*duration;e.burnDps=Math.max(e.burnDps||0,b.damage*elements.fire*(e.aim?b.bossFactor??1:1)*burnBonus*(owns('A3-23')?1.75:1))}
+ if(elements.fire>0){
+  const amount=b.damage*elements.fire*(e.aim?b.bossFactor??1:1)*burnBonus*(owns('A3-23')?1.75:1);
+  if(!(e.burnLife>0)){e.burnDps=0;e.glutStacks=0;e.glutDps=0}
+  if(b.skillElement==='element'){
+   const other=Math.max(0,(e.burnDps||0)-(e.glutDps||0)*(e.glutStacks||0));
+   e.glutStacks=Math.min(3,(e.glutStacks||0)+1);
+   e.glutDps=Math.max(e.glutDps||0,amount);
+   e.burnDps=other+e.glutDps*e.glutStacks;
+  }else e.burnDps=Math.max(e.burnDps||0,amount);
+  e.burnLife=1.8*duration;
+ }
 }
 function eruptElement(kind,target,x,y){
  if(elementalBursts.some(effect=>effect.target===target&&effect.kind===kind&&effect.life>.36))return;
