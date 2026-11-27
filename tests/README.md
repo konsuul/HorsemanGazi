@@ -11,6 +11,7 @@ Tests passend zur Änderung auswählen; mehrere Bereiche bei Wechselwirkungen ge
 - `node tests/test-scoreboard.cjs`: Punktetafel, Sortierung und Speicherung.
 - `node tests/test-game.cjs`: Kampf, Waffen, Rückwärtsschaden, Suchraketenmaße, Unsterblichkeitsschalter, normale und spezielle Feuertimer, Karten, Gegner, Bosssegmente und Geheimlevel sowie Musikrotation (alle MP3-Dateien, neu gemischte Durchläufe und keine direkte Wiederholung am Rundenwechsel).
 - `node tests/test-game.cjs --boomerang` prüft Durchschläge vor der Umkehr und erneute Treffer auf dem Rückflug.
+- `node tests/test-game.cjs --rockets` prüft fünf Suchraketen, Größe und Schaden sowie Bosssegment-Zielwahl und Treffer in sechs Orbitphasen. Die Startposition hält die vergrößerte Rakete bis zur Zielprüfung außerhalb der Bosssegmente.
 - `node tests/test-encounters.cjs --boss-attacks`: Angriffsfolgen aller neun Bosse inklusive Warnungen und Wellen der 18 Sonderangriffe.
 - `node tests/test-encounters.cjs --telegraphs` prüft beim Teppich und bei Impulsangriffen dass die Geschosse ohne sichtbare Warnlinien abgefeuert werden.
 - `node tests/test-encounters.cjs --arcade` prüft fünf Arkadenfeuer, Warnphase, Pause, Treffergrenzen, Schutz, Punkte und Ausschluss anderer Begegnungen. Der reguläre Aufruf von `test-encounters.cjs` enthält diese Fälle ebenfalls.

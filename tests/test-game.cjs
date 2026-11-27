@@ -107,7 +107,7 @@ for(const id of ['multiShot','fanShot','breakShot']){
 shoot();
 assert.equal(a.get().bullets.length,7);
 if(process.argv.includes('--seek-hit'))process.exit(0);
-if(process.argv.includes('--rockets')){testRocketPickup();console.log('OK: Fünf Suchraketen und doppelter Schaden.');process.exit(0)}
+if(process.argv.includes('--rockets')){testRocketPickup();testBossRocketTarget();console.log('OK: Fünf Suchraketen, doppelter Schaden und Bosssegment-Zielwahl.');process.exit(0)}
 reset();a.get().pickups.push({x:135,y:270,w:30,h:42,i:16});a.update(.01);assert.equal(a.get().player.verticalWine,10);shoot();let vertical=a.get().bullets.filter(b=>b.verticalWine);assert.equal(vertical.length,2);assert.ok(vertical[0].vy<0&&vertical[1].vy>0);a.get().player.effects[1]=5;a.get().player.weapon=1;a.get().bullets.length=0;shoot();assert.ok(a.get().bullets.every(b=>!b.verticalWine),'keine Zusatzschüsse mit Weinwaffe');a.get().player.effects[1]=0;a.update(10);assert.equal(a.get().player.verticalWine,0);a.get().bullets.length=0;shoot();assert.ok(a.get().bullets.every(b=>!b.verticalWine),'Effekt endet nach zehn Sekunden');
 function defeatBoss(){const count=a.get().boss.parts.length;for(let i=0;i<count;i++){const q=a.get(),p=q.boss.parts[i];p.hp=1;q.bullets.push(bullet(q.boss.x+p.aim[0],q.boss.y+p.aim[1]));a.update(.01);if(i<count-1){assert.ok(a.get().boss,'Boss bleibt bis zum letzten Bereich');assert.equal(a.get().boss.parts[i].hp,0,'Bereich '+i+' besiegt')}}if(a.get().state!=='transition')assert.equal(a.get().boss,null)}
 for(const [key,index] of [['Numpad2',0],['Numpad3',1],['Numpad4',2],['Numpad5',3],['Numpad6',4],['Numpad7',5],['Numpad8',6],['Numpad9',0]]){debugReset();events.keydown({code:key,repeat:false,preventDefault:noop});assert.equal(a.get().boss.i,index,'Debug-Bosssprung '+key)}
@@ -473,6 +473,31 @@ function testRocketPickup(){
  reset();assert.equal(a.get().player.fieldPower.rockets,0);
 }
 testRocketPickup();
+function testBossRocketTarget(){
+ for(let phase=0;phase<6;phase++){
+  reset();a.startBoss();a.setRunTime(phase*Math.PI/9);
+  const {boss,player}=a.get(),armor=boss.parts.find(part=>part.role===1);
+  boss.fire=999;
+  player.x=boss.x-195;player.y=boss.y+armor.aim[1];
+  const power=player.fieldPower,nextPickup=power.dropIn;
+  power.rockets=1;
+  a.update(.01);
+  const rocket=a.get().bullets.find(b=>b.style==='rocket');
+  assert.ok(rocket,'Rakete bleibt vor dem Boss im Flug, Orbitphase '+phase);
+  assert.equal(rocket.target,armor,'Nächstes lebendes Bosssegment wird anvisiert');
+  assert.equal(power.rockets,0,'Ein Start verbraucht eine Ladung');
+  assert.ok(boss.parts.every(part=>!a.partHit(rocket,boss,part)),'Startposition liegt außerhalb der Bosssegmente');
+  assert.equal(power.dropIn,nextPickup,'keine neuen Power-ups während des Bosskampfs');
+  const hp=armor.hp;
+  rocket.x=boss.x+armor.aim[0];rocket.y=boss.y+armor.aim[1];
+  rocket.vx=0;rocket.vy=0;
+  a.update(.01);
+  assert.ok(Math.abs(armor.hp-(hp-rocket.damage))<1e-9,'Rakete trifft das anvisierte Bosssegment');
+  assert.ok(!a.get().bullets.includes(rocket),'Treffer entfernt die Rakete');
+ }
+ console.log('OK: Bosssegment-Zielwahl und Raketentreffer in sechs Orbitphasen.');
+}
+testBossRocketTarget();
 {
  reset();a.setTime(419.99);a.setNextBoss(600);a.update(.02);
  const {player,golden,bullets}=a.get(),power=player.fieldPower;
@@ -513,7 +538,7 @@ testRocketPickup();
  assert.equal(a.modifyDirectHit(enemy,10,{vx:1,vy:2},false,enemy.x,enemy.y),10);
  assert.equal(a.modifyDirectHit(enemy,10,{charged:true},false,enemy.x,enemy.y),5.5,'Sonderlaser trifft von vorn');
  a.render();a.startBoss();
- const {boss,player}=a.get(),armor=boss.parts.find(part=>part.role===1),exposed=boss.parts[0];
+ const {boss}=a.get(),armor=boss.parts.find(part=>part.role===1),exposed=boss.parts[0];
  const hitPart=(part,attack)=>a.modifyDirectHit(part,10,attack,true,boss.x,boss.y);
  assert.equal(hitPart(armor,{vx:1}),10);
  boss.strike={elapsed:0,warning:1.15,fromX:boss.x,toX:boss.x-300};
@@ -521,10 +546,6 @@ testRocketPickup();
  assert.equal(hitPart(armor,{charged:true}),6.5);
  assert.equal(hitPart(exposed,{vx:1}),10);
  a.render();
- boss.strike=null;boss.fire=999;player.x=boss.x-175;player.y=boss.y+armor.aim[1];
- const power=player.fieldPower;power.rockets=1;const nextPickup=power.dropIn;
- a.update(.01);assert.ok(a.get().bullets.some(b=>b.style==='rocket'&&b.target===armor));
- assert.equal(power.dropIn,nextPickup,'keine neuen Power-ups während des Bosskampfs');
 }
 equip(15);a.get().upgrades.seekShot=1;placeTarget(650,400);shoot();let tracking=a.get().bullets[0];a.update(.05);assert.ok(tracking.vy>0,'Weingeschoss verfolgt auch entfernten Gegner');
 for(const weapon of [0,1,2,3,4,6,7,8,9,10,11,12,13,14,15]){equip(weapon);for(const id of ['multiShot','fanShot','snakeShot','seekShot','breakShot'])a.get().upgrades[id]=1;shoot(1);const q=a.get(),attacks=q.bullets.length?q.bullets:q.beams;assert.ok(attacks.length>=4,'Wein-Sonderangriff vervielfacht '+weapon);assert.ok(attacks.every(b=>b.seekRank===1&&b.snakeRank===1&&b.breakRank===1),'Karteneffekte auf Wein-Sonderangriff '+weapon);a.render()}
