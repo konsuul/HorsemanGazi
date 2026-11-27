@@ -6,6 +6,8 @@ Die Einträge nennen die Urheberschaft. Vorschläge sind keine Zusage zur Umsetz
 
 - [ ] **Unterschiedliche Gegner-Flugprofile.** Standardgegner kommen nicht alle gerade vom Bildschirmrand. Einige fliegen diagonal ein; andere preschen vor, halten kurz an, erfassen die Position des Pferts und stoßen dann gezielt vor. Das Pfert soll in Bewegung bleiben und auf unterschiedliche Muster reagieren. Anstürme gut ankündigen und im frühen Spiel sparsam einsetzen. Bestehende Boss-, Formations- und Spezialabläufe bewahren.
 
+- [ ] **Basarwachen ohne Texte intuitiv erkennbar machen.** „Wache 1/2“ nicht durch Ziffern, Striche oder andere Zählzeichen ersetzen. Wachen und Anführer durch sichtbares Verhalten und ihre Beziehung zueinander unterscheiden, etwa durch ein am Gegner befestigtes Eskortenband, das beim Abschuss einer Wache sichtbar nachgibt. Die Darstellung darf keine Unverwundbarkeit vortäuschen. In einem kurzen Spieltest prüfen, ob jemand ohne Erklärung erkennt, dass beide Wachen vor dem Anführer fallen sollen. Keine eingeblendeten Texte im Spielfeld; die Regel in den Entwicklungsvorgaben festhalten.
+
 ## Vorschläge vom Dot
 
 ### P1 · Schwierigkeit und Lesbarkeit
