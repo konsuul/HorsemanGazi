@@ -818,7 +818,74 @@ function reset(skill=baseSkills[0]){startRun('regular',skill)}
 let starRoute=null,nextStarRoute=100,starRouteIndex=0;
 let formation=null, arcadeFire=null;
 let flightStats;
+let ranchData=null,ranchStorage=null,ranchWritable=false,ranchSavedAt=0,ranchAttemptAt=0,ranchSaveFailed=false,ranchDrops=[];
+function loadRanch(){
+ if(ranchData||typeof PfertRanch==='undefined')return;
+ try{ranchStorage=window.localStorage}catch{}
+ const result=PfertRanch.load(ranchStorage);
+ ranchData=result.data;ranchWritable=result.writable;ranchSavedAt=ranchAttemptAt=ranchData.active;
+ if(PfertRanch.advance(ranchData,0))saveRanch(true);
+}
+function saveRanch(force=false){
+ if(!ranchWritable||!ranchData||!force&&ranchData.active===ranchSavedAt)return;
+ ranchAttemptAt=ranchData.active;
+ ranchSaveFailed=!PfertRanch.save(ranchStorage,ranchData);
+ if(!ranchSaveFailed)ranchSavedAt=ranchData.active;
+}
+function updateRanchClock(dt){
+ if(runMode!=='regular'||!ranchData)return;
+ const hatched=PfertRanch.advance(ranchData,dt);
+ if(hatched||ranchData.active-ranchAttemptAt>=5)saveRanch(!!hatched);
+}
+function maybeDropEgg(e){
+ if(!ranchData||runMode!=='regular'||secret||!e.regularSpawn||!onPlayfield(e)||t<(player.nextEggDrop||0))return;
+ const egg=PfertRanch.rollDrop(ranchData,t,ranchDrops.length);
+ if(!egg)return;
+ player.nextEggDrop=t+45;
+ ranchDrops.push({...egg,x:clamp(e.x,22,W-22),y:clamp(e.y,88,H-22),w:36,h:36});
+}
+function moveEggDrops(dt){
+ for(const egg of ranchDrops){
+  egg.x-=45*dt;
+  if(hit(player,egg)&&PfertRanch.collect(ranchData,egg)){
+   egg.collected=true;saveRanch(true);
+   sound('pickup');ring(egg.x,egg.y,'#f9dfac',42);
+  }
+ }
+ ranchDrops=ranchDrops.filter(egg=>!egg.collected&&egg.x+egg.w/2>=0);
+}
+function showRanch(){
+ if(state!=='menu')return;
+ loadRanch();
+ if(!ranchData)return;
+ state='ranch';cancelCharge();padBlocked=true;
+ const cards=[];
+ function animals(items,hatched){
+  if(!items.length)return '<p class="hint">'+(hatched?'Hier erscheinen deine geschlüpften Pfohlen.':'Noch keine Eier in Brut.')+'</p>';
+  return '<ul class="ranch-cards">'+items.map(item=>{
+   cards.push({item,hatched});
+   const tier=PfertRanch.tierOf(item.tier),palette=PfertRanch.palettes[item.palette],pattern=PfertRanch.patterns[item.pattern];
+   const time=Math.max(0,Math.ceil(item.hatchAt-ranchData.active));
+   return '<li><canvas id="ranch-animal-'+item.id+'" width="72" height="56" aria-hidden="true"></canvas><div><strong>'+tier.name+
+    '</strong><small>'+palette.name+' · '+pattern+'</small>'+(hatched?'':'<small>Schlüpft in '+clock(time)+' · '+tier.minutes+' Min. Brutzeit</small>')+'</div></li>';
+  }).join('')+'</ul>';
+ }
+ overlay.classList.add('ranch-overlay');
+ overlay.innerHTML='<section class="ranch-panel"><h2>Pferteranch</h2><p class="hint">Aktive Spielzeit · '+clock(ranchData.active)+'</p>'+
+  (!ranchWritable||ranchSaveFailed?'<p class="hint">Speichern gerade nicht verfügbar.</p>':'')+
+  '<h3>Brut · '+ranchData.eggs.length+' / 6</h3>'+animals(ranchData.eggs,false)+
+  '<h3>Pfohlen · '+ranchData.foals.length+'</h3>'+animals(ranchData.foals,true)+
+  '<button id="ranch-close">Zurück</button></section>';
+ for(const {item,hatched} of cards){
+  const ctx=document.getElementById('ranch-animal-'+item.id).getContext('2d');
+  PfertRanchArt.draw(ctx,item,36,28,2,hatched);
+ }
+ const close=document.getElementById('ranch-close');
+ close.addEventListener('click',goToStartMenu);close.focus?.();
+}
 function startRun(mode,skill=baseSkills[0]){
+ if(mode==='regular')loadRanch();
+ ranchDrops=[];
  starRoute=null;nextStarRoute=100;starRouteIndex=0;formation=null;arcadeFire=null;
  flightStats={enemies:0,bosses:0,bestCombo:0,slipstreams:0,deliveries:0};
  if(mode==='regular')leaveDebugTalents();
@@ -842,6 +909,7 @@ function startRun(mode,skill=baseSkills[0]){
 }
 function cancelCharge(){keys.clear();if(player){player.charging=false;player.charge=0}}
 function pauseGame(){
+ saveRanch();
  if(state!=='playing'&&state!=='transition')return;
  pausedFrom=state;
  state='paused';
@@ -1053,6 +1121,7 @@ function closeBaseSkills(){
  document.getElementById(state==='menu'?'start':'again')?.focus?.({preventScroll:true});
 }
 function bindHomeControls(){
+ document.getElementById('ranch')?.addEventListener('click',showRanch);
  document.getElementById('inspect-hit')?.addEventListener('click',showHitFrame);
  document.getElementById('training')?.addEventListener('click',()=>showBaseSkills('training'));
  document.getElementById('courier')?.addEventListener('click',()=>showBaseSkills('courier'));
@@ -1064,7 +1133,7 @@ function goToStartMenu(){
  leaveDebugTalents();
  if(typeof PfertSound!=='undefined')PfertSound.stopMusic();
  state='menu';runMode='regular';player=null;boss=null;
- overlay.classList.remove('game-over','debug-overlay','skill-overlay','hidden');
+ overlay.classList.remove('game-over','debug-overlay','skill-overlay','ranch-overlay','hidden');
  overlay.innerHTML=startMenuMarkup;
  cancelCharge();padBlocked=true;bindHomeControls();
 }
@@ -1133,6 +1202,8 @@ function finishUnranked(completed=false){
 bindHomeControls();
 window.addEventListener('keydown',e=>{
  if(e.altKey||e.ctrlKey||e.metaKey)return;
+ if(state==='ranch'){if(e.code==='Escape')goToStartMenu();return}
+ if(state==='menu'&&!e.repeat&&e.code==='KeyH'){e.preventDefault();showRanch();return}
  if(state==='inspect'){if(e.code==='Escape'||e.code==='KeyL')closeHitFrame();return}
  if(state==='over'&&(e.code==='KeyL'||e.code==='Enter'&&e.target?.id==='inspect-hit')){e.preventDefault();showHitFrame();return}
  if(state==='encore')return;
@@ -1222,12 +1293,13 @@ window.addEventListener('keydown',e=>{
  if(e.code==='KeyQ'&&!e.repeat)activateRage();
  if(e.code==='KeyT'&&!e.repeat&&(state==='menu'||state==='over'))showTalents();
 
- if(e.code==='Enter'&&!e.repeat&&(state==='menu'||state==='over')&&!['talents','training','courier'].includes(e.target?.id)){e.preventDefault();showBaseSkills()}
+ if(e.code==='Enter'&&!e.repeat&&(state==='menu'||state==='over')&&!['talents','training','courier','ranch'].includes(e.target?.id)){e.preventDefault();showBaseSkills()}
 });
 window.addEventListener('keyup',e=>{
  keys.delete(e.code);
 });
 function checkpointRunTalents(){
+ saveRanch();
  if(player&&runTime>metaSavedAt)bankRunTalents(0,true);
 }
 window.addEventListener('pagehide',checkpointRunTalents);
@@ -1402,6 +1474,7 @@ function enemySpeed(e,dt=0){
  return ((paused?0:e.speed)+charge)*(1-(e.slow||0));
 }
 function death(e){
+ maybeDropEgg(e);
  flightStats.enemies++;
  if(e.chain){
   if(!e.leader){
@@ -2229,7 +2302,7 @@ function spawnRegularEnemy(){
   unit.fire=1.75;
  }else{
   const unit=enemy(type,y);
-  if(!secret)assignEnemyFlight(unit);
+  if(!secret){unit.regularSpawn=true;assignEnemyFlight(unit)}
  }
  spawnIndex++;
  spawn+=1;
@@ -2637,6 +2710,7 @@ function closeHitFrame(){
  state='over';overlay.classList.remove('hidden');lastRenderedState=null;
 }
 function end(died=true,victory=false){
+ saveRanch();
  if(victory?state!=='encore':died?state!=='playing':state!=='paused'||pauseView!=='confirmEnd')return;
  pausedFrom=null;
  clearRunGear();
@@ -3153,6 +3227,7 @@ function updateGameplay(dt){
  const targetThreat=encounterThreat(t,upgrades,activeWeapon()>=0);
  threat+=(targetThreat-threat)*Math.min(1,dt*.25);
  const previousRunTime=runTime;runTime+=dt;
+ updateRanchClock(dt);
  if(runMode==='courier'&&runTime>=courierDuration-1e-8){
   runTime=courierDuration;
   if(typeof PfertSound!=='undefined')PfertSound.stopMusic();
@@ -3403,6 +3478,7 @@ function updateGameplay(dt){
  if(power.shieldTime===0)power.shield=0;
  power.beamTime=Math.max(0,power.beamTime-dt);
  if(state!=='playing')return;
+ if(ranchDrops.length)moveEggDrops(dt);
  for(const orb of orbs)if((orb.contractAngle===undefined||orb.age>=contractOrbBurstTime)&&(!orb.starBurst||orb.age>=starOrbFlightTime+starOrbPickupDelay)&&hit(player,orb)){const elite=orb.kind==='elite',bossOrb=orb.kind==='boss';const bonus=.03*(metaCount('B1',[5,10,11,12,14,15,17,18,19])+2*Number(owns('B1-21')))+(owns('B1-16')&&elite?.30:0)+(owns('B1-23')?.60:0)+(owns('Q5')&&player.overdrive>0?.15:0)+(elite?.03*metaCount('B3',[1,2,3,4,6,7,8,9]):0)+(bossOrb?.03*(metaCount('B3',[11,12,14,15,17,18,19])+2*Number(owns('B3-21'))):0)+(bossOrb&&owns('B3-13')?.45:0)+(owns('B3-23')?(elite||bossOrb?.90:-.10):0);xp+=orb.value*(1+bonus)*1.25*orbXpMultiplier*gearFactor('orbXp');orb.collected=true;player.metaOrbs=(player.metaOrbs||0)+1;const wave=(owns('B1-20')&&player.metaOrbs%25===0)||(bossOrb&&owns('B3-22'));if(wave){const radius=112.5+(owns('B1-22')?75:0),amount=damage(3+(owns('B1-22')?1.5:0));ring(player.x,player.y,'#80faff',radius);for(const e of enemies)if(e.hp>0&&Math.hypot(e.x-player.x,e.y-player.y)<radius)damageEnemy(e,amount,e.x,e.y)}}
  orbs=orbs.filter(orb=>!orb.collected&&orb.x+orb.w/2>=0);if(xp>=xpNeeded){offerCards();return}
  for(const p of pickups)if(!p.dead&&(hit(player,p)||p.forkJuice&&starRoute?.fork&&Math.abs(p.x-player.x)<25&&player.y>=110&&player.y<=250)){
@@ -3610,6 +3686,7 @@ function render(still=false){
  }
  if(player&&player.metaBombs)for(const b of player.metaBombs){c.fillStyle='#ffd58b';c.beginPath();c.arc(b.x,b.y,6,0,Math.PI*2);c.fill()}
  for(const orb of orbs)PfertArt.experienceOrb(c,orb);
+ for(const egg of ranchDrops)PfertRanchArt.draw(c,egg,egg.x,egg.y,2);
  if(golden)PfertArt.golden(c,golden);
  const sceneLights=[];
  for(let i=Math.max(0,flashes.length-4);i<flashes.length;i++){
@@ -3749,6 +3826,7 @@ function pollGamepad(now=Date.now()){
  }
  if(state==='transition'){padMove={x:0,y:0};padPrev={a,confirm,target,left,right,up,down,rage,menu};return}
   if(state==='inspect'){if(rage&&!padPrev.rage)closeHitFrame()}
+ else if(state==='ranch'){if(a&&!padPrev.a||rage&&!padPrev.rage||menu&&!padPrev.menu)goToStartMenu()}
  else if(state==='over'&&target&&!padPrev.target){showHitFrame()}
  else if(state==='encore'){
   if(a&&!padPrev.a)end(false,true);
@@ -3761,7 +3839,7 @@ function pollGamepad(now=Date.now()){
   if(down&&!padPrev.down)selectBaseSkill(skillSelection+2);
   if(a&&!padPrev.a)chooseBaseSkill(skillSelection);
   else if(rage&&!padPrev.rage||menu&&!padPrev.menu)closeBaseSkills();
- }else if(state==='menu'||state==='over'){if(rage&&!padPrev.rage&&metaAvailable){showTalents();padBlocked=true}else if(state==='menu'&&confirm&&!padPrev.confirm)showBaseSkills('training');else if(state==='menu'&&target&&!padPrev.target)showBaseSkills('courier');else if(a&&!padPrev.a)showBaseSkills()}else if(state==='playing'){
+ }else if(state==='menu'||state==='over'){if(state==='menu'&&menu&&!padPrev.menu)showRanch();else if(rage&&!padPrev.rage&&metaAvailable){showTalents();padBlocked=true}else if(state==='menu'&&confirm&&!padPrev.confirm)showBaseSkills('training');else if(state==='menu'&&target&&!padPrev.target)showBaseSkills('courier');else if(a&&!padPrev.a)showBaseSkills()}else if(state==='playing'){
   if(a&&!padPrev.a)fireSpecial();
   if(rage&&!padPrev.rage)activateRage();
   if(target&&!padPrev.target){lastFlightInput='gamepad';aimSweeper()}

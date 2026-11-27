@@ -29,6 +29,10 @@ Nach dem letzten Herz zeigt **L / Y** die Trefferlupe. Klick, Esc oder B führen
 - Türkis gerahmte Flaschen mit Pluszeichen sind Powerups. Rot umrandete, hohle Projektile sind gefährlich. Getroffene Gegner blitzen weiß auf.
 - Noch nicht eingesammelte Flaschen setzen während des Bosskampfs aus. Sie erscheinen nach dem Sieg wieder, bei geheimen Bossen beim Rückwechsel ins Hauptspiel.
 
+## Pferteranch
+
+Im Hauptmenü öffnet **H / Start** die Pferteranch mit Brutliste, Restzeit und Pfohlen. Im regulären Flug können ab **30:00** geeignete besiegte Gegner selten ein Ei fallen lassen. Berühre das Ei, um es einzusammeln und die Brut zu starten. Pleb schlüpft nach 5, Otto nach 10, Wallach nach 20 und Hengst nach 60 Minuten aktiver Spielzeit in regulären Runden. Die Farbe und das Muster der Schale erscheinen nach dem Schlupf im Fell.
+
 ## Training und Kurierlauf
 
 - Im Hauptmenü öffnet **Großwesir-Training** (2 / X) die Basisskill-Auswahl für den direkten Bosskampf. Nach dem Ergebnis startet **Erneut starten** denselben Skill.

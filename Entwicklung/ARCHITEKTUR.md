@@ -203,6 +203,14 @@ Die zwei Einstiegsstrategien des Tests erreichten mit den neuen Flugprofilen die
 - **Sternenpost-Kurierlauf.** Der 90-Sekunden-Kurs hat 19 fest getaktete Gegner und vier Routen mit jeweils drei festen Siegeln. Die Wellen greifen mit festen Feuerintervallen an. Ein vollständiger Satz bringt ein Herz, fünf Sekunden schnelleres Fliegen und 1,5 Sekunden Schutz. Der Kurs verwendet die normalen Flugregeln ohne Talentboni, automatisches Feuer oder Kartenaufstieg. Beide Übungsmodi schreiben weder die Punktetafel noch Talentfortschritt.
 - **Persönliche Bestlaufzeit.** Beim gewerteten Ergebnis wird die Überlebenszeit in ganzen Sekunden mit dem bisherigen Maximum desselben Basisskills und derselben Wertungsart verglichen. Ein eigener lokaler Speicher hält den Rekord fest, auch wenn der Eintrag aus den letzten zehn Runden fällt. Alte Punktetafeleinträge ohne Skill bleiben lesbar und gehen in keinen Skillvergleich ein.
 
+## Pferteranch ab 1.1.7
+
+Die Pferteranch führt `pfert-ranch-v1` als eigenen lokalen Spielstand. Das Schema hält aktive Sekunden, eine aufsteigende ID und die Listen für Eier und Pfohlen. Ungültige Einträge werden beim Laden verworfen. Ein Eintrag ohne optische Variante erhält Honig und Kreis. Ein Spielstand mit einer neueren Version wird nicht überschrieben. Talentdaten, Punktetafel und Bestzeiten behalten ihre Speicherpfade.
+
+Ab Hauptspielzeit 30:00 haben geeignete reguläre Abschüsse eine Dropchance von 0,7 %. Zwischen Drops liegen mindestens 45 Hauptspielsekunden. Drei Eier können gleichzeitig im Spielfeld liegen, sechs gleichzeitig brüten und bis zu 128 Tiere im lokalen Spielstand stehen. Die Tierwahl 64 / 26 / 9 / 1 ist vom Dropwurf getrennt. Palette und Muster werden unabhängig gewürfelt. Die Varianten-ID wird aus den beiden stabilen Indizes gebildet und beim Schlupf gemeinsam mit Palette, Muster und Eintrags-ID übernommen.
+
+Die Brut läuft ab Einsammeln für 5 / 10 / 20 / 60 Minuten. Der Spielablauf reicht nur aktive reguläre Zeitschritte an die Ranch weiter. Der Stand wird nach spätestens fünf aktiven Sekunden sowie beim Einsammeln, Schlüpfen, Pausieren und Verlassen gespeichert. Ein Schlupf verschiebt das Ei in demselben Speicherstand in die Pfohlen-Liste und schreibt dabei dieselbe ID.
+
 ## Änderungen vorbereiten
 
 1. Bei einer neuen Regel zuerst in der [Roadmap](ROADMAP.md) den gewünschten Effekt und die betroffenen Fälle festhalten. Für Zahlenänderungen Startwert, Multiplikatoren, Rundung und mindestens einen konkreten Zielwert angeben. Bei Bossen zusätzlich Boss-ID, Segment und Vergleichs-Bedrohung festlegen.

@@ -659,3 +659,12 @@ button:focus-visible { outline: 2px solid #abf4f3; outline-offset: 3px; }
  box-shadow: inset 3px 0 var(--skill-color), 0 0 12px #000b;
 }
 .skill-overlay .hint { margin: 0; }
+
+.overlay.ranch-overlay { overflow: auto; align-content: start; }
+.ranch-panel { width: min(100%, 720px); margin: 12px auto; }
+.ranch-panel h3 { color: #f0cf91; margin: 15px 0 6px; }
+.ranch-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px; margin: 0 0 12px; padding: 0; text-align: left; list-style: none; }
+.ranch-cards li { display: flex; align-items: center; min-height: 56px; color: #fff1d8; background: #192237; border: 1px solid #625675; padding: 4px 6px; }
+.ranch-cards canvas { width: 72px; height: 56px; flex: none; display: block; image-rendering: pixelated; }
+.ranch-cards small { display: block; font-size: .73rem; color: #d3ccd4; }
+#ranch-close { margin-top: 12px; }

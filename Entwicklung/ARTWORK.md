@@ -57,6 +57,10 @@ Beide transparenten Streifen stammen aus einem gemeinsamen Pixelgrafik-Entwurf. 
 - **Orte.** Hauptlevel bleiben osmanisch geprägt, etwa mit Kuppeln, Minaretten, Iznik-Mosaik und Markisen. Ruhrpott-Sonderlevel verwenden Ziegel, Stahl, Schornsteine und lokale Ladenfronten. Beide Welten teilen Pixelmaßstab, Lichtrichtung und Materialabstufung.
 - **Abnahme im Spiel.** Gegner und Gebäude bei nativer Canvas-Größe sowie bei kleiner Darstellung prüfen. Angriffswarnungen und Projektile müssen bei dichtem Feuer lesbar sein. Bei realen Gebäuden die Silhouette und markanten Fassadendetails an einer eindeutig zugeordneten Vorlage prüfen.
 
+## Eier und Pfohlen der Pferteranch
+
+Eier und Pfohlen nutzen dieselbe Palette und dasselbe Fell- beziehungsweise Schalenmuster. Kreis, Rechteck, Raute und Kreuz bleiben bei Spielgröße durch ihre Pixelkontur unterscheidbar. Jede Eier-Seltenheit trägt zusätzlich eine eigene Silhouette am oberen Schalenrand. Die Ranch zeigt die Sprites größer zusammen mit Name und Brutzeit.
+
 ## Figuren und Geschosse mit scharfen Pixelkanten
 
 | Datei | Verwendung |
