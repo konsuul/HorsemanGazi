@@ -238,4 +238,29 @@ for(const [name,arity,count] of [['trail',2,360],['bullet',2,360],['hostile',2,2
  assert.equal(calls,count);
 }
 console.log('OK: Geschosslast 360 + 216 mit regulärer Darstellung und Leuchtspuren.');
+
+// A dense frame draws every aura particle and glow from shared artwork.
+{
+ const ctx=makeContext(),stamps=[],glows=[];
+ ctx.createRadialGradient=()=>assert.fail('Geschoss-Leuchthöfe werden als Sprite gezeichnet');
+ ctx.drawImage=(...args)=>(args.length===9?stamps:glows).push(args);
+ const projectile={x:550,y:240,w:14,vx:220,vy:0,style:'normal',
+  elements:{frost:.25,fire:.25,lightning:true,earth:true}};
+ for(let i=0;i<360;i++){
+  const shot={...projectile,x:300+i,age:i*.02};
+  a.art.trail(ctx,shot);
+  a.art.bullet(ctx,shot);
+ }
+ for(let i=0;i<216;i++)a.art.hostile(ctx,{kind:'needle',x:550+i,y:240,vx:-50,vy:0,w:10,h:10});
+ assert.equal(stamps.length,360*16);
+ assert.equal(new Set(stamps.map(([image])=>image)).size,1);
+ assert.deepEqual(stamps.slice(0,16).map(([,x])=>x/stamps[0][3]),
+  [0,0,0,0,0,0,1,2,1,2,1,2,3,3,3,3]);
+ assert.notEqual(stamps[0][7],stamps[16][7],'Frostteilchen bewegen sich mit dem Alter');
+ assert.equal(ctx.calls.filter(call=>call[0]==='stroke'&&call[1]==='#e2f5ff').length,360);
+ assert.equal(glows.length,360+216);
+ assert.equal(new Set(glows.map(([image])=>image)).size,2);
+ assert.ok(glows.every(([, , ,w,h])=>w===h&&w>0));
+}
+console.log('OK: Leuchthöfe und alle animierten Elementarpartikel nutzen bei Geschosslast wiederverwendete Grafiken.');
 console.log('OK: Trefferursachen, Wein-Sonderangriffe, Minenwarnung, Splitterwarnung und Orb-Kontrast.');

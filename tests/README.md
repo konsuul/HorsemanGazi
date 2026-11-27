@@ -14,7 +14,7 @@ Tests passend zur Änderung auswählen; mehrere Bereiche bei Wechselwirkungen ge
 - `node tests/test-encounters.cjs --boss-attacks`: Angriffsfolgen aller neun Bosse inklusive Warnungen und Wellen der 18 Sonderangriffe.
 - `node tests/test-encounters.cjs --telegraphs` prüft beim Teppich und bei Impulsangriffen dass die Geschosse ohne sichtbare Warnlinien abgefeuert werden.
 - `node tests/test-encounters.cjs --arcade` prüft fünf Arkadenfeuer, Warnphase, Pause, Treffergrenzen, Schutz, Punkte und Ausschluss anderer Begegnungen. Der reguläre Aufruf von `test-encounters.cjs` enthält diese Fälle ebenfalls.
-- `node tests/test-readability.cjs` prüft unter anderem die Grenzen der Feuerzonen, Warn- und Feuerfarben, Bossbruchstücke bei reduzierter Bewegung und den Sprite-Cache der Beutesymbole.
+- `node tests/test-readability.cjs` prüft die Grenzen und Farben der Feuerzonen, Bossbruchstücke bei reduzierter Bewegung, den Sprite-Cache der Beutesymbole und die Wiederverwendung der Leuchthöfe und Elementarpartikel bei 360 Spieler- und 216 Feindgeschossen.
 - `node tests/test-encounters.cjs --formation`: Fünf Formationen, Vorwarnung, Einflugspuren, Salven, Pause und Ausschluss bei Bossen und im Ruhrpott.
 - `node tests/test-encounters.cjs --caravan`: Munitionskarten, Nachladung, Maschinen und Abschluss der neuen Hauptbosse.
 - `node tests/test-encounters.cjs --wind`: Windschatten, Nachladeschub, Pausen und Sternenpost.
