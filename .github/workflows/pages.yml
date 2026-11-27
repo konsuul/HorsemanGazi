@@ -120,7 +120,7 @@ jobs:
           GAME_VERSION: ${{ steps.package.outputs.version }}
         run: |
           filename="Pfert-$RELEASE_TAG.zip"
-          previous=$(gh release list --limit 100 --json tagName,isDraft --jq +            '[.[] | select(.isDraft == false)] | .[].tagName' | while read -r candidate; do
+          previous=$(gh release list --limit 100 --json tagName,isDraft --jq '[.[] | select(.isDraft == false)] | .[].tagName' | while read -r candidate; do
             if [[ "$candidate" != "$RELEASE_TAG" ]] && git merge-base --is-ancestor "$candidate" "$GITHUB_SHA"; then
               echo "$candidate"
               break
