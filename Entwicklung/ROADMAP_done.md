@@ -2,6 +2,14 @@
 
 [Offene Roadmap](ROADMAP.md) · [Spielarchitektur](ARCHITEKTUR.md) · [Testanleitung](../tests/README.md)
 
+## Umgebungsgefahren, Pause und Kampf · 27.11.2026
+
+- [x] **Umgebungsgefahren.** Ab 2:49 erscheinen zwei bis drei angekündigte Wellen pro Begegnung. Arkadenfeuer, Fallgitter, Kreuzfeuer, Flutkammer und Palastgitter nutzen horizontale, vertikale oder wechselnde freie Spuren. Der Hintergrund graut während der Begegnung aus. `test-encounters.cjs` und `test-readability.cjs` haben Warnzeit, Pause, Treffergrenzen, Punkte, Ausschluss paralleler Begegnungen und die Rendergrenzen bestanden.
+- [x] **Pause und Ausrüstung.** Die Liste im Pausenmenü zeigt gesammelte Power-ups samt Rang. Rucksack und Ersatzmenü fassen acht Items mit sichtbarem Ausrüstungsplatz. `test-pause-cards.cjs` und `test-items.cjs` sind bestanden, einschließlich Tastaturbedienung und Ersetzen im achten Platz.
+- [x] **Kampf.** Käsekarussell und Mondorbit behalten ihre Umlaufgeschosse neben dem Vorwärtsangriff. `test-game.cjs`, `test-input.cjs` und `test-balance.cjs` sind bestanden. Der Mondorbit erreicht auf Distanz 6,20 Schaden/s. `test-encounters.cjs` hat die um 40 % verlängerte Säbelteppich-Vorstoßstrecke und die um 30 % höhere Patronenfrequenz einschließlich zehn Nachladegrenzen bestanden.
+
+Der [GitHub-Lauf für `b21dd80`](https://github.com/konsuul/HorsemanGazi/actions/runs/45980243776) enthält zusätzlich den bestandenen Chromium-Starttest mit Runde, Pause und Fortsetzen.
+
 ## Talent-Sicherung, Sternenpost und Schussvorwarnungen
 
 - [x] **Sternenpost-Orbs:** Pro Orb 50 % blau, 30 % grün, 15 % rot und 5 % golden. Rote und goldene Orbs geben doppelte XP, auch bei regulären Drops. Ziehgrenzen und XP-Werte gezielt geprüft.
