@@ -256,7 +256,7 @@ console.log('OK: Geschosslast 360 + 216 mit regulärer Darstellung und Leuchtspu
  assert.equal(new Set(stamps.map(([image])=>image)).size,1);
  assert.deepEqual(stamps.slice(0,16).map(([,x])=>x/stamps[0][3]),
   [0,0,0,0,0,0,1,2,1,2,1,2,3,3,3,3]);
- assert.notEqual(stamps[0][7],stamps[16][7],'Frostteilchen bewegen sich mit dem Alter');
+ assert.notEqual(stamps[0][6],stamps[16][6],'Frostteilchen bewegen sich mit dem Alter (Ziel-Y statt Sprite-Höhe)');
  assert.equal(ctx.calls.filter(call=>call[0]==='stroke'&&call[1]==='#e2f5ff').length,360);
  assert.equal(glows.length,360+216);
  assert.equal(new Set(glows.map(([image])=>image)).size,2);
