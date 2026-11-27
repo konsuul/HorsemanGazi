@@ -582,11 +582,13 @@ reset();a.get().upgrades.execute=1;e=placeTarget(400,268);e.hp=30;shoot();a.get(
 {
  reset();const shooter=a.enemy(3,220);
  Object.assign(shooter,{x:700,speed:0,fire:.5});
- a.update(.05);
+ for(let i=0;i<4;i++)a.update(.05);
+ assert.equal(shooter.aimTarget.x,135);
+ assert.equal(shooter.aimTarget.y,270,'Ziel wird 0,55 Sekunden vor dem Schuss gespeichert');
  assert.equal(a.art.shotPreview,undefined);
  a.render();
  a.get().player.y=450;
- for(let i=0;i<10;i++)a.update(.05);
+ for(let i=0;i<7;i++)a.update(.05);
  assert.equal(a.get().shots.length,0,'Normaler Feuertimer läuft mit Faktor 0,7');
  for(let i=0;i<4;i++)a.update(.05);
  const dart=a.get().shots[0];
