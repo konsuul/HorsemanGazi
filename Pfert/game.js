@@ -1003,12 +1003,8 @@ function closeBaseSkills(){
  padBlocked=true;bindHomeControls();
  document.getElementById(state==='menu'?'start':'again')?.focus?.({preventScroll:true});
 }
-function bindHomeStatus(){
- const immortalStatus=document.getElementById('immortal-status');
- if(immortalStatus)immortalStatus.textContent='Numpad 0 · Unsterblichkeit: '+(immortalMode?'AN':'AUS');
-}
 function bindHomeControls(){
- refreshPadHints();bindHomeStatus();
+ refreshPadHints();
  document.getElementById(state==='menu'?'start':'again')?.addEventListener('click',showBaseSkills);
  document.getElementById('talents')?.addEventListener('click',showTalents);
 }
@@ -1080,7 +1076,7 @@ window.addEventListener('keydown',e=>{
  if(e.code==='Numpad0'){
   if(state==='menu'){
    e.preventDefault();
-   if(!e.repeat){immortalMode=!immortalMode;bindHomeStatus()}
+   if(!e.repeat)immortalMode=!immortalMode;
   }
   return;
  }
