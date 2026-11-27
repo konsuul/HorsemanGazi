@@ -132,8 +132,8 @@ reset();a.setXp(a.get().xpNeeded);a.update(.01);events.keydown({code:'KeyD',repe
  a.get().upgrades.multiShot=2;a.get().upgrades.fanShot=2;a.fireCharge();
  const [main,...copies]=a.get().bullets;
  assert.equal(copies.length,6);
- assert.ok(Math.abs(copies[0].damage/main.damage-.1152)<1e-9);
- assert.ok(Math.abs(copies[2].damage/main.damage-.17)<1e-9);
+ assert.ok(Math.abs(copies[0].damage/main.damage-.2304)<1e-9);
+ assert.ok(Math.abs(copies[2].damage/main.damage-.34)<1e-9);
  assert.ok(copies[2].damage>copies[4].damage);
  assert.equal(main.elements.frost,.25);assert.equal(main.skillElement,'salvo');
  assert.equal(main.y,a.get().player.y-2);

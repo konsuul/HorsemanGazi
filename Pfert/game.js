@@ -10,7 +10,7 @@ const homingStrength=.3, seekSteering=.51*homingStrength;
 const fullEnemyDensityTime=20*60;
 const rageBaseDuration=12, orbXpMultiplier=1.5, snakeAmplitude=.85, comboWindow=4;
 const damageFrameTime=.18;
-const breakShotDamage=.126,bounceCrustDamage=.21,hitFragmentDamage=.21;
+const breakShotDamage=.252,bounceCrustDamage=.21,hitFragmentDamage=.21;
 const doubleCheeseDamage=.48;
 const starOrbRadius=128,starOrbFlightTime=.36,starOrbPickupDelay=.25;
 const laserDamageScale=1.6,laserIntervalScale=2;
@@ -47,41 +47,41 @@ const cartridges=[
 const cardDefs = [
  ...cartridges,
  {id:'healing',icon:'♥',title:'Herzstück',desc:'Füllt ein Herz wieder auf.',max:Infinity},
- {id:'multiShot',icon:'⋮',title:'Doppelter Käse',desc:'Ein Zusatzschuss je Rang für Käseschüsse, Lichtlanze und Wein-Sonderangriffe. Weitere Kopien werden schwächer.',max:2},
- {id:'fanShot',icon:'⋔',title:'Streuflug',desc:'Zwei Fächerschüsse je Rang für Käseschüsse, Lichtlanze und Wein-Sonderangriffe. Weitere Kopien werden schwächer.',max:2},
+ {id:'multiShot',icon:'⋮',title:'Doppelter Käse',desc:'Ein Zusatzschuss je Rang für Käseschüsse, Lichtlanze und Wein-Sonderangriffe. Je später der Platz unter den sechs Zusatzschüssen, desto geringer der Schaden.',max:2},
+ {id:'fanShot',icon:'⋔',title:'Streuflug',desc:'Zwei Fächerschüsse je Rang für Käseschüsse, Lichtlanze und Wein-Sonderangriffe. Je später der Platz unter den sechs Zusatzschüssen, desto geringer der Schaden.',max:2},
  {id:'snakeShot',icon:'∿',title:'Schlangenlinie',desc:'Standardgeschosse und Wein-Sonderangriffe schwingen.',max:3},
  {id:'seekShot',icon:'◎',title:'Spürnase',desc:'Standardgeschosse, Weinangriffe und Laser verfolgen Gegner.',max:3},
- {id:'breakShot',icon:'✣',title:'Käsebruch',desc:'Treffer erzeugen Splitter mit 12,6 % des auslösenden Schadens.',max:2},
+ {id:'breakShot',icon:'✣',title:'Käsebruch',desc:'Treffer erzeugen Splitter mit 25,2 % des auslösenden Schadens.',max:2},
  {id:'boomerang',icon:'↶',title:'Bumerangkäse',desc:'Standardschüsse kehren nach dem letzten möglichen Treffer oder nach einer Sekunde Flug um. Auf dem Rückweg können sie erneut treffen.',max:1},
  {id:'carousel',icon:'⟳',title:'Käsekarussell',desc:'Eine Käsekugel kreist dauerhaft um das Pfert. Der Basisschuss feuert weiter geradeaus.',max:1},
  {id:'bounceCrust',icon:'↱',title:'Sprungkruste',desc:'Standardschüsse prallen einmal zusätzlich ab. Beim ersten Abpraller löst sich ein Splitter.',max:1},
- {id:'damage',icon:'✦',title:'Käsereifung',desc:'12 % MEHR Schaden je Rang, multipliziert mit anderen Effekten.',max:10},
- {id:'charge',icon:'ϟ',title:'Schnellgärung',desc:'+9 % Sonderangriffsschaden je Rang.',max:8},
- {id:'spread',icon:'⋔',title:'Flankenkäse',desc:'Zwei Flankenschüsse. Je Rang +15 % ihrer Stärke.',max:6},
- {id:'critical',icon:'◆',title:'Goldene Rinde',desc:'+5 % Chance auf doppelten Schaden.',max:8},
- {id:'size',icon:'◉',title:'Große Portion',desc:'+6 % Geschossgröße und Laserbreite.',max:8},
- {id:'duration',icon:'∞',title:'Langer Abgang',desc:'+8 % Dauer für Wein und Laser.',max:8},
- {id:'velocity',icon:'➤',title:'Rückenwind',desc:'+6 % Geschossgeschwindigkeit.',max:8},
+ {id:'damage',icon:'✦',title:'Käsereifung',desc:'24 % mehr Schaden je Rang, multipliziert mit anderen Effekten.',max:10},
+ {id:'charge',icon:'ϟ',title:'Schnellgärung',desc:'+18 % Sonderangriffsschaden je Rang.',max:8},
+ {id:'spread',icon:'⋔',title:'Flankenkäse',desc:'Zwei Flankenschüsse. 15 % Grundstärke plus 30 Prozentpunkte je Rang.',max:6},
+ {id:'critical',icon:'◆',title:'Goldene Rinde',desc:'+10 Prozentpunkte Krit-Chance je Rang.',max:8},
+ {id:'size',icon:'◉',title:'Große Portion',desc:'+12 % Geschossgröße und Laserbreite je Rang.',max:8},
+ {id:'duration',icon:'∞',title:'Langer Abgang',desc:'+16 % Dauer für Wein und Laser je Rang.',max:8},
+ {id:'velocity',icon:'➤',title:'Rückenwind',desc:'+12 % Geschossgeschwindigkeit je Rang.',max:8},
  {id:'pierce',icon:'➶',title:'Harte Kruste',desc:'Ein zusätzliches Ziel durchdringen.',max:3},
- {id:'blast',icon:'✺',title:'Käsefondue',desc:'+12 % Trefferfläche für Sonderangriffe je Rang.',max:6},
- {id:'agility',icon:'➟',title:'Flotte Hufe',desc:'+3 % Pfert-Geschwindigkeit.',max:6},
- {id:'magnet',icon:'⊕',title:'Korkenzieher',desc:'+240 Pixel Ansaugreichweite für Flaschen, +12 für Orbs.',max:5},
+ {id:'blast',icon:'✺',title:'Käsefondue',desc:'+24 % Trefferbreite für Sonderangriffe je Rang.',max:6},
+ {id:'agility',icon:'➟',title:'Flotte Hufe',desc:'+6 % Pfert-Geschwindigkeit je Rang.',max:6},
+ {id:'magnet',icon:'⊕',title:'Korkenzieher',desc:'+480 Pixel Ansaugreichweite für Flaschen, +24 für Orbs je Rang.',max:5},
  {id:'ricochet',icon:'↗',title:'Billardkäse',desc:'Ein zusätzlicher Abpraller an Ober- und Unterkante.',max:3},
  {id:'chain',icon:'ϟ',title:'Statische Rinde',desc:'Treffer springen mit 20 % Schaden auf ein weiteres Ziel über.',max:3},
- {id:'frost',icon:'❄',title:'Kühlkette',desc:'Treffer bremsen Gegner kurz um zusätzliche 4 %.',max:5},
- {id:'ember',icon:'✹',title:'Räucherkammer',desc:'Treffer glimmen nach: +8 % Schaden pro Sekunde.',max:5},
- {id:'echo',icon:'»',title:'Doppelter Boden',desc:'Jeder sechste Angriff sendet zwei schwache Echo-Schüsse.',max:4},
- {id:'rear',icon:'↤',title:'Rückendeckung',desc:'Ein Rückwärtsschuss mit 120 % Stärke je Rang.',max:4},
- {id:'guard',icon:'◈',title:'Wachsamer Mond',desc:'Schutzimpuls lädt 8 % schneller nach.',max:5},
- {id:'execute',icon:'✧',title:'Letzter Bissen',desc:'+10 % Schaden gegen Ziele unter 35 % Leben.',max:6},
+ {id:'frost',icon:'❄',title:'Kühlkette',desc:'Treffer bremsen Gegner kurz um bis zu 8 Prozentpunkte je Rang (insgesamt höchstens 65 %).',max:5},
+ {id:'ember',icon:'✹',title:'Räucherkammer',desc:'Treffer glimmen nach: +16 % des Trefferschadens pro Sekunde je Rang.',max:5},
+ {id:'echo',icon:'»',title:'Doppelter Boden',desc:'Jeder sechste Angriff sendet zwei Echo-Schüsse mit 30 % Grundstärke plus 10 Prozentpunkten je Rang.',max:4},
+ {id:'rear',icon:'↤',title:'Rückendeckung',desc:'Ein Rückwärtsschuss mit 240 % Stärke je Rang.',max:4},
+ {id:'guard',icon:'◈',title:'Wachsamer Mond',desc:'Die Abklingzeit des Schutzimpulses sinkt je Rang um 16 % der verbleibenden Zeit.',max:5},
+ {id:'execute',icon:'✧',title:'Letzter Bissen',desc:'+20 % Schaden je Rang gegen Ziele unter 35 % Leben.',max:6},
  {id:'fork',icon:'⋏',title:'Splittergelage',desc:'Splitter erben Treffer-Effekte. Pro Treffer sind höchstens sieben Splitter möglich.',max:2,rare:true,requires:[['spread','pierce']]},
- {id:'cascade',icon:'ϟ',title:'Kettenreaktion',desc:'Ketten übertragen Frost und Glut.',max:3,rare:true,requires:[['chain']]},
- {id:'shatter',icon:'❄',title:'Thermischer Schock',desc:'Frost und Glut zünden gemeinsam eine Flächenexplosion.',max:2,rare:true,requires:[['frost'],['ember']]},
+ {id:'cascade',icon:'ϟ',title:'Kettenreaktion',desc:'Ketten übertragen Frost und Glut und verursachen 90 % mehr Schaden je Rang.',max:3,rare:true,requires:[['chain']]},
+ {id:'shatter',icon:'❄',title:'Thermischer Schock',desc:'Frost und Glut zünden eine Explosion mit 80 % Trefferschaden je Rang.',max:2,rare:true,requires:[['frost'],['ember']]},
  {id:'echoForge',icon:'»',title:'Echokammer',desc:'Kopiert jeden vierten Angriff. Ersetzt die Echo-Schüsse von Doppelter Boden.',max:1,rare:true,requires:[['echo']]},
- {id:'orbital',icon:'◎',title:'Mondschmelze',desc:'Sonderangriffe erschaffen zwei kreisende Käsemonde.',max:2,rare:true,requires:[['guard']]},
- {id:'mastery',icon:'✦',title:'Feinschliff',desc:'+1 % zusätzlicher Waffenschaden.',max:Infinity,repeatable:true},
- {id:'tempo',icon:'ϟ',title:'Fingerfertigkeit',desc:'+1 % Sonderangriffsschaden je Rang.',max:Infinity,repeatable:true},
- {id:'cellar',icon:'∞',title:'Gläserpflege',desc:'+1 % zusätzliche Wein- und Laserdauer.',max:Infinity,repeatable:true}
+ {id:'orbital',icon:'◎',title:'Mondschmelze',desc:'Sonderangriffe erschaffen zwei Käsemonde mit 25 % Grundstärke plus 30 Prozentpunkten je Rang.',max:2,rare:true,requires:[['guard']]},
+ {id:'mastery',icon:'✦',title:'Feinschliff',desc:'+2 % zusätzlicher Waffenschaden je Rang.',max:Infinity,repeatable:true},
+ {id:'tempo',icon:'ϟ',title:'Fingerfertigkeit',desc:'+2 % Sonderangriffsschaden je Rang.',max:Infinity,repeatable:true},
+ {id:'cellar',icon:'∞',title:'Gläserpflege',desc:'+2 % zusätzliche Wein- und Laserdauer je Rang.',max:Infinity,repeatable:true}
 ];
 const baseSkills=[
  {id:'salvo',icon:'❄',title:'Eisfächer',desc:'Breite Eiskristalle bremsen Gegner. Zusatzschüsse decken mehr Fläche ab.',cards:['multiShot','frost','fanShot','spread','bounceCrust','breakShot','iceSpindle'],talents:['A1-5','A1-23']},
@@ -90,8 +90,8 @@ const baseSkills=[
  {id:'laser',icon:'ϟ',title:'Lichtlanze · Wind',desc:'Ein gebündelter Windstrahl durchdringt alle Ziele in seiner Spur.',cards:['damage','size','duration','sunLance','chain','echo','carousel','fanShot','multiShot'],talents:['A1-5','A3-23']}
 ];
 function extraShotScale(index,hasWine=false){
- const factor=!hasWine&&player.skill.id==='salvo'?1+.04*Number(owns('A1-5'))+.08*Number(owns('A1-23')):.85;
- return factor*[.24,.24,.17,.17,.11,.11][index];
+ const factor=!hasWine&&player.skill.id==='salvo'?1+.08*Number(owns('A1-5'))+.16*Number(owns('A1-23')):.85;
+ return factor*[.48,.48,.34,.34,.22,.22][index];
 }
 const specialCards=new Set(['charge','blast','tempo','orbital']);
 const projectileCards=new Set(['velocity','pierce','ricochet']);
@@ -105,33 +105,33 @@ const cardCodes={
 };
 const cardValues={
  fanShot:r=>2*r,
- snakeShot:(r,beam=false)=>(beam?12:24)*snakeAmplitude*r,
- seekShot:(r,beam=false)=>r?(beam?r*1.2:4+r*2)*seekSteering:0,
+ snakeShot:(r,beam=false)=>(beam?24:48)*snakeAmplitude*r,
+ seekShot:(r,beam=false)=>r?(beam?r*2.4:4+r*4)*seekSteering:0,
  breakShot:(r,hasSplit=false)=>r?r+Number(!hasSplit):0,
- damage:r=>Math.pow(1.12,r),
- charge:r=>r*.09,
- spread:r=>r?.15+r*.15:0,
- critical:r=>r*.05,
- size:r=>r*.06,
- duration:r=>r*.08,
- velocity:r=>r*.06,
- blast:r=>r*.12,
- agility:r=>r*.03,
- magnet:(r,orb=false)=>r*(orb?12:240),
- frost:r=>r*.04,
- ember:r=>r*.08,
- echo:r=>r?.3+r*.05:0,
- rear:r=>r*1.2,
- guard:r=>Math.pow(.92,r),
- execute:r=>r*.10,
+ damage:r=>Math.pow(1.24,r),
+ charge:r=>r*.18,
+ spread:r=>r?.15+r*.30:0,
+ critical:r=>r*.10,
+ size:r=>r*.12,
+ duration:r=>r*.16,
+ velocity:r=>r*.12,
+ blast:r=>r*.24,
+ agility:r=>r*.06,
+ magnet:(r,orb=false)=>r*(orb?24:480),
+ frost:r=>r*.08,
+ ember:r=>r*.16,
+ echo:r=>r?.3+r*.10:0,
+ rear:r=>r*2.4,
+ guard:r=>Math.pow(.84,r),
+ execute:r=>r*.20,
  fork:r=>r*2,
- cascade:r=>Math.pow(1.45,r),
- shatter:r=>r*.4,
+ cascade:r=>Math.pow(1.9,r),
+ shatter:r=>r*.8,
  echoForge:r=>r?.45:0,
- orbital:r=>r?.25+r*.15:0,
- mastery:r=>r*.01,
- tempo:r=>r*.01,
- cellar:r=>r*.01
+ orbital:r=>r?.25+r*.30:0,
+ mastery:r=>r*.02,
+ tempo:r=>r*.02,
+ cellar:r=>r*.02
 };
 const numberLabel=new Intl.NumberFormat('de-DE',{maximumFractionDigits:2});
 const percent=value=>numberLabel.format(100*value)+' %';
@@ -547,11 +547,9 @@ function talentVisibility(data){
 function talentTitle(id){
  return typeof PfertMetaData==='undefined'?'Talent':PfertMetaData.titles[id];
 }
-function talentDescription(id){
+function talentDescription(id,rank){
  if(typeof PfertMetaData==='undefined')return '';
- const description=PfertMeta.describe(metaData,id,PfertMetaData.descriptions[id]);
- const skills=baseSkills.filter(skill=>skill.talents.includes(id));
- return skills.length?description+' Verstärkt auch '+skills.map(skill=>skill.title).join(' und ')+'.':description;
+ return PfertMeta.describe(metaData,id,PfertMetaData.descriptions[id],rank);
 }
 function talentIcon(id){
  if(typeof PfertMetaData==='undefined')return '';
@@ -566,6 +564,7 @@ function talentDetail(){
   '<span class="meta-rank">Rang '+rank+' / '+limit+'</span>'+
   '<h3>'+talentTitle(metaSelected)+'</h3>'+
   '<p class="meta-description">'+talentDescription(metaSelected)+'</p>'+
+  (rank>0&&!maxed?'<p class="meta-description">Nächster Rang · '+talentDescription(metaSelected,rank+1)+'</p>':'')+
   '<button id="meta-buy" aria-disabled="'+(maxed||metaData.points<1)+'">'+label+'</button>';
 }
 function talentBonuses(owned){
@@ -799,7 +798,7 @@ const roasts=[
  'Der Basar sucht noch einen Türstopper. Mit deinen Reflexen wärst du perfekt.'
 ];
 const comebacks=['Nochmal. Der Basar soll gefälligst vor dir zittern.','Neue Runde. Diesmal bitte neben die Geschosse fliegen.','Eine Runde noch. Irgendwann muss selbst dieses Pfert etwas lernen.','Du kannst das besser. Die Messlatte liegt ja bereits im Keller.'];
-function addRage(amount,source){const graze=source==='grazeRage';if(!player||player.overdrive>0||player.metaRageLock>0)return;const before=player.rage;const rate=(1+.0075*metaCount('K2',[1,2,3,4,6,7,8,9])+.015*(metaCount('K3',[11,12,14,15,17,18,19])+2*Number(owns('K3-21')))+(graze?.015*metaCount('K3',[1,2,3,4,6,7,8,9]):0))*(owns('S3')?1.03:1)*(owns('K1-23')?.85:1)*(owns('K2-23')?.8:1);player.rage=clamp(player.rage+amount*.5*rate*(1+gearBonus('allRage')+gearBonus(source)),0,100);if(before<100&&player.rage>=100){sound('ready');notice=2;noticeText='KÄSERAUSCH BEREIT · Q'}}
+function addRage(amount,source){const graze=source==='grazeRage';if(!player||player.overdrive>0||player.metaRageLock>0)return;const before=player.rage;const rate=(1+.015*metaCount('K2',[1,2,3,4,6,7,8,9])+.03*(metaCount('K3',[11,12,14,15,17,18,19])+2*Number(owns('K3-21')))+(graze?.03*metaCount('K3',[1,2,3,4,6,7,8,9]):0))*(owns('S3')?1.06:1)*(owns('K1-23')?.85:1)*(owns('K2-23')?.8:1);player.rage=clamp(player.rage+amount*.5*rate*(1+gearBonus('allRage')+gearBonus(source)),0,100);if(before<100&&player.rage>=100){sound('ready');notice=2;noticeText='KÄSERAUSCH BEREIT · Q'}}
 function onPlayfield(s){
  const hw=(s.w||0)/2,hh=(s.h||0)/2;
  return s.x+hw>=0&&s.x-hw<=W&&s.y+hh>=62&&s.y-hh<=H;
@@ -809,7 +808,7 @@ function clearRageShots(){
  if(warned&&warned.wait>0&&warned.wait<=.24)warned.overture=true;
  shots=shots.filter(s=>!onPlayfield(s));
 }
-function activateRage(){if(state!=='playing'||player.rage<100||player.overdrive>0)return false;player.rage=0;player.overdrive=rageBaseDuration*(1+.03*metaCount('K1',[5,10])+.03*metaCount('K2',[5,10])+.015*(metaCount('K2',[11,12,14,15,17,18,19])+2*Number(owns('K2-21'))))*(owns('K2-23')?1.525:1)*gearFactor('rageDuration');player.metaRageMax=player.overdrive;player.metaAfterglow=0;player.metaLightning=1;heal(2);player.inv=Math.max(player.inv,owns('K3-13')?.75:.65);clearRageShots();if(owns('K3-22'))player.inv=Math.max(player.inv,1.5);if(owns('K3-23')){player.inv=Math.max(player.inv,3);player.metaRageLock=player.overdrive+5}for(const e of enemies){if(e.hp>0&&e.x+e.w/2>=0&&e.x-e.w/2<=W&&e.y+e.h/2>=62&&e.y-e.h/2<=H){e.hp=0;death(e)}}enemies=enemies.filter(e=>e.hp>0);ring(player.x,player.y,'#b6f8ff',180);flashes.push({x:player.x,y:player.y,r:100,life:.15,maxLife:.15});shake=4;notice=2;noticeText='KÄSERAUSCH!';sound('overdrive');return true}
+function activateRage(){if(state!=='playing'||player.rage<100||player.overdrive>0)return false;player.rage=0;player.overdrive=rageBaseDuration*(1+.06*metaCount('K1',[5,10])+.06*metaCount('K2',[5,10])+.03*(metaCount('K2',[11,12,14,15,17,18,19])+2*Number(owns('K2-21'))))*(owns('K2-23')?2.05:1)*gearFactor('rageDuration');player.metaRageMax=player.overdrive;player.metaAfterglow=0;player.metaLightning=1;heal(2);player.inv=Math.max(player.inv,owns('K3-13')?.85:.65);clearRageShots();if(owns('K3-22'))player.inv=Math.max(player.inv,1.5);if(owns('K3-23')){player.inv=Math.max(player.inv,3);player.metaRageLock=player.overdrive+5}for(const e of enemies){if(e.hp>0&&e.x+e.w/2>=0&&e.x-e.w/2<=W&&e.y+e.h/2>=62&&e.y-e.h/2<=H){e.hp=0;death(e)}}enemies=enemies.filter(e=>e.hp>0);ring(player.x,player.y,'#b6f8ff',180);flashes.push({x:player.x,y:player.y,r:100,life:.15,maxLife:.15});shake=4;notice=2;noticeText='KÄSERAUSCH!';sound('overdrive');return true}
 
 function clock(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(Math.floor(s%60)).padStart(2,'0')}
 function sound(kind,strong=false){if(typeof PfertSound!=='undefined')PfertSound.play(kind,strong)}
@@ -824,10 +823,10 @@ function startRun(mode,skill=baseSkills[0]){
  runMode=mode;
  if(typeof PfertSound!=='undefined'){PfertSound.wake();PfertSound.startMusic()}
  clearRunGear();
- pausedFrom=null;transition=null;t=0;runTime=0;metaBosses=0;metaTimePoints=0;metaSavedAt=0;level=1;xp=owns('B1-13')?2:0;xpNeeded=10;orbs=[];choices=[];score=0;hearts=MAX_HEARTS;lastRare=null;
+ pausedFrom=null;transition=null;t=0;runTime=0;metaBosses=0;metaTimePoints=0;metaSavedAt=0;level=1;xp=owns('B1-13')?4:0;xpNeeded=10;orbs=[];choices=[];score=0;hearts=MAX_HEARTS;lastRare=null;
  buildCards=null;
  upgrades=Object.fromEntries(cardDefs.map(card=>[card.id,0]));
- player={skill,orbiters:[],x:135,y:H/2,w:40,h:29,inv:0,effects:Array(16).fill(0),weapon:-1,charge:0,charging:false,specials:owns('W1-23')?2:3,specialCount:0,freeSpecialUsed:false,bossSpecialUsed:false,autoCooldown:0,autoAttacks:0,podSide:1,podCooldown:0,muzzle:0,guardFlash:0,attacks:0,rage:owns('K2-13')?15:0,overdrive:0,metaAfterglow:0,chargeCue:false,readyCue:false};
+ player={skill,orbiters:[],x:135,y:H/2,w:40,h:29,inv:0,effects:Array(16).fill(0),weapon:-1,charge:0,charging:false,specials:owns('W1-23')?2:3,specialCount:0,freeSpecialUsed:false,bossSpecialUsed:false,autoCooldown:0,autoAttacks:0,podSide:1,podCooldown:0,muzzle:0,guardFlash:0,attacks:0,rage:owns('K2-13')?30:0,overdrive:0,metaAfterglow:0,chargeCue:false,readyCue:false};
  player.immortal=immortalMode;
  player.fieldPower={dropIn:rand(45,65),queue:[],rockets:0,launchCooldown:0,shield:0,shieldTime:0,beamTime:0};
  enemies=[];bullets=[];shots=[];pickups=[];bossPickups=[];particles=[];deaths=[];rings=[];beams=[];
@@ -1282,7 +1281,7 @@ function gearAttackFactor(stat){
  return 1+gearBonus(stat)+(player.overdrive>0?gearBonus('rageDamage'):0)+
   (hearts===maxHearts()?gearBonus('fullDamage'):0)+(hearts<=2?gearBonus('lowDamage'):0);
 }
-function damage(base,hasWine=activeWeapon()>=0,applyGearDamage=true){const rageBonus=.015*(metaCount('K1',[1,2,3,4,6,7,8,9,11,12,14,15,17,18,19])+2*Number(owns('K1-21')));const active=player.overdrive>0,after=player.metaAfterglow>0;const rageFactor=active?1.35*(1+rageBonus)*(owns('K2-20')&&player.metaRageMax-player.overdrive<2?1.15:1):after?1.35:1;const low=hearts<=2?1+.015*metaCount('V3',[1,2,3,4,6,7,8,9])+(owns('V3-13')?.15:0)+(owns('V3-23')?.60:0)+(hearts<=1&&owns('V3-22')?.225:0):1;metaLastCritical=Math.random()<Math.min(1,cardValues.critical(upgrades.critical)+.015*metaCount('A2',[5,10])+(owns('A2-22')?.06:0)+gearBonus('criticalChance'));const criticalFactor=metaLastCritical?2+.03*(metaCount('A2',[11,12,14,15,17,18,19])+2*Number(owns('A2-21')))+(owns('A2-23')?.75:0)+gearBonus('criticalDamage'):(owns('A2-23')?.85:1);return 1.5*playerHitDamage*base*(owns('S1')?1.03:1)*cardValues.damage(upgrades.damage)*(1+cardValues.mastery(upgrades.mastery))*rageFactor*low*(owns('Q10')&&active?1.5:1)*(1+(owns('Q1')?.045:0)+(player.metaRevenge>0?.15:0))*(hasWine?1+.03*metaCount('W2',[5,10])+.015*(metaCount('W2',[11,12,14,15,17,18,19])+2*Number(owns('W2-21'))):1)*criticalFactor*(applyGearDamage?gearAttackFactor():1)}
+function damage(base,hasWine=activeWeapon()>=0,applyGearDamage=true){const rageBonus=.03*(metaCount('K1',[1,2,3,4,6,7,8,9,11,12,14,15,17,18,19])+2*Number(owns('K1-21')));const active=player.overdrive>0,after=player.metaAfterglow>0;const rageFactor=active?1.35*(1+rageBonus)*(owns('K2-20')&&player.metaRageMax-player.overdrive<2?1.30:1):after?1.35:1;const low=hearts<=2?1+.03*metaCount('V3',[1,2,3,4,6,7,8,9])+(owns('V3-13')?.30:0)+(owns('V3-23')?1.20:0)+(hearts<=1&&owns('V3-22')?.45:0):1;metaLastCritical=Math.random()<Math.min(1,cardValues.critical(upgrades.critical)+.03*metaCount('A2',[5,10])+(owns('A2-22')?.12:0)+gearBonus('criticalChance'));const criticalFactor=metaLastCritical?2+.06*(metaCount('A2',[11,12,14,15,17,18,19])+2*Number(owns('A2-21')))+(owns('A2-23')?1.50:0)+gearBonus('criticalDamage'):(owns('A2-23')?.85:1);return 1.5*playerHitDamage*base*(owns('S1')?1.06:1)*cardValues.damage(upgrades.damage)*(1+cardValues.mastery(upgrades.mastery))*rageFactor*low*(owns('Q10')&&active?2:1)*(1+(owns('Q1')?.09:0)+(player.metaRevenge>0?.30:0))*(hasWine?1+.06*metaCount('W2',[5,10])+.03*(metaCount('W2',[11,12,14,15,17,18,19])+2*Number(owns('W2-21'))):1)*criticalFactor*(applyGearDamage?gearAttackFactor():1)}
 function heartsAfterHealing(amount,multiplier=1){
  if(owns('V3-23')&&hearts<=2)amount=Math.round(amount)*.5;
  return Math.min(maxHearts(),hearts+amount*multiplier);
@@ -1317,9 +1316,9 @@ function death(e){
   else if(e.chain.guards===2){score+=250;notice=2;noticeText='KÄSEKETTE · +250'}
  }
  if(e.rareEnemy&&!e.equipmentDropped){e.equipmentDropped=true;dropGear(e.x,e.y)}
- if(owns('A3-22')&&e.burnLife>0){const amount=(e.metaLastDamage||0)*.30*(owns('A3-23')?1.75:1);ring(e.x,e.y,'#ffb483',67.5);for(const target of enemies)if(target!==e&&target.hp>0&&Math.hypot(target.x-e.x,target.y-e.y)<67.5)damageEnemy(target,amount,target.x,target.y)}
+ if(owns('A3-22')&&e.burnLife>0){const amount=(e.metaLastDamage||0)*.60*(owns('A3-23')?2.50:1);ring(e.x,e.y,'#ffb483',67.5);for(const target of enemies)if(target!==e&&target.hp>0&&Math.hypot(target.x-e.x,target.y-e.y)<67.5)damageEnemy(target,amount,target.x,target.y)}
  const baseXp=e.rareEnemy?4:[1,1,1,2,2,2,3,3,3,4][e.i];
- dropOrb(e.x,e.y,baseXp*(e.elite?2:1)*(player.overdrive>0&&owns('K3-16')?1.12:1),enemySpeed(e)/2,e.elite?'elite':'normal',Math.min(3,baseXp));
+ dropOrb(e.x,e.y,baseXp*(e.elite?2:1)*(player.overdrive>0&&owns('K3-16')?1.24:1),enemySpeed(e)/2,e.elite?'elite':'normal',Math.min(3,baseXp));
  sound('explode',{type:e.i,elite:e.elite||e.blocker,x:e.x});addRage((e.elite?9:3)+(e.lastCharged?2:0),'killRage');
  combo++;comboTime=comboWindow;flightStats.bestCombo=Math.max(flightStats.bestCombo,combo);
  score+=Math.round((100+e.i*35)*(e.elite?1.5:1)*(1+Math.min(2,combo*.04))*(e.lastCharged?1.2:1));deaths.push({...e,age:0,life:.72,secret:secretType,rotation:rand(-.6,.6)});
@@ -1515,9 +1514,9 @@ function steerProjectile(b,target,turn,dt){
 function shotInterval(){
  const intervals=[.24,.30,.28,.42,.20,.24,.32,.40,.32,.45,.48,.42,.28,.70,.60,.40],weapon=activeWeapon();
  const base=weapon<0&&player.skill.id==='laser'?.31*laserIntervalScale:weapon===3?Math.max(.42,.34*(1+cardValues.duration(upgrades.duration)+cardValues.cellar(upgrades.cellar))+.04):(intervals[weapon]||.24);
- const rate=1+.015*(metaCount('A1',[11,12,14,15,17,18,19])+2*Number(owns('A1-21')));
+ const rate=1+.03*(metaCount('A1',[11,12,14,15,17,18,19])+2*Number(owns('A1-21')));
  const gearRate=1+gearBonus('autoRate')+gearBonus(weapon<0?'standardRate':'wineRate');
- return base/(rate*playerFireRate*gearRate)*(owns('A1-23')?1.25:1)/(owns('W3-23')?(weapon>=0?1.375:.85):1);
+ return base/(rate*playerFireRate*gearRate)*(owns('A1-23')?1.25:1)/(owns('W3-23')?(weapon>=0?1.75:.85):1);
 }
 function updateAutoFire(dt){
  const weapon=activeWeapon();
@@ -1669,7 +1668,7 @@ function fireCharge(special=false){
  if(style==='light'){
   const duration=cardValues.duration(upgrades.duration)+cardValues.cellar(upgrades.cellar);
   const beam=emitLightBeam(1.22*(1+duration*.55),16*(1+cardValues.size(upgrades.size)),.13*(1+Math.min(1,duration)));
-  beam.damage*=1+.04*Number(owns('A1-5'))+.08*Number(owns('A3-23'));
+  beam.damage*=1+.08*Number(owns('A1-5'))+.16*Number(owns('A3-23'));
   for(let i=0;i<upgrades.multiShot;i++)addLightBeamCopy(beam,extraShotScale(i)*doubleCheeseDamage,i%2?12:-12);
   for(let i=0;i<cardValues.fanShot(upgrades.fanShot);i++){
    const ray=(i%2?1:-1)*(Math.floor(i/2)+1);
@@ -1705,14 +1704,14 @@ function fireCharge(special=false){
   const applyShape=b=>{
    b.standardShot=true;b.skillElement=id;
    if(id==='salvo')b.elements.frost=Math.min(.65,b.elements.frost+.25);
-   if(id==='element')b.elements.fire+=.64+.08*Number(owns('A3-5'))+.12*Number(owns('A3-23'));
+   if(id==='element')b.elements.fire+=.64+.16*Number(owns('A3-5'))+.24*Number(owns('A3-23'));
    b.seekRank=upgrades.seekShot;b.snakeRank=upgrades.snakeShot;b.breakRank=upgrades.breakShot;
    mutateStandardShot(b);
   };
   if(primary){
    if(id==='precision'){
     primary.vx*=.9;
-    primary.damage*=1.77*(1+.04*Number(owns('A2-5'))+.08*Number(owns('A2-23')));
+    primary.damage*=1.77*(1+.08*Number(owns('A2-5'))+.16*Number(owns('A2-23')));
    }else if(id==='salvo'){
     primary.w*=1.2;primary.h*=1.2;
    }else if(id==='element'){
@@ -1767,7 +1766,7 @@ function fireCharge(special=false){
  }
  if(charged&&upgrades.orbital>0)for(let i=0;i<2;i++){const orb=addBullet(0,'orbit',charged,power,cardValues.orbital(upgrades.orbital));if(orb){orb.orbit=1.2;orb.orbitRadius=48+i*5;orb.phase=i*Math.PI;orb.life=2.7}}
  if(player.overdrive>0)for(const angle of [-.2,.2,Math.PI,-Math.PI/2,Math.PI/2])addBullet(angle,'speed',charged,power,.45);
- if(player.overdrive>0&&!charged){const count=Number(owns('K1-13'))+Number(owns('K1-16'))+Number(owns('K1-22'));for(let i=0;i<count;i++)addBullet((i-(count-1)/2)*.22,'speed',false,0,.525)}
+ if(player.overdrive>0&&!charged){const count=Number(owns('K1-13'))+Number(owns('K1-16'))+Number(owns('K1-22'));for(let i=0;i<count;i++)addBullet((i-(count-1)/2)*.22,'speed',false,0,1.05)}
  if(upgrades.spread>0)for(const angle of [-.32,.32])addBullet(angle,'satellite',false,0,cardValues.spread(upgrades.spread));
  if(upgrades.rear>0)addBullet(Math.PI,'satellite',charged,power,cardValues.rear(upgrades.rear));
  player.attacks++;
@@ -1780,21 +1779,21 @@ function fireCharge(special=false){
    if(!charged&&weapon<0)mutateStandardShot(echo);
   }
  }
- if(charged){player.metaAfterSpecial=3;const w1=.015*metaCount('W1',[1,2,3,4,6,7,8,9,11,12,14,15,17,18,19])+.03*metaCount('W1',[5,10])+.03*Number(owns('W1-21'));const meta=1+w1+(weapon>=0?.03*metaCount('W3',[5,10]):0)+(owns('W3-22')&&player.metaWeaponSpecial?.30:0)+(owns('W1-16')&&player.specialCount===1?.30:0)+(owns('W1-22')&&player.metaLastSpecial?.30:0)+(owns('W1-23')?.90:0);const multiplier=(1+cardValues.charge(upgrades.charge)+cardValues.tempo(upgrades.tempo))*meta;for(const b of bullets.slice(firstNew)){b.damage*=multiplier;b.w*=3*(1+cardValues.blast(upgrades.blast));b.h*=3*(1+cardValues.blast(upgrades.blast))}for(const beam of beams.slice(firstBeam)){beam.damage*=multiplier;beam.width*=3*(1+cardValues.blast(upgrades.blast))}player.metaWeaponSpecial=false}
- const speedMultiplier=1+.03*metaCount('A1',[5,10])+(weapon>=0?.015*metaCount('W3',[1,2,3,4,6,7,8,9]):0);
- for(const b of bullets.slice(firstNew)){b.vx*=speedMultiplier;b.vy*=speedMultiplier;if(!charged&&owns('A1-16'))b.life*=1.225}
+ if(charged){player.metaAfterSpecial=3;const w1=.03*metaCount('W1',[1,2,3,4,6,7,8,9,11,12,14,15,17,18,19])+.06*metaCount('W1',[5,10])+.06*Number(owns('W1-21'));const meta=1+w1+(weapon>=0?.06*metaCount('W3',[5,10]):0)+(owns('W3-22')&&player.metaWeaponSpecial?.60:0)+(owns('W1-16')&&player.specialCount===1?.60:0)+(owns('W1-22')&&player.metaLastSpecial?.60:0)+(owns('W1-23')?1.80:0);const multiplier=(1+cardValues.charge(upgrades.charge)+cardValues.tempo(upgrades.tempo))*meta;for(const b of bullets.slice(firstNew)){b.damage*=multiplier;b.w*=3*(1+cardValues.blast(upgrades.blast));b.h*=3*(1+cardValues.blast(upgrades.blast))}for(const beam of beams.slice(firstBeam)){beam.damage*=multiplier;beam.width*=3*(1+cardValues.blast(upgrades.blast))}player.metaWeaponSpecial=false}
+ const speedMultiplier=1+.06*metaCount('A1',[5,10])+(weapon>=0?.03*metaCount('W3',[1,2,3,4,6,7,8,9]):0);
+ for(const b of bullets.slice(firstNew)){b.vx*=speedMultiplier;b.vy*=speedMultiplier;if(!charged&&owns('A1-16'))b.life*=1.45}
  if(!charged){
   const balance=[.325,.419,1.084,.3225,.415,1,1.339,.83,1.339,1.875,1.976,1.921,.585,4.089,.619,1.866];
   if(weapon>=0){for(const b of bullets.slice(firstNew))b.damage*=balance[weapon];for(const beam of beams.slice(firstBeam))beam.damage*=balance[weapon]}
   player.autoAttacks++;
-  let bonus=1+.015*metaCount('A1',[1,2,3,4,6,7,8,9])+(weapon>=0?.015*(metaCount('W3',[11,12,14,15,17,18,19])+2*Number(owns('W3-21')))+(owns('W2-13')?.12:0):0)+(player.metaAfterSpecial>0&&owns('W3-20')?.15:0);
-  if(owns('A1-13')&&player.autoAttacks%12===0)bonus+=.45;
-  if(owns('A1-20')&&player.autoAttacks%6===0)bonus+=.30;
-  if(owns('A1-23'))bonus+=.60;
+  let bonus=1+.03*metaCount('A1',[1,2,3,4,6,7,8,9])+(weapon>=0?.03*(metaCount('W3',[11,12,14,15,17,18,19])+2*Number(owns('W3-21')))+(owns('W2-13')?.24:0):0)+(player.metaAfterSpecial>0&&owns('W3-20')?.30:0);
+  if(owns('A1-13')&&player.autoAttacks%12===0)bonus+=.90;
+  if(owns('A1-20')&&player.autoAttacks%6===0)bonus+=.60;
+  if(owns('A1-23'))bonus+=1.20;
   for(const b of bullets.slice(firstNew))b.damage*=bonus;
   for(const beam of beams.slice(firstBeam))beam.damage*=bonus;
-  if(owns('A1-22')&&player.autoAttacks%15===0){const extra=addBullet(0,'normal',false,0,.6);if(extra)extra.damage*=bonus}
-  if(weapon>=0&&owns('W3-16')&&player.autoAttacks%15===0){const extra=addBullet(0,'echo',false,0,.6);if(extra)extra.damage*=bonus}
+  if(owns('A1-22')&&player.autoAttacks%15===0){const extra=addBullet(0,'normal',false,0,1.2);if(extra)extra.damage*=bonus}
+  if(weapon>=0&&owns('W3-16')&&player.autoAttacks%15===0){const extra=addBullet(0,'echo',false,0,1.2);if(extra)extra.damage*=bonus}
   player.autoCooldown=shotInterval();player.autoWeapon=weapon;
  }
  if(weapon>=0){for(const b of bullets.slice(firstNew))b.damage*=1.15;for(const beam of beams.slice(firstBeam))beam.damage*=1.15}
@@ -1809,7 +1808,7 @@ function fireCharge(special=false){
   if(upgrades.carousel)armOrbiters(0,1,96,.55,primary);
   if(style==='orbit')armOrbiters(1,2,46,.45,primary);
  }
- if(charged&&owns('W2-20')){if(!player.metaBombs)player.metaBombs=[];player.metaBombs.push({x:player.x+28,y:player.y,time:1,amount:damage(1.5+(owns('W2-22')?.75:0),undefined,false)*attackFactor*(owns('W2-23')?2.5:1),bossFactor,radius:90+(owns('W2-22')?30:0)})}
+ if(charged&&owns('W2-20')){if(!player.metaBombs)player.metaBombs=[];player.metaBombs.push({x:player.x+28,y:player.y,time:1,amount:damage(3+(owns('W2-22')?1.5:0),undefined,false)*attackFactor*(owns('W2-23')?4:1),bossFactor,radius:90+(owns('W2-22')?60:0)})}
  player.muzzle=charged?.2:.12;impact(player.x+28,player.y,colors[weapon]||'#a8edff',charged?18:7);
  if(charged){ring(player.x+27,player.y,colors[weapon]||'#d6f5ff',48);shake=Math.max(shake,1.8)}
 }
@@ -2381,11 +2380,16 @@ function burstHostileShot(shot){
 
 const damageCauses={contact:'Gegnerkontakt',projectile:'Feindgeschoss',boss:'Bosskontakt',strike:'Bossvorstoß',arcade:'Umgebungsgefahr'};
 const slipstreamWindow=2.5,slipstreamReload=1.5;
+function podReload(){
+ const reduction=.09*metaCount('V2',[5,10])+.03*(metaCount('V2',[11,12,14,15,17,18,19])+2*Number(owns('V2-21')));
+ const rageReduction=owns('Q4')&&player.overdrive>0?.15:0;
+ return 2.5*cardValues.guard(upgrades.guard)*(1-reduction-rageReduction)*(owns('V2-23')?.25:1)*gearFactor('guardCooldown');
+}
 function grazeShot(shot){
  shot.grazed=true;
  if(owns('V1-13'))player.metaGrazeSpeed=2;
  if(owns('V1-22')&&player.metaGrazeInvCooldown<=0){
-  player.inv=Math.max(player.inv,.3);
+  player.inv=Math.max(player.inv,.6);
   player.metaGrazeInvCooldown=8;
  }
  addRage(2,'grazeRage');score+=25;
@@ -2428,13 +2432,13 @@ function hurt(source,sourceX=player.x,sourceY=player.y,impactShot=null){
   }
   if(hearts===1&&owns('V3-16')&&!player.metaRecover){player.metaRecover=true;heal(1);showProtection('HERZ REGENERIERT')}
  }
- player.inv=1.5*(1+.03*(metaCount('V3',[11,12,14,15,17,18,19])+2*Number(owns('V3-21')))+.015*metaCount('V2',[1,2,3,4,6,7,8,9]))*(lostHeart?gearFactor('hitProtection'):1);shake=4;if(hearts<=0){
+ player.inv=1.5*(1+.06*(metaCount('V3',[11,12,14,15,17,18,19])+2*Number(owns('V3-21')))+.03*metaCount('V2',[1,2,3,4,6,7,8,9]))*(lostHeart?gearFactor('hitProtection'):1);shake=4;if(hearts<=0){
   player.fatalFrame={x:player.x,y:player.y,w:player.w-(source==='contact'?8:0),h:player.h-(source==='contact'?8:0),source,
    shot:impactShot?{...impactShot}:null};
   render(true);player.fatalFrame.image=snapshot();
   end();
  }
- if(hearts===1&&owns('K3-20')&&!player.metaNotreserve){player.metaNotreserve=true;player.rage=Math.min(100,player.rage+30*gearFactor('allRage'))}
+ if(hearts===1&&owns('K3-20')&&!player.metaNotreserve){player.metaNotreserve=true;player.rage=Math.min(100,player.rage+60*gearFactor('allRage'))}
 }
 const scoreKey='pfert-scoreboard-v1';
 let recentScores=[],scoreStorageDirty=false;
@@ -2584,7 +2588,7 @@ function traceBeam(beam,angle,length,dealsDamage){
   if(!boss)break;
   if(part.hp<=0||beam.hitTargets?.has(part)||!partHit(rect,boss,part))continue;
   const {x,y}=impactPoint(boss.x+part.aim[0],boss.y+part.aim[1]);
-  const amount=beam.damage*(beam.charged?.35:1)*(beam.charged&&owns('Q8')?1.075:1);
+  const amount=beam.damage*(beam.charged?.35:1)*(beam.charged&&owns('Q8')?1.15:1);
   damagePart(part,modifyDirectHit(part,amount,source,true,x,y),x,y,beam.bossFactor??1);
   beamHit(part,amount,x,y);
  }
@@ -2646,12 +2650,12 @@ function directHitGuard(target,source,isBoss,x,y){
  return scale;
 }
 function modifyDirectHit(target,amount,source,isBoss,x,y){
- const high=target.hp/target.max>.70;let bonus=high?.015*metaCount('A2',[1,2,3,4,6,7,8,9]):0;
- if(!target.metaOpened&&owns('A2-13'))bonus+=.30;target.metaOpened=true;
+ const high=target.hp/target.max>.70;let bonus=high?.03*metaCount('A2',[1,2,3,4,6,7,8,9]):0;
+ if(!target.metaOpened&&owns('A2-13'))bonus+=.60;target.metaOpened=true;
  if(player.metaPrecisionTarget!==target){player.metaPrecisionTarget=target;player.metaPrecisionCount=0}player.metaPrecisionCount++;
- if(owns('A2-20')&&player.metaPrecisionCount%4===0)bonus+=.375;
- if(isBoss&&source.metaCritical&&owns('A2-16'))bonus+=.15;
- if(target.burnLife>0||target.slowTime>0)bonus+=.015*metaCount('A3',[1,2,3,4,6,7,8,9]);
+ if(owns('A2-20')&&player.metaPrecisionCount%4===0)bonus+=.75;
+ if(isBoss&&source.metaCritical&&owns('A2-16'))bonus+=.30;
+ if(target.burnLife>0||target.slowTime>0)bonus+=.03*metaCount('A3',[1,2,3,4,6,7,8,9]);
  return amount*(1+bonus)*(owns('A3-23')?.9:1)*directHitGuard(target,source,isBoss,x,y);
 }
 function damageEnemy(e,amount,x,y){
@@ -2666,16 +2670,16 @@ function damageEnemy(e,amount,x,y){
  if(e.hp<=0)death(e);
 }
 function applyAilment(b,e){
- const duration=1+.06*metaCount('A3',[5,10]);
+ const duration=1+.12*metaCount('A3',[5,10]);
  const elements=b.elements||attackElements(!!b.charged),slow=Math.min(.65,Math.max(b.slow||0,elements.frost));
  if(slow>0){
   const existing=e.slowTime>0?e.slow:0;
   e.slow=Math.min(.65,existing+(1-existing)*slow);
   e.slowTime=Math.max(e.slowTime||0,1.8*duration);
  }
- const burnBonus=1+.03*(metaCount('A3',[11,12,14,15,17,18,19])+2*Number(owns('A3-21')))+(owns('Q3')&&player.overdrive>0?.12:0)+(owns('Q9')&&activeWeapon()>=0?.12:0);
+ const burnBonus=1+.06*(metaCount('A3',[11,12,14,15,17,18,19])+2*Number(owns('A3-21')))+(owns('Q3')&&player.overdrive>0?.24:0)+(owns('Q9')&&activeWeapon()>=0?.24:0);
  if(elements.fire>0){
-  const amount=b.damage*elements.fire*(e.aim?b.bossFactor??1:1)*burnBonus*(owns('A3-23')?1.75:1);
+  const amount=b.damage*elements.fire*(e.aim?b.bossFactor??1:1)*burnBonus*(owns('A3-23')?2.50:1);
   if(!(e.burnLife>0)){e.burnDps=0;e.glutStacks=0;e.glutDps=0}
   if(b.skillElement==='element'){
    const other=Math.max(0,(e.burnDps||0)-(e.glutDps||0)*(e.glutStacks||0));
@@ -2702,8 +2706,8 @@ function showElementalHit(elements,target,x,y){
 function onHit(b,e,x,y){
  if(e){applyAilment(b,e);
   player.metaElementHits=(player.metaElementHits||0)+1;
-  if(player.metaElementHits%10===0){const duration=1+.06*metaCount('A3',[5,10]);if(owns('A3-13')){const burnBonus=1+.03*(metaCount('A3',[11,12,14,15,17,18,19])+2*Number(owns('A3-21')));e.burnLife=Math.max(e.burnLife||0,2*duration);e.burnDps=Math.max(e.burnDps||0,b.damage*.225*(e.aim?b.bossFactor??1:1)*burnBonus*(owns('A3-23')?1.75:1))}if(owns('A3-16')){e.slow=Math.max(e.slow||0,.225);e.slowTime=Math.max(e.slowTime||0,2*duration)}}
-  if(owns('A3-20')&&runTime>=(player.metaSparkReady||0)){const target=enemies.filter(v=>v!==e&&v.hp>0).sort((a,b)=>Math.hypot(a.x-x,a.y-y)-Math.hypot(b.x-x,b.y-y))[0];if(target){player.metaSparkReady=runTime+1;arcs.push({x,y,tx:target.x,ty:target.y,life:.16,maxLife:.16});damageEnemy(target,b.damage*.375*(owns('A3-23')?1.75:1),target.x,target.y);eruptElement('lightning',target)}}
+  if(player.metaElementHits%10===0){const duration=1+.12*metaCount('A3',[5,10]);if(owns('A3-13')){const burnBonus=1+.06*(metaCount('A3',[11,12,14,15,17,18,19])+2*Number(owns('A3-21')));e.burnLife=Math.max(e.burnLife||0,2*duration);e.burnDps=Math.max(e.burnDps||0,b.damage*.45*(e.aim?b.bossFactor??1:1)*burnBonus*(owns('A3-23')?2.50:1))}if(owns('A3-16')){e.slow=Math.max(e.slow||0,.45);e.slowTime=Math.max(e.slowTime||0,2*duration)}}
+  if(owns('A3-20')&&runTime>=(player.metaSparkReady||0)){const target=enemies.filter(v=>v!==e&&v.hp>0).sort((a,b)=>Math.hypot(a.x-x,a.y-y)-Math.hypot(b.x-x,b.y-y))[0];if(target){player.metaSparkReady=runTime+1;arcs.push({x,y,tx:target.x,ty:target.y,life:.16,maxLife:.16});damageEnemy(target,b.damage*.75*(owns('A3-23')?2.50:1),target.x,target.y);eruptElement('lightning',target)}}
   if(upgrades.shatter>0&&e.slowTime>0&&e.burnLife>0&&!(e.shatterCooldown>0)){
    e.shatterCooldown=.4;ring(x,y,'#bbf4ff',62+upgrades.shatter*8);flashes.push({x,y,r:35,life:.1,maxLife:.1});sound('shatter');
    for(const target of enemies)if(target.hp>0&&Math.hypot(target.x-x,target.y-y)<70){
@@ -2726,7 +2730,7 @@ function onHit(b,e,x,y){
   if(!target)break;
   used.add(target);
   if(arcs.length<36)arcs.push({x:origin.x,y:origin.y,tx:target.x,ty:target.y,life:.16,maxLife:.16});
-  target.lastCharged=!!(b.charged||b.sourceCharged);damageEnemy(target,b.damage*(b.chain?.5:.2)*cardValues.cascade(upgrades.cascade)*(owns('A3-23')?1.75:1),target.x,target.y);applyAilment(b,target);
+  target.lastCharged=!!(b.charged||b.sourceCharged);damageEnemy(target,b.damage*(b.chain?.5:.2)*cardValues.cascade(upgrades.cascade)*(owns('A3-23')?2.50:1),target.x,target.y);applyAilment(b,target);
   showElementalHit({...elements,lightning:true},target,target.x,target.y);origin=target;
  }}
  const baseSplit=Math.max(b.split||0,elements.earth?2:0),cardSplit=cardValues.breakShot(b.breakRank,baseSplit>0);
@@ -2765,7 +2769,8 @@ function damagePart(part,amount,x,y,bossFactor=1){
  if(owns('W1-20')&&!player.bossSpecialUsed){
   const weapon=activeWeapon(),max=player.effectMax||18;
   if(weapon>=0&&player.effects[weapon]<max){
-   player.effects[weapon]=Math.min(max,player.effects[weapon]+max/(owns('W1-23')?2:3));
+   const refill=owns('W1-23')?1:2/3;
+   player.effects[weapon]=Math.min(max,player.effects[weapon]+max*refill);
    player.bossSpecialUsed=true;
   }
  }
@@ -2791,7 +2796,7 @@ function continueEncore(){
 }
 function splash(b){
  const explosive=b.style==='red'||b.cartridge==='fuseRocket';
- const radius=(explosive?54:30)+upgrades.blast*5,amount=b.damage*(explosive?.4:cardValues.blast(upgrades.blast));
+ const radius=(explosive?54:30)+upgrades.blast*10,amount=b.damage*(explosive?.4:cardValues.blast(upgrades.blast));
  ring(b.x,b.y,b.style==='red'?'#ff8b5b':'#ffe9aa',radius);particle(b.x,b.y,'#ffbe72',20,1.3);
  for(const e of enemies)if(e.hp>0&&Math.hypot(e.x-b.x,e.y-b.y)<radius)damageEnemy(e,amount,e.x,e.y);
 }
@@ -3002,8 +3007,8 @@ function updateGameplay(dt){
  if(secret)secretTime+=dt;else t+=dt;
  notice=Math.max(0,notice-dt);flash=Math.max(0,flash-dt);shake=Math.max(0,shake-dt*18);
  const nextLevel=Math.floor(t/districtDuration)%levels.length;if(!secret&&nextLevel!==levelIndex){levelIndex=nextLevel;notice=4;noticeText=levels[levelIndex]}
- player.metaQ10Speed=Math.max(0,(player.metaQ10Speed||0)-dt);player.metaRevenge=Math.max(0,(player.metaRevenge||0)-dt);player.metaBottleSpeed=Math.max(0,(player.metaBottleSpeed||0)-dt);player.guardFlash=Math.max(0,player.guardFlash-dt);player.metaAfterSpecial=Math.max(0,(player.metaAfterSpecial||0)-dt);player.metaGuardCooldown=Math.max(0,(player.metaGuardCooldown||0)-dt);player.metaGrazeSpeed=Math.max(0,(player.metaGrazeSpeed||0)-dt);player.metaHitSpeed=Math.max(0,(player.metaHitSpeed||0)-dt);player.metaGrazeInvCooldown=Math.max(0,(player.metaGrazeInvCooldown||0)-dt);const previousRage=player.overdrive;player.overdrive=Math.max(0,player.overdrive-dt);player.metaRageLock=Math.max(0,(player.metaRageLock||0)-dt);if(previousRage>0&&player.overdrive===0)player.metaAfterglow=1.5*(Number(owns('K2-16'))+Number(owns('K2-22')));else player.metaAfterglow=Math.max(0,player.metaAfterglow-dt);player.inv=Math.max(0,player.inv-dt);player.podCooldown=Math.max(0,player.podCooldown-dt);player.muzzle=Math.max(0,player.muzzle-dt);
- if(player.overdrive>0&&owns('K1-20')){player.metaLightning=(player.metaLightning||0)-dt;if(player.metaLightning<=0){player.metaLightning+=1;const targets=enemies.filter(e=>e.hp>0).sort((a,b)=>Math.hypot(a.x-player.x,a.y-player.y)-Math.hypot(b.x-player.x,b.y-player.y)).slice(0,owns('K1-23')?2:1);for(const e of targets){arcs.push({x:player.x,y:player.y,tx:e.x,ty:e.y,life:.16,maxLife:.16});damageEnemy(e,damage(.6),e.x,e.y)}}}
+ player.metaQ10Speed=Math.max(0,(player.metaQ10Speed||0)-dt);player.metaRevenge=Math.max(0,(player.metaRevenge||0)-dt);player.metaBottleSpeed=Math.max(0,(player.metaBottleSpeed||0)-dt);player.guardFlash=Math.max(0,player.guardFlash-dt);player.metaAfterSpecial=Math.max(0,(player.metaAfterSpecial||0)-dt);player.metaGuardCooldown=Math.max(0,(player.metaGuardCooldown||0)-dt);player.metaGrazeSpeed=Math.max(0,(player.metaGrazeSpeed||0)-dt);player.metaHitSpeed=Math.max(0,(player.metaHitSpeed||0)-dt);player.metaGrazeInvCooldown=Math.max(0,(player.metaGrazeInvCooldown||0)-dt);const previousRage=player.overdrive;player.overdrive=Math.max(0,player.overdrive-dt);player.metaRageLock=Math.max(0,(player.metaRageLock||0)-dt);if(previousRage>0&&player.overdrive===0)player.metaAfterglow=3*(Number(owns('K2-16'))+Number(owns('K2-22')));else player.metaAfterglow=Math.max(0,player.metaAfterglow-dt);player.inv=Math.max(0,player.inv-dt);player.podCooldown=Math.max(0,player.podCooldown-dt);player.muzzle=Math.max(0,player.muzzle-dt);
+ if(player.overdrive>0&&owns('K1-20')){player.metaLightning=(player.metaLightning||0)-dt;if(player.metaLightning<=0){player.metaLightning+=1;const targets=enemies.filter(e=>e.hp>0).sort((a,b)=>Math.hypot(a.x-player.x,a.y-player.y)-Math.hypot(b.x-player.x,b.y-player.y)).slice(0,owns('K1-23')?2:1);for(const e of targets){arcs.push({x:player.x,y:player.y,tx:e.x,ty:e.y,life:.16,maxLife:.16});damageEnemy(e,damage(1.2),e.x,e.y)}}}
  player.verticalWine=Math.max(0,(player.verticalWine||0)-dt);
  const expiring=activeWeapon();
  for(let i=0;i<player.effects.length;i++)player.effects[i]=Math.max(0,player.effects[i]-dt);
@@ -3014,8 +3019,8 @@ function updateGameplay(dt){
  const dx=clamp(Number(keys.has('ArrowRight')||keys.has('KeyD'))-Number(keys.has('ArrowLeft')||keys.has('KeyA'))+padMove.x,-1,1);
  const dy=clamp(Number(keys.has('ArrowDown')||keys.has('KeyS'))-Number(keys.has('ArrowUp')||keys.has('KeyW'))+padMove.y,-1,1);
  player.metaBossSpeed=Math.max(0,(player.metaBossSpeed||0)-dt);
- const v1=.0075*(metaCount('V1',[1,2,3,4,6,7,8,9,11,12,14,15,17,18,19])+2*Number(owns('V1-21')))+(owns('V1-23')?.375:0)+(player.metaGrazeSpeed>0?.12:0)+(player.metaHitSpeed>0?.225:0)+(owns('V1-20')&&runTime-(player.metaLastHit||0)>=2?.075:0)+(hearts<=2?.045*metaCount('V3',[5,10]):0)+(hearts<=1&&owns('V3-22')?.225:0);
- const len=Math.max(1,Math.hypot(dx,dy)),speed=(activeWeapon()===4?300:220)*1.15*1.05*1.15*(1+cardValues.agility(upgrades.agility))*(owns('S2')?1.03:1)*(owns('B2-23')?.9:1)*(owns('V2-23')?.88:1)*(player.metaBossSpeed>0?1.15:1)*(1+v1+(owns('Q1')?.045:0)+(player.metaQ10Speed>0&&owns('Q10')?.12:0))*(player.metaBottleSpeed>0?1.15:1);
+ const v1=.03*(metaCount('V1',[1,2,3,4,6,7,8,9,11,12,14,15,17,18,19])+2*Number(owns('V1-21')))+(owns('V1-23')?.75:0)+(player.metaGrazeSpeed>0?.24:0)+(player.metaHitSpeed>0?.45:0)+(owns('V1-20')&&runTime-(player.metaLastHit||0)>=2?.15:0)+(hearts<=2?.09*metaCount('V3',[5,10]):0)+(hearts<=1&&owns('V3-22')?.45:0);
+ const len=Math.max(1,Math.hypot(dx,dy)),speed=(activeWeapon()===4?300:220)*1.15*1.05*1.15*(1+cardValues.agility(upgrades.agility))*(owns('S2')?1.06:1)*(owns('B2-23')?.9:1)*(owns('V2-23')?.88:1)*(player.metaBossSpeed>0?1.30:1)*(1+v1+(owns('Q1')?.09:0)+(player.metaQ10Speed>0&&owns('Q10')?.24:0))*(player.metaBottleSpeed>0?1.30:1);
  player.bank=(player.bank||0)+(dy/len-(player.bank||0))*Math.min(1,dt*9);
  const gearSpeed=1+gearBonus('speed')+gearBonus(player.overdrive>0?'rageSpeed':'calmSpeed')+(hearts<=2?gearBonus('lowSpeed'):0);
  const fine=arcadeFire&&levelIndex===4&&(keys.has('ShiftLeft')||keys.has('ShiftRight')||flightPad.fine);
@@ -3103,10 +3108,10 @@ function updateGameplay(dt){
   }else if(s.life>0&&clearing&&sweeperClears(clearing,s)){s.life=0;particle(s.x,s.y,fieldPowerups.sweeper.color,3)}
   if(s.life>0&&s.burstAt&&s.age>=s.burstAt)burstHostileShot(s);
  }
- const pickupRadius=pickups.length?(78+cardValues.magnet(upgrades.magnet))*(1+.045*metaCount('B2',[1,2,3,4,6,7,8,9])+(owns('B2-23')?1.5:0))+(owns('B2-13')?60:0)+gearBonus('bottleMagnet'):0;
+ const pickupRadius=pickups.length?(78+cardValues.magnet(upgrades.magnet))*(1+.09*metaCount('B2',[1,2,3,4,6,7,8,9])+(owns('B2-23')?3:0))+(owns('B2-13')?120:0)+gearBonus('bottleMagnet'):0;
  for(const p of pickups){const dx=player.x-p.x,dy=player.y-p.y,distance=Math.hypot(dx,dy);p.x-=100*dt;if(distance<pickupRadius&&distance>1){p.x+=dx/distance*80*dt;p.y+=dy/distance*80*dt}p.age=(p.age||0)+dt;if(styles[p.i]&&p.x-p.w/2<W)player.weaponWineSeen=true}
- const orbRadius=orbs.length?(78+cardValues.magnet(upgrades.magnet,true))*(1+(owns('S4')?.075:0)+.03*metaCount('B1',[1,2,3,4,6,7,8,9])+.03*metaCount('B3',[5,10])+(player.overdrive>0?.045*metaCount('K3',[5,10]):0))+gearBonus('orbMagnet'):0;
- const eliteReach=orbs.length&&owns('B3-16')?45:0;
+ const orbRadius=orbs.length?(78+cardValues.magnet(upgrades.magnet,true))*(1+(owns('S4')?.15:0)+.06*metaCount('B1',[1,2,3,4,6,7,8,9])+.06*metaCount('B3',[5,10])+(player.overdrive>0?.09*metaCount('K3',[5,10]):0))+gearBonus('orbMagnet'):0;
+ const eliteReach=orbs.length&&owns('B3-16')?90:0;
  for(const orb of orbs){
   orb.age+=dt;
   if(orb.contractAngle!==undefined){
@@ -3192,7 +3197,7 @@ function updateGameplay(dt){
   }
   if(boss&&!b.dead&&(!b.returnContact||b.returning))for(const part of [...boss.parts]){
    if(!boss)break;if(part.hp<=0||part===b.returnContact||b.hit.has(part)||!partHit(b,boss,part))continue;
-   b.hit.add(part);const amount=(b.damage||1)*(b.charged?.35:1)*(b.charged&&owns('Q8')?1.075:1);
+   b.hit.add(part);const amount=(b.damage||1)*(b.charged?.35:1)*(b.charged&&owns('Q8')?1.15:1);
    damagePart(part,modifyDirectHit(part,amount,b,true,b.x,b.y),b.x,b.y,b.bossFactor??1);
    if(!rocket){
     const impact={...b,damage:amount};
@@ -3203,15 +3208,15 @@ function updateGameplay(dt){
   }
  }
  if(state!=='playing')return;
- const grazeRadiusSquared=shots.length?(42*(1+.03*metaCount('V1',[5,10])))**2:0;
+ const grazeRadiusSquared=shots.length?(42*(1+.06*metaCount('V1',[5,10])))**2:0;
  const pod={x:player.x,y:player.y,w:player.w+14,h:player.h+14};
  for(const s of shots){
   if(s.life>0&&clearing&&sweeperClears(clearing,s)){s.life=0;particle(s.x,s.y,fieldPowerups.sweeper.color,3)}
   else if(s.life>0&&power.shieldTime>0&&power.shield>0&&hit(player,s)){
    s.life=0;power.shield--;showProtection('SCHILD');impact(s.x,s.y,fieldPowerups.shield.color);sound('block');addRage(10,'blockRage');
   }
-  else if(s.life>0&&owns('V2-13')&&player.metaGuardCooldown<=0&&Math.hypot(s.x-player.x,s.y-player.y)<55){s.life=0;showProtection('TALENTWACHE');player.metaGuardCooldown=(owns('V2-16')?13.33:16.67)/(owns('V2-23')?1.6:1);impact(s.x,s.y,'#aeeaff',12);sound('block')}
-  else if(s.life>0&&player.podCooldown<=0&&hit(pod,s)){s.life=0;showProtection('SCHUTZKAPSEL');player.guardFlash=.16;const reduction=.045*metaCount('V2',[5,10])+.015*(metaCount('V2',[11,12,14,15,17,18,19])+2*Number(owns('V2-21')));player.podCooldown=2.5*cardValues.guard(upgrades.guard)*(1-reduction-(owns('Q4')&&player.overdrive>0?.075:0))/(owns('V2-23')?1.6:1)*gearFactor('guardCooldown');impact(pod.x,pod.y,'#aeeaff',12);addRage(10,'blockRage');sound('block')}
+  else if(s.life>0&&owns('V2-13')&&player.metaGuardCooldown<=0&&Math.hypot(s.x-player.x,s.y-player.y)<55){s.life=0;showProtection('TALENTWACHE');player.metaGuardCooldown=(owns('V2-16')?9.99:16.67)*(owns('V2-23')?.25:1);impact(s.x,s.y,'#aeeaff',12);sound('block')}
+  else if(s.life>0&&player.podCooldown<=0&&hit(pod,s)){s.life=0;showProtection('SCHUTZKAPSEL');player.guardFlash=.16;player.podCooldown=podReload();impact(pod.x,pod.y,'#aeeaff',12);addRage(10,'blockRage');sound('block')}
   else if(s.life>0&&hit(player,s)){
    s.life=0;
    hurt('projectile',s.originX??(s.x-s.vx*.05),s.y-s.vy*.05,s);
@@ -3225,7 +3230,7 @@ function updateGameplay(dt){
  if(power.shieldTime===0)power.shield=0;
  power.beamTime=Math.max(0,power.beamTime-dt);
  if(state!=='playing')return;
- for(const orb of orbs)if((orb.contractAngle===undefined||orb.age>=contractOrbBurstTime)&&(!orb.starBurst||orb.age>=starOrbFlightTime+starOrbPickupDelay)&&hit(player,orb)){const elite=orb.kind==='elite',bossOrb=orb.kind==='boss';const bonus=.015*(metaCount('B1',[5,10,11,12,14,15,17,18,19])+2*Number(owns('B1-21')))+(owns('B1-16')&&elite?.15:0)+(owns('B1-23')?.30:0)+(owns('Q5')&&player.overdrive>0?.075:0)+(elite?.015*metaCount('B3',[1,2,3,4,6,7,8,9]):0)+(bossOrb?.015*(metaCount('B3',[11,12,14,15,17,18,19])+2*Number(owns('B3-21'))):0)+(bossOrb&&owns('B3-13')?.225:0)+(owns('B3-23')?(elite||bossOrb?.45:-.10):0);xp+=orb.value*(1+bonus)*1.25*orbXpMultiplier*gearFactor('orbXp');orb.collected=true;player.metaOrbs=(player.metaOrbs||0)+1;const wave=(owns('B1-20')&&player.metaOrbs%25===0)||(bossOrb&&owns('B3-22'));if(wave){const radius=112.5+(owns('B1-22')?37.5:0),amount=damage(1.5+(owns('B1-22')?.75:0));ring(player.x,player.y,'#80faff',radius);for(const e of enemies)if(e.hp>0&&Math.hypot(e.x-player.x,e.y-player.y)<radius)damageEnemy(e,amount,e.x,e.y)}}
+ for(const orb of orbs)if((orb.contractAngle===undefined||orb.age>=contractOrbBurstTime)&&(!orb.starBurst||orb.age>=starOrbFlightTime+starOrbPickupDelay)&&hit(player,orb)){const elite=orb.kind==='elite',bossOrb=orb.kind==='boss';const bonus=.03*(metaCount('B1',[5,10,11,12,14,15,17,18,19])+2*Number(owns('B1-21')))+(owns('B1-16')&&elite?.30:0)+(owns('B1-23')?.60:0)+(owns('Q5')&&player.overdrive>0?.15:0)+(elite?.03*metaCount('B3',[1,2,3,4,6,7,8,9]):0)+(bossOrb?.03*(metaCount('B3',[11,12,14,15,17,18,19])+2*Number(owns('B3-21'))):0)+(bossOrb&&owns('B3-13')?.45:0)+(owns('B3-23')?(elite||bossOrb?.90:-.10):0);xp+=orb.value*(1+bonus)*1.25*orbXpMultiplier*gearFactor('orbXp');orb.collected=true;player.metaOrbs=(player.metaOrbs||0)+1;const wave=(owns('B1-20')&&player.metaOrbs%25===0)||(bossOrb&&owns('B3-22'));if(wave){const radius=112.5+(owns('B1-22')?75:0),amount=damage(3+(owns('B1-22')?1.5:0));ring(player.x,player.y,'#80faff',radius);for(const e of enemies)if(e.hp>0&&Math.hypot(e.x-player.x,e.y-player.y)<radius)damageEnemy(e,amount,e.x,e.y)}}
  orbs=orbs.filter(orb=>!orb.collected&&orb.x+orb.w/2>=0);if(xp>=xpNeeded){offerCards();return}
  for(const p of pickups)if(!p.dead&&(hit(player,p)||p.forkJuice&&starRoute?.fork&&Math.abs(p.x-player.x)<25&&player.y>=110&&player.y<=250)){
   if(p.forkJuice&&starRoute?.fork){
@@ -3256,8 +3261,8 @@ function recallBottle(){
 }
 function drinkBottle(p){
  if(player.contract===1&&p.i!==5)settleContract(false);
-  if(p.i!==5&&p.i!==16){if(owns('Q10'))player.metaQ10Speed=3;if(owns('W3-22'))player.metaWeaponSpecial=true;if(owns('W3-13')){ring(player.x,player.y,'#ffd58b',90);for(const e of enemies)if(e.hp>0&&Math.hypot(e.x-player.x,e.y-player.y)<90)damageEnemy(e,damage(.75),e.x,e.y)}}
-  if(p.i===16){const weapon=activeWeapon();if(weapon>=0)player.effects[weapon]=player.effectMax||18;else player.verticalWine=10}else if(p.i===5)heal(1,gearFactor('juiceHealing'));else{const first=!player.metaWeaponFound;player.metaWeaponFound=true;if(first&&owns('Q7'))player.rage=Math.min(100,player.rage+7.5*gearFactor('allRage'));player.weapon=p.i;player.effects=player.effects.map((v,i)=>i===2?v:0);if(owns('W2-16'))player.metaBottleSpeed=2;const duration=1+.015*metaCount('W2',[1,2,3,4,6,7,8,9])+.045*metaCount('B2',[5,10])+.015*(metaCount('B2',[11,12,14,15,17,18,19])+2*Number(owns('B2-21')))+(owns('S5')?.045:0)+(owns('Q6')&&player.overdrive>0?.075:0)+(first&&owns('B2-16')?.30:0)+(first&&owns('B2-20')?1/3:0);player.effectMax=player.effects[p.i]=18*(1+cardValues.duration(upgrades.duration)+cardValues.cellar(upgrades.cellar))*duration*gearFactor('wineDuration')*(owns('V1-23')?.85:1)*(owns('W2-23')?.8:1);if(owns('B2-22')&&!player.metaBottleHealed&&hearts<maxHearts()){heal(1);player.metaBottleHealed=true}}
+  if(p.i!==5&&p.i!==16){if(owns('Q10'))player.metaQ10Speed=3;if(owns('W3-22'))player.metaWeaponSpecial=true;if(owns('W3-13')){ring(player.x,player.y,'#ffd58b',90);for(const e of enemies)if(e.hp>0&&Math.hypot(e.x-player.x,e.y-player.y)<90)damageEnemy(e,damage(1.5),e.x,e.y)}}
+  if(p.i===16){const weapon=activeWeapon();if(weapon>=0)player.effects[weapon]=player.effectMax||18;else player.verticalWine=10}else if(p.i===5)heal(1,gearFactor('juiceHealing'));else{const first=!player.metaWeaponFound;player.metaWeaponFound=true;if(first&&owns('Q7'))player.rage=Math.min(100,player.rage+15*gearFactor('allRage'));player.weapon=p.i;player.effects=player.effects.map((v,i)=>i===2?v:0);if(owns('W2-16'))player.metaBottleSpeed=2;const duration=1+.03*metaCount('W2',[1,2,3,4,6,7,8,9])+.09*metaCount('B2',[5,10])+.03*(metaCount('B2',[11,12,14,15,17,18,19])+2*Number(owns('B2-21')))+(owns('S5')?.09:0)+(owns('Q6')&&player.overdrive>0?.15:0)+(first&&owns('B2-16')?.60:0)+(first&&owns('B2-20')?2/3:0);player.effectMax=player.effects[p.i]=18*(1+cardValues.duration(upgrades.duration)+cardValues.cellar(upgrades.cellar))*duration*gearFactor('wineDuration')*(owns('V1-23')?.85:1)*(owns('W2-23')?.8:1);if(owns('B2-22')&&!player.metaBottleHealed&&hearts<maxHearts()){heal(1);player.metaBottleHealed=true}}
   sound(p.i===5?'heal':'pickup',{style:styles[p.i]||'normal'});p.dead=true;notice=2.6;noticeText=p.i===16?(player.verticalWine>0&&activeWeapon()<0?'SONDERWEIN · OBEN UND UNTEN':'SONDERWEIN · WEIN AUFGEFÜLLT'):p.i===5?(gearBonus('juiceHealing')?'TRAUBENMOST · +'+numberLabel.format(gearFactor('juiceHealing'))+' HEILUNG':'TRAUBENMOST · EIN HERZ'):powerNames[p.i].toUpperCase()+' · '+weaponNames[p.i];ring(p.x,p.y,colors[p.i]||'#ffd34e',60);particle(p.x,p.y,colors[p.i]||'#ffd34e',24);
  }
 function drawFieldPickup(p){
