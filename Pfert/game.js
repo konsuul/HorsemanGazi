@@ -31,6 +31,7 @@ const weaponNames = ['GLUTSALVE','PERLMUTT-FÄCHER','ROSEN-SUCHER','PORT-LASER',
 const weaponElements=['fire','frost','fire','lightning','lightning',null,'earth','earth','lightning','earth','earth','frost','frost','earth','lightning','fire'];
 const styles=['red','white','rose','port','speed',null,'prism','saw','chain','orbit','mortar','wave','frost','vortex','storm','phoenix'];
 const colors=['#ffb06e','#9effe8','#ffa7d8','#c499ff','#75d9ff','#d3a9ed','#c7eeff','#e5f6b4','#83e5ff','#c2c0ff','#ffd386','#a5f8d5','#a6eaff','#b6a0ff','#e4f7ff','#ffc48e'];
+const cartridgeRate=1.3;
 const cartridges=[
  ['sunLance','Sonnenlanze','☀','AK',3.2*laserIntervalScale,'Ein schmaler Laser durchdringt die ganze Spur.'],
  ['fuseRocket','Zündrakete','➤','AL',4.6,'Eine Suchrakete explodiert beim Einschlag.'],
@@ -42,7 +43,7 @@ const cartridges=[
  ['moonHook','Mondhaken','☾','AR',2.9,'Eine Sichel trifft auf dem Hin- und Rückflug.'],
  ['railSkip','Bandenkeil','◇','AS',2.4,'Ein diagonaler Keil prallt dreimal an den Feldrändern ab.'],
  ['anchorCore','Ankerkern','◎','AT',4.8,'Ein Kern zieht Gegner heran und trifft in Pulsen.']
-].map(([id,title,icon,code,reload,desc])=>({id,title,icon,code,reload,max:1,desc:desc+' Lädt in '+reload.toLocaleString('de-DE')+' s nach.'}));
+].map(([id,title,icon,code,reload,desc])=>({id,title,icon,code,reload:reload/cartridgeRate,max:1,desc:desc+' Lädt in '+(reload/cartridgeRate).toLocaleString('de-DE',{maximumFractionDigits:2})+' s nach.'}));
 const cardDefs = [
  ...cartridges,
  {id:'healing',icon:'♥',title:'Herzstück',desc:'Füllt ein Herz wieder auf.',max:Infinity},
@@ -52,7 +53,7 @@ const cardDefs = [
  {id:'seekShot',icon:'◎',title:'Spürnase',desc:'Standardgeschosse, Weinangriffe und Laser verfolgen Gegner.',max:3},
  {id:'breakShot',icon:'✣',title:'Käsebruch',desc:'Treffer erzeugen Splitter mit 12,6 % des auslösenden Schadens.',max:2},
  {id:'boomerang',icon:'↶',title:'Bumerangkäse',desc:'Standardschüsse kehren nach dem letzten möglichen Treffer oder nach einer Sekunde Flug um. Auf dem Rückweg können sie erneut treffen.',max:1},
- {id:'carousel',icon:'⟳',title:'Käsekarussell',desc:'Standardschüsse kreisen kurz um das Pfert. Die Lichtlanze dreht sich einmal und feuert dann nach vorn.',max:1},
+ {id:'carousel',icon:'⟳',title:'Käsekarussell',desc:'Eine Käsekugel kreist dauerhaft um das Pfert. Der Basisschuss feuert weiter geradeaus.',max:1},
  {id:'bounceCrust',icon:'↱',title:'Sprungkruste',desc:'Standardschüsse prallen einmal zusätzlich ab. Beim ersten Abpraller löst sich ein Splitter.',max:1},
  {id:'damage',icon:'✦',title:'Käsereifung',desc:'12 % MEHR Schaden je Rang, multipliziert mit anderen Effekten.',max:10},
  {id:'charge',icon:'ϟ',title:'Schnellgärung',desc:'+9 % Sonderangriffsschaden je Rang.',max:8},
@@ -142,7 +143,7 @@ const cardEffectLabels={
  seekShot:(r,rank)=>numberLabel.format(r)+' / '+numberLabel.format(cardValues.seekShot(rank,true))+' Lenkstärke (Geschoss / Laser)',
  breakShot:(r,rank)=>r+' Splitter · '+cardValues.breakShot(rank,true)+' zusätzlich bei Waffen-Splittern',
  boomerang:r=>r?'55 % Schaden auf dem Rückweg':'Kein Rückflug',
- carousel:r=>r?'0,25 Sekunden Kreisflug':'Kein Kreisflug',
+ carousel:r=>r?'Dauerhafter Kreisflug + Basisschuss':'Kein Kreisflug',
  bounceCrust:r=>r?'+1 Abpraller · Splitter mit 21 % Schaden':'Kein Splitter beim Abprallen',
  damage:r=>'+'+percent(r-1)+' Schaden',
  charge:r=>'+'+percent(r)+' Sonderangriffsschaden',
@@ -285,7 +286,7 @@ const gearEffectLabels={
  allRage:'Käserausch-Ladung aus allen Quellen'
 };
 const flatGearEffects=new Set(['criticalDamage','orbMagnet','bottleMagnet','shieldDuration','maxHearts']);
-const gearBagCapacity=4,gearDropDuration=20;
+const gearBagCapacity=8,gearDropDuration=20;
 let wornGear={},gearBag=[],gearDrops=[],gearStats={};
 let pauseView='main',gearActions=[],gearSelection=0;
 function clearRunGear(){
@@ -816,7 +817,7 @@ function startRun(mode,skill=baseSkills[0]){
  pausedFrom=null;transition=null;t=0;runTime=0;metaBosses=0;metaTimePoints=0;metaSavedAt=0;level=1;xp=owns('B1-13')?2:0;xpNeeded=10;orbs=[];choices=[];score=0;hearts=MAX_HEARTS;lastRare=null;
  buildCards=null;
  upgrades=Object.fromEntries(cardDefs.map(card=>[card.id,0]));
- player={skill,x:135,y:H/2,w:40,h:29,inv:0,effects:Array(16).fill(0),weapon:-1,charge:0,charging:false,specials:owns('W1-23')?2:3,specialCount:0,freeSpecialUsed:false,bossSpecialUsed:false,autoCooldown:0,autoAttacks:0,podSide:1,podCooldown:0,muzzle:0,guardFlash:0,attacks:0,rage:owns('K2-13')?15:0,overdrive:0,metaAfterglow:0,chargeCue:false,readyCue:false};
+ player={skill,orbiters:[],x:135,y:H/2,w:40,h:29,inv:0,effects:Array(16).fill(0),weapon:-1,charge:0,charging:false,specials:owns('W1-23')?2:3,specialCount:0,freeSpecialUsed:false,bossSpecialUsed:false,autoCooldown:0,autoAttacks:0,podSide:1,podCooldown:0,muzzle:0,guardFlash:0,attacks:0,rage:owns('K2-13')?15:0,overdrive:0,metaAfterglow:0,chargeCue:false,readyCue:false};
  player.fieldPower={dropIn:rand(45,65),queue:[],rockets:0,launchCooldown:0,shield:0,shieldTime:0,beamTime:0};
  enemies=[];bullets=[];shots=[];pickups=[];bossPickups=[];particles=[];deaths=[];rings=[];beams=[];
  hostileShotCount=0;enemyShotBudget=3;bossShotCount=0;
@@ -838,13 +839,24 @@ function pauseGame(){
  overlay.classList.add('pause-overlay');
  renderPauseMenu();
 }
+function pausePowerUps(){
+ const cards=collectedCards();
+ const rows=cards.map(({code,title,rank})=>'<li><b>'+code+'</b><span>'+title+'</span><small>Rang '+rank+'</small></li>').join('');
+ return '<section class="pause-build"><button id="pause-build-toggle" aria-expanded="false" aria-controls="pause-build-list">Power-ups <span>'+cards.length+'</span></button>'+
+  '<div id="pause-build-list" hidden>'+(rows?'<ul tabindex="0">'+rows+'</ul>':'<p>In dieser Runde bisher keine Power-ups gesammelt.</p>')+'</div></section>';
+}
+function togglePausePowerUps(){
+ const list=document.getElementById('pause-build-list');
+ list.hidden=!list.hidden;
+ document.getElementById('pause-build-toggle').setAttribute('aria-expanded',String(!list.hidden));
+}
 function renderPauseMenu(){
  pauseView='main';
  overlay.classList.remove('gear-overlay');
  overlay.innerHTML='<h2 id="pause-title">Pause</h2><div class="pause-actions">'+
   '<button id="resume">Fortsetzen</button><button id="gear-open">Ausrüstung</button><button id="end-run">Runde beenden</button></div>'+
+  pausePowerUps()+
   '<label class="music-volume">Musiklautstärke <input id="music-volume" type="range" min="0" max="100" step="1"></label>'+
-  '<p class="hint">Windschatten · Drei Geschosse in 2,5 s knapp passieren.</p>'+
   '<p class="hint">Esc oder Controller '+padHint(9)+' zum Fortsetzen</p>'+
   '<p class="hint pad-only">Steuerkreuz ↑ / ↓ wählt · ← / → regelt Musik</p>';
  const volume=document.getElementById('music-volume');
@@ -852,7 +864,7 @@ function renderPauseMenu(){
  volume.addEventListener('input',()=>applyMusicVolume(volume));
  bindGearActions([
   {id:'resume',run:resumeGame},{id:'gear-open',run:renderGearInventory},
-  {id:'end-run',run:confirmEndRun},{id:'music-volume'}
+  {id:'end-run',run:confirmEndRun},{id:'pause-build-toggle',run:togglePausePowerUps},{id:'music-volume'}
  ]);
 }
 function applyMusicVolume(volume){
@@ -864,7 +876,7 @@ function confirmEndRun(){
   '<div class="pause-actions"><button id="keep-run">Zurück zur Pause</button><button id="confirm-end">Runde beenden</button></div>';
  bindGearActions([{id:'keep-run',run:renderPauseMenu},{id:'confirm-end',run:()=>end(false)}]);
 }
-function gearDetails(item){
+function gearDetails(item,showSlot=true){
  const rarity=gearRarities[item.rarity];
  const effects=Object.entries(item.effects).map(([stat,value])=>{
   const magnitude=flatGearEffects.has(stat)?numberLabel.format(Math.abs(value)):
@@ -872,10 +884,10 @@ function gearDetails(item){
   return '<span>'+(value<0?'−':'+')+magnitude+' '+gearEffectLabels[stat]+'</span>';
  }).join('');
  return '<span class="gear-details" style="--gear-color:'+rarity.color+'"><strong>'+item.name+
-  '</strong><small>'+rarity.label+' · '+gearSlots[item.slot].label+'</small>'+effects+'</span>';
+  '</strong><small>'+rarity.label+(showSlot?' · '+gearSlots[item.slot].label:'')+'</small>'+effects+'</span>';
 }
 function gearButton(id,label,item){
- return '<button id="'+id+'" class="gear-option">'+label+(item?gearDetails(item):'')+'</button>';
+ return '<button id="'+id+'" class="gear-option"><span class="gear-action">'+label+'</span>'+(item?'<span class="gear-slot">'+gearSlots[item.slot].label+'</span>'+gearDetails(item,false):'')+'</button>';
 }
 function bindGearActions(actions,selection=0){
  gearActions=actions;
@@ -1229,7 +1241,18 @@ function dropOrb(x,y,value,speed=32.5,kind='normal',tier=1){
  const orb={x:clamp(x,22,W-22),y:clamp(y,85,H-22),w:16,h:16,value,speed,age:0,kind,tier};
  orbs.push(orb);return orb;
 }
-function enemySpeed(e){const paused=!e.formation&&e.i===3&&e.age%3>1.25&&e.age%3<2.05;const charge=!e.formation&&e.i===6&&e.age%3>1.1&&e.age%3<1.55?180:0;return ((paused?0:e.speed)+charge)*(1-(e.slow||0));}
+const enemyRushStart=1.1,enemyRushEnd=enemyRushStart+.45*1.4;
+function enemySpeed(e,dt=0){
+ const phase=e.age%3;
+ const paused=!e.formation&&e.i===3&&phase>1.25&&phase<2.05;
+ let charge=0;
+ if(!e.formation&&e.i===6){
+  const share=dt?Math.max(0,Math.min(phase,enemyRushEnd)-Math.max(phase-dt,enemyRushStart))/dt:
+   Number(phase>=enemyRushStart&&phase<enemyRushEnd);
+  charge=180*share;
+ }
+ return ((paused?0:e.speed)+charge)*(1-(e.slow||0));
+}
 function death(e){
  flightStats.enemies++;
  if(e.rareEnemy&&!e.equipmentDropped){e.equipmentDropped=true;dropGear(e.x,e.y)}
@@ -1302,13 +1325,7 @@ function addBullet(angle,style,charged,power,scale=1,offset=0){
 }
 function mutateStandardShot(b){
  if(!b)return;
- if(upgrades.carousel){
-  b.carousel=true;b.orbit=.25;b.orbitRadius=114;
-  b.orbitSpeed=Math.PI*2/b.orbit;
-  b.orbitOffset=(b.y-player.y+2)*.25;
-  b.phase=Math.atan2(b.vy,b.vx);
- }
- if(upgrades.boomerang)b.boomerangAt=(b.orbit||0)+1;
+ if(upgrades.boomerang)b.boomerangAt=1;
  if(upgrades.bounceCrust){b.bounces++;b.crust=true}
 }
 function turnBoomerang(b){
@@ -1506,10 +1523,8 @@ function emitLightBeam(strength,width,life){
  beams.push(beam);
  return beam;
 }
-const laserCarouselTime=.25,laserCarouselRadius=114;
 function addLightBeamCopy(beam,scale,offset,angle=0,lifeScale=1){
- const carousel=beam.carousel||0;
- const life=carousel+(beam.maxLife-carousel)*lifeScale;
+ const life=beam.maxLife*lifeScale;
  beams.push({...beam,opacity:.8,damage:beam.damage*scale,offset,shotAngle:angle,angle,y:beam.y+offset,life,maxLife:life,
   splitTargets:new Set(),hitTargets:beam.hitTargets?new Set():undefined});
 }
@@ -1546,6 +1561,35 @@ function dischargeCartridge(){
  b.seekRank=upgrades.seekShot;b.snakeRank=upgrades.snakeShot;b.breakRank=upgrades.breakShot;
  fired();
 }
+const orbitRevolution=.65;
+function armOrbiters(first,count,radius,damageScale,source){
+ if(!source)return;
+ for(let i=0;i<count;i++){
+  const slot=first+i;
+  const orb=player.orbiters[slot]??={x:player.x,y:player.y,vx:0,vy:1,style:'orbit',w:17,h:17,pierce:true,hit:new Set(),turn:-1,radius,phase:i*Math.PI};
+  Object.assign(orb,{damage:source.damage*damageScale,metaCritical:source.metaCritical,
+   elements:source.elements,bossFactor:source.bossFactor});
+ }
+}
+function activeOrbiters(){
+ return player.orbiters.filter(Boolean);
+}
+function updateOrbiters(dt){
+ if(styles[activeWeapon()]!=='orbit')player.orbiters.length=Math.min(1,player.orbiters.length);
+ const turn=Math.floor(runTime/orbitRevolution);
+ for(const orb of activeOrbiters()){
+  if(turn!==orb.turn){orb.turn=turn;orb.hit.clear();orb.fragmented=false}
+  const speed=Math.PI*2/orbitRevolution;
+  const angle=(runTime%orbitRevolution)*speed+orb.phase;
+  const cos=Math.cos(angle),sin=Math.sin(angle);
+  orb.x=player.x+cos*orb.radius;
+  orb.y=player.y+sin*orb.radius;
+  orb.vx=-sin*orb.radius*speed;
+  orb.vy=cos*orb.radius*speed;
+  orb.age=runTime%orbitRevolution;
+  recordProjectileTrail(orb,dt,.025,7);
+ }
+}
 function fireCharge(special=false){
  const charged=special,power=special?1:0,weapon=activeWeapon();
  const style=styles[weapon]||(charged?'wave':player.skill.id==='laser'?'light':'normal');
@@ -1558,12 +1602,6 @@ function fireCharge(special=false){
   const duration=cardValues.duration(upgrades.duration)+cardValues.cellar(upgrades.cellar);
   const beam=emitLightBeam(1.22*(1+duration*.55),16*(1+cardValues.size(upgrades.size)),.13*(1+Math.min(1,duration)));
   beam.damage*=1+.04*Number(owns('A1-5'))+.08*Number(owns('A3-23'));
-  if(upgrades.carousel){
-   beam.carousel=laserCarouselTime;
-   beam.life+=beam.carousel;beam.maxLife=beam.life;
-   beam.length=laserCarouselRadius;
-   beam.hitTargets=new Set();
-  }
   for(let i=0;i<upgrades.multiShot;i++)addLightBeamCopy(beam,extraShotScale(i)*doubleCheeseDamage,i%2?12:-12);
   for(let i=0;i<cardValues.fanShot(upgrades.fanShot);i++){
    const ray=(i%2?1:-1)*(Math.floor(i/2)+1);
@@ -1581,7 +1619,8 @@ function fireCharge(special=false){
  }else if(style==='chain'){
   const b=emit();if(b)b.chain=charged?4:2;
  }else if(style==='orbit'){
-  for(let i=0;i<(charged?3:2);i++){const b=emit(0);if(b){b.orbit=charged?1.25:.7;b.phase=i*Math.PI*2/(charged?3:2);b.orbitRadius=charged?56:35;b.life=3}}
+  if(!charged)emit(0,'normal');
+  else for(let i=0;i<3;i++){const b=emit(0);if(b){b.orbit=1.25;b.phase=i*Math.PI*2/3;b.orbitRadius=56;b.life=3}}
  }else if(style==='mortar'){
   for(let i=0;i<(charged?3:1);i++){const b=emit();if(b){b.vx=350+i*60;b.vy=-200-i*35;b.gravity=330;b.blast=true;b.life=2.4}}
  }else if(style==='wave'){
@@ -1691,6 +1730,11 @@ function fireCharge(special=false){
  for(const attack of [...bullets.slice(firstNew),...beams.slice(firstBeam)]){
   attack.damage*=attackFactor;
   attack.bossFactor=bossFactor;
+ }
+ if(!charged){
+  const primary=style==='light'||style==='port'||style==='storm'?beams[firstBeam]:bullets[firstNew];
+  if(upgrades.carousel)armOrbiters(0,1,96,.55,primary);
+  if(style==='orbit')armOrbiters(1,2,46,.45,primary);
  }
  if(charged&&owns('W2-20')){if(!player.metaBombs)player.metaBombs=[];player.metaBombs.push({x:player.x+28,y:player.y,time:1,amount:damage(1.5+(owns('W2-22')?.75:0),undefined,false)*attackFactor*(owns('W2-23')?2.5:1),bossFactor,radius:90+(owns('W2-22')?30:0)})}
  player.muzzle=charged?.2:.12;impact(player.x+28,player.y,colors[weapon]||'#a8edff',charged?18:7);
@@ -1819,20 +1863,35 @@ function updateFormation(previousTime){
  }
  formation=null;
 }
-// One encounter per district. Later batteries cover more of the flight ceiling.
-const arcadeOffsets=[169,16,92,70,110];
+// The schedule leaves room for the full encounter before a boss can start.
+const levelHazards=[
+ {offset:169,name:'ARKADENFEUER',lanes:[['y',144],['y',144]]},
+ {offset:16,name:'FALLGITTER',lanes:[['x',230],['x',212]]},
+ {offset:92,name:'KREUZFEUER',lanes:[['y',120],['x',220],['y',108]]},
+ {offset:70,name:'FLUTKAMMER',lanes:[['y',120],['y',108],['y',96]]},
+ {offset:110,name:'PALASTGITTER',lanes:[['x',226],['y',100],['x',196]]}
+];
 const arcadeFirstWarning=1.45, arcadeRepeatWarning=1.05, arcadePulseTime=.32;
+function setArcadeLane(fire){
+ const [axis,width]=fire.lanes[fire.lanes.length-fire.remaining];
+ const vertical=axis==='x';
+ const middle=vertical?W/2:H/2,shift=vertical?140:54;
+ const sameAxis=fire.axis===axis;
+ fire.center=sameAxis?2*middle-fire.center:
+  middle+(vertical?(player.x<middle?-shift:shift):(player.y<middle?shift:-shift));
+ fire.axis=axis;
+ fire.halfGap=width/2;
+}
 function updateArcadeFire(previousTime){
  if(secret||boss||golden){arcadeFire=null;return}
  if(!arcadeFire){
-  const start=Math.floor(t/districtDuration)*districtDuration+arcadeOffsets[levelIndex];
-  if(t<start||previousTime>=start||t+5>=nextBoss||starRoute||formation||
+  const {offset,name,lanes}=levelHazards[levelIndex];
+  const start=Math.floor(t/districtDuration)*districtDuration+offset;
+  if(t<start||previousTime>=start||t+6>=nextBoss||starRoute||formation||
    enemies.some(e=>e.formation&&e.hp>0))return;
-  arcadeFire={
-   center:player.y<270?324:216, halfGap:72-levelIndex*6,
-   remaining:levelIndex<2?2:3, clean:true, firing:false, touched:false,
-   phaseStart:start, phaseEnd:start+arcadeFirstWarning
-  };
+  arcadeFire={name,lanes,remaining:lanes.length,clean:true,firing:false,touched:false,
+   phaseStart:start,phaseEnd:start+arcadeFirstWarning};
+  setArcadeLane(arcadeFire);
  }
  const fire=arcadeFire;
  if(t>=fire.phaseEnd){
@@ -1841,14 +1900,14 @@ function updateArcadeFire(previousTime){
    fire.firing=true;
    fire.phaseEnd+=arcadePulseTime;
   }else if(--fire.remaining>0){
-   fire.center=540-fire.center;
+   setArcadeLane(fire);
    fire.firing=false;
    fire.touched=false;
-   fire.phaseEnd+=arcadeRepeatWarning;
+   fire.phaseEnd+=fire.axis==='x'?arcadeFirstWarning:arcadeRepeatWarning;
   }else{
    arcadeFire=null;
    if(fire.clean){
-    const points=levelIndex<2?350:450;
+    const points=fire.lanes.length===2?350:450;
     score+=points;
     player.arcadeReward={points,until:runTime+2};
     ring(player.x,player.y,'#a9edd3',48);
@@ -1857,12 +1916,16 @@ function updateArcadeFire(previousTime){
   }
  }
  if(!fire.firing||fire.touched)return;
- const above=player.y-player.h/2<fire.center-fire.halfGap;
- const below=player.y+player.h/2>fire.center+fire.halfGap;
- if(above||below){
+ const vertical=fire.axis==='x';
+ const position=vertical?player.x:player.y;
+ const halfSize=(vertical?player.w:player.h)/2;
+ const before=position-halfSize<fire.center-fire.halfGap;
+ const after=position+halfSize>fire.center+fire.halfGap;
+ if(before||after){
   fire.touched=true;
   fire.clean=false;
-  hurt('arcade',player.x,player.y+(above?-24:24));
+  const direction=before?-24:24;
+  hurt('arcade',player.x+(vertical?direction:0),player.y+(vertical?0:direction));
  }
 }
 function spawnBlocker(previousTime){
@@ -2234,7 +2297,7 @@ function burstHostileShot(shot){
  }
 }
 
-const damageCauses={contact:'Gegnerkontakt',projectile:'Feindgeschoss',boss:'Bosskontakt',strike:'Bossvorstoß',arcade:'Arkadenfeuer'};
+const damageCauses={contact:'Gegnerkontakt',projectile:'Feindgeschoss',boss:'Bosskontakt',strike:'Bossvorstoß',arcade:'Umgebungsgefahr'};
 const slipstreamWindow=2.5,slipstreamReload=1.5;
 function grazeShot(shot){
  shot.grazed=true;
@@ -2414,26 +2477,16 @@ function traceBeam(beam,angle,length,dealsDamage){
 }
 function updateBeam(beam,dt){
  const age=beam.maxLife-beam.life,shotAngle=beam.shotAngle||0;
- const carousel=beam.carousel||0,nextAge=age+Math.min(dt,beam.life);
+ const nextAge=age+Math.min(dt,beam.life);
  const baseY=player.y-2+(beam.offset||0);
  beam.x=player.x+27;beam.y=baseY;
  beam.life-=dt;beam.tick-=dt;
- if(age<carousel){
-  // Auch bei langen Frames wird zwischen den sichtbaren Strahlpositionen getroffen.
-  const end=Math.min(nextAge,carousel);
-  const steps=Math.max(1,Math.ceil((end-age)/carousel*48));
-  for(let i=0;i<=steps;i++){
-   const angle=shotAngle+(age+(end-age)*i/steps)/carousel*Math.PI*2;
-   if(traceBeam(beam,angle,laserCarouselRadius,true))return true;
-  }
-  if(nextAge<carousel)return false;
- }
  beam.seekOffset=beam.seekOffset||0;
  if(beam.seekRank){
   const target=enemies.find(e=>e.hp>0&&e.x>beam.x&&Math.abs(e.y-baseY)<300)||bossAimPoint(beam.x,baseY+beam.seekOffset);
   if(target)beam.seekOffset+=(target.y-baseY-beam.seekOffset)*Math.min(1,dt*cardValues.seekShot(beam.seekRank,true));
  }
- const snakeAge=(beam.pulse?nextAge:age)-carousel;
+ const snakeAge=beam.pulse?nextAge:age;
  beam.y=baseY+beam.seekOffset+Math.sin(snakeAge*8)*cardValues.snakeShot(beam.snakeRank||0,true);
  const dealsDamage=!!beam.hitTargets||beam.tick<=0;
  if(dealsDamage)beam.tick=beam.pulse?Infinity:.12;
@@ -2804,6 +2857,7 @@ function updateGameplay(dt){
  const clearing=power.beamTime>0?sweeperRay(true):null;
  power.launchCooldown=Math.max(0,power.launchCooldown-dt);
  updateAutoFire(dt);
+ updateOrbiters(dt);
  if(!secret&&!golden&&!goldenAppeared&&t>=420&&!boss&&t<nextBoss){goldenAppeared=true;golden={x:1000,y:clamp(player.y,110,460),w:64,h:38,age:0,kind:1};notice=4;noticeText='GOLDENE SUCUK! SCHIESS SIE AB!'}
  if(!secret&&!golden&&!secondAppeared&&t>=840&&!boss&&t<nextBoss){secondAppeared=true;golden={x:1000,y:clamp(player.y,110,460),w:44,h:50,age:0,kind:2};notice=4;noticeText='GRUBENLAMPE! SCHIESS SIE AB!'}
  if(golden){golden.x-=80*dt;golden.age+=dt;golden.y=clamp(golden.y+Math.sin(golden.age*3)*20*dt,90,490);if(golden.x< -60)golden=null}
@@ -2833,16 +2887,15 @@ function updateGameplay(dt){
   const previousX=b.x,previousY=b.y;
   recordProjectileTrail(b,dt,.025,7);
   b.age=(b.age||0)+dt;b.life=(b.life===undefined?4:b.life)-dt;
-  const carousel=b.carousel,orbiting=b.orbit&&b.age<b.orbit;
-  const leavingCarousel=carousel&&!orbiting&&b.age-dt<b.orbit;
-  if(orbiting||leavingCarousel){
-   const angle=Math.min(b.age,b.orbit)*(b.orbitSpeed||7)+b.phase;
+  const orbiting=b.orbit&&b.age<b.orbit;
+  if(orbiting){
+   const angle=b.age*7+b.phase;
    b.x=player.x+22+Math.cos(angle)*b.orbitRadius;
-   b.y=player.y+Math.sin(angle)*b.orbitRadius+(b.orbitOffset||0);
+   b.y=player.y+Math.sin(angle)*b.orbitRadius;
   }
   if(b.boomerangAt&&!b.returning&&!orbiting&&(b.age>=b.boomerangAt||b.returnContact))turnBoomerang(b);
   if(b.target)steerProjectile(b,rocketAim(b.target),12*homingStrength,dt);
-  if((b.homing||b.seekRank)&&!(carousel&&(orbiting||leavingCarousel))){
+  if(b.homing||b.seekRank){
    const direction=b.boomerangAt&&b.returning?-1:1;
    let target=null,nearest=Infinity;
    for(const e of enemies){
@@ -2857,11 +2910,10 @@ function updateGameplay(dt){
   if(b.returnAt&&b.age>b.returnAt&&!b.returning){b.returning=true;b.vx=-Math.abs(b.vx);b.hit.clear()}
   if(b.wave){b.w+=dt*38;b.h+=dt*(b.charged?105:65)}
   if(b.vortex){b.pulse-=dt;if(b.pulse<=0){b.pulse=.3;b.hit.clear()}for(const e of enemies)if(e.hp>0&&Math.hypot(e.x-b.x,e.y-b.y)<b.vortex){e.x+=(b.x-e.x)*dt*.3;e.y+=(b.y-e.y)*dt*.7}}
-  if(!orbiting){const flightDt=leavingCarousel?b.age-b.orbit:dt;b.x+=b.vx*flightDt;b.y+=b.vy*flightDt}
+  if(!orbiting){b.x+=b.vx*dt;b.y+=b.vy*dt}
   if(b.phoenix){b.baseY+=b.vy*dt;b.y=b.baseY+Math.sin(b.age*9+b.phase)*22}
-  if(b.snakeRank&&!(carousel&&orbiting)){
-   const age=carousel?b.age-b.orbit:b.age,phase=age*8;
-   const start=carousel?Math.max(0,age-dt):age-dt;
+  if(b.snakeRank){
+   const phase=b.age*8,start=b.age-dt;
    b.y+=(b.phoenix||orbiting?Math.sin(phase):Math.sin(phase)-Math.sin(start*8))*cardValues.snakeShot(b.snakeRank);
   }
   if(!orbiting&&(b.y<80||b.y>510)&&b.bounces>0){b.y=clamp(b.y,80,510);b.vy=-b.vy;b.bounces--;if(b.crust)bounceCrustFragment(b)}
@@ -2911,7 +2963,7 @@ function updateGameplay(dt){
    moveBlockerPatrol(e,dt);
   }else{
    const entering=e.blocker&&e.x>W-e.w/2;
-   e.x+=(e.rear?1:-1)*enemySpeed(e)*(entering?3:1)*dt;
+   e.x+=(e.rear?1:-1)*enemySpeed(e,dt)*(entering?3:1)*dt;
    if(e.rear){
     if(!e.formation&&e.x<player.x)e.y+=clamp(player.y-e.y,-38*dt,38*dt);
    }else if(e.blocker){
@@ -2941,7 +2993,8 @@ function updateGameplay(dt){
  launchOrbitRocket();
  if(clearing)hitSweeperTarget(sweeperRay(true),dt);
  for(const beam of beams)if(updateBeam(beam,dt))break;
- for(const b of bullets){
+ const orbiters=activeOrbiters();
+ for(const b of orbiters.length?bullets.concat(orbiters):bullets){
   if(b.dead||b.returnContact&&!b.returning)continue;
   const rocket=b.style==='rocket';
   if(rocket&&b.life<=0)continue;
@@ -3137,6 +3190,9 @@ function render(){
   PfertArt.trail(c,b);
   if(b.style==='rocket')drawRocket(b.x,b.y,Math.atan2(b.vy,b.vx),true);
   else PfertArt.bullet(c,b);
+ }
+ if(player)for(const orb of activeOrbiters()){
+  PfertArt.trail(c,orb);PfertArt.bullet(c,orb);
  }
  for(const beam of beams)PfertArt.beam(c,beam,now);
  for(const arc of arcs)PfertArt.arc(c,arc);for(const f of flashes)PfertArt.flash(c,f);

@@ -125,12 +125,28 @@ if(process.argv.length===2||process.argv.includes('--arcade')){
  assert.equal(game.state().hearts,5);
  assert.equal(protectedFlight.clean,false,'Unverwundbarkeit vergibt keine Bonuspunkte für die Gefahrenzone');
 
- for(const [time,bosses,halfGap,waves] of [[196,0,66,2],[452,1,60,3],[610,2,54,3],[830,2,48,3]]){
+ for(const [time,bosses,axis,halfGap,waves] of [[196,0,'x',115,2],[452,1,'y',60,3],[610,2,'y',60,3],[830,2,'x',113,3]]){
   const fire=approachArcade(time,bosses);
+  assert.equal(fire.axis,axis);
   assert.equal(fire.halfGap,halfGap);
   assert.equal(fire.remaining,waves);
   assert.equal(game.route(),null);
  }
+ const vertical=approachArcade(196);
+ game.allowContact();
+ game.state().player.x=vertical.center-vertical.halfGap+game.state().player.w/2-1;
+ advance(1.5);
+ assert.equal(game.state().hearts,4,'Senkrechte Gefahren prüfen die Breite des Pferts');
+ assert.equal(game.state().player.lastDamage.angle,Math.PI);
+ const cross=approachArcade(452,1);
+ game.state().player.y=cross.center;
+ advance(1.8);
+ assert.equal(cross.axis,'x');
+ assert.equal(cross.halfGap,110);
+ game.state().player.x=cross.center;
+ advance(1.8);
+ assert.equal(cross.axis,'y');
+ assert.equal(cross.halfGap,54);
  game.startBoss();
  assert.equal(game.state().arcadeFire,null,'Boss-Start beendet die Begegnung');
  setup(168.98);
@@ -147,6 +163,14 @@ if(process.argv.length===2||process.argv.includes('--arcade')){
  assert.equal(game.state().arcadeFire,null,'Ein Portalziel hat Vorrang');
  console.log('OK: Fünf Arkadenfeuer, Warnzeit, Pause, Treffergrenze, Schutz und Punkte sowie Ausschluss bei Boss, Portal, Ruhrpott und Sternenpost.');
  if(process.argv.includes('--arcade'))process.exit(0);
+}
+
+{
+ setup();
+ const charger=game.enemy(6,270);
+ Object.assign(charger,{x:880,age:1.05,speed:100,fire:Infinity});
+ advance(.75);
+ assert.ok(Math.abs(charger.x-(880-100*.75-180*.63))<1e-8,'Der vollständige Vorstoß legt exakt 40 % mehr Strecke zurück');
 }
 
 if(process.argv.includes('--telegraphs')){
@@ -325,12 +349,15 @@ if(process.argv.includes('--wind')){
 if(process.argv.includes('--caravan')){
  const ids=game.cartridges().map(c=>c.id);
  assert.equal(new Set(ids).size,10);
- for(const {id,reload} of game.cartridges()){
+ const original=[6.4,4.6,3.6,3.1,2.7,3.8,3.4,2.9,2.4,4.8];
+ for(const [index,{id,reload}] of game.cartridges().entries()){
+  assert.ok(Math.abs(reload*1.3-original[index])<1e-9,id+' feuert 30 Prozent häufiger');
   setup();game.chooseCartridge(id);
   game.fireCharge();game.fireCharge();
   const fired=()=>[...game.bullets(),...game.beams()].filter(b=>b.cartridge===id);
   assert.equal(fired().length,1,id+' wartet auf Nachladung');
   assert.equal(game.bullets().filter(b=>b.standardShot).length,2);
+  game.readyTime(reload-.001);game.fireCharge();assert.equal(fired().length,1);
   game.readyTime(reload);game.fireCharge();
   assert.equal(fired().length,2,id+' lädt nach');
   game.update(.05);game.render();

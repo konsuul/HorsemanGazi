@@ -351,29 +351,44 @@ for(const [special,radius] of [[0,120],[1,188]]){
 {
  reset();const {upgrades,player}=a.get();
  Object.assign(upgrades,{carousel:1,boomerang:1,bounceCrust:1,fanShot:1,snakeShot:1,seekShot:1});
- shoot();const [main,wing]=a.get().bullets;
- const direction=wing.vy;
- a.update(.1);
- assert.ok(Math.abs(Math.hypot(main.x-player.x-22,main.y-player.y)-114)<1e-9,'Kreisflug mit 114 Pixeln Radius');
- assert.ok(Math.abs(Math.hypot(wing.x-player.x-22,wing.y-player.y+3)-114)<1e-9,'Fächerschuss umkreist den versetzten Ursprung');
- assert.equal(wing.vy,direction);
- a.update(.16);
- assert.ok(main.x>player.x+136&&Math.abs(main.y-player.y)<3,'Ausflug auf der gespeicherten Bahn');
+ shoot();const [main]=a.get().bullets;
+ const orb=player.orbiters[0];
+ a.update(.05);
+ assert.ok(main.x>player.x+46&&main.vx>0,'Der Standardschuss fliegt sofort aus');
+ assert.ok(Math.abs(Math.hypot(orb.x-player.x,orb.y-player.y)-96)<1e-9);
+ assert.equal(main.boomerangAt,1);
  const outbound=main.damage;
  for(let i=0;i<10;i++)a.update(.05);
  assert.ok(!main.returning&&main.vx>0,'Nach einer halben Sekunde fliegt der Bumerang noch auswärts');
  for(let i=0;i<10;i++)a.update(.05);
  assert.ok(main.returning&&main.vx<0);
  assert.equal(main.damage,outbound*.55);
+ for(let i=0;i<80;i++)a.update(.05);
+ assert.equal(player.orbiters[0],orb,'Das Käsekarussell bleibt über die Projektil-Lebensdauer hinaus aktiv');
  player.weapon=1;player.effects[1]=18;
  a.get().bullets.length=0;shoot();shoot(1);
- assert.ok(a.get().bullets.every(b=>!b.carousel&&!b.boomerangAt&&!b.crust),'Wein-Dauerfeuer und Sonderangriffe behalten ihre Formen');
+ assert.ok(a.get().bullets.every(b=>!b.boomerangAt&&!b.crust),'Wein-Dauerfeuer und Sonderangriffe behalten ihre Formen');
  player.effects[1]=0;
  const projectiles=a.get().bullets;
  while(projectiles.length<360)projectiles.push(bullet(700,100));
  shoot();
  assert.equal(projectiles.length,360);
  assert.equal(projectiles.at(-1).damage,outbound,'Platz für Hauptschuss vor Fächerkopien');
+ assert.equal(player.orbiters[0],orb,'Der Projektilpool verdrängt das Karussell nicht');
+}
+{
+ reset();const {player}=a.get();
+ player.weapon=9;player.effects[9]=8;
+ shoot();
+ const [,left,right]=player.orbiters;
+ assert.ok(left&&right);
+ assert.ok(a.get().bullets.some(b=>b.style==='normal'&&b.vx>0&&!b.orbit));
+ for(let i=0;i<80;i++)a.update(.05);
+ assert.equal(player.orbiters[1],left);
+ assert.equal(player.orbiters[2],right);
+ assert.ok(Math.abs(Math.hypot(left.x-player.x,left.y-player.y)-46)<1e-9);
+ player.effects[9]=.01;a.update(.05);
+ assert.equal(player.orbiters.length,0,'Die Muskat-Monde enden mit dem Wein');
 }
 {
  reset();const {upgrades}=a.get();Object.assign(upgrades,{boomerang:1,bounceCrust:1,ricochet:2,seekShot:1,snakeShot:1,breakShot:1});

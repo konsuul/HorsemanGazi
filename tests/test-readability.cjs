@@ -53,13 +53,22 @@ delete context.drawImage;
   a.art.arcadeField(warning,fire,169.5,reducedMotion);
   a.art.arcadeRails(warning,fire,169.5);
   assert.ok(warning.calls.some(call=>call[1]==='#9fe4d4'));
-  assert.deepEqual(warning.calls.filter(call=>call[1]==='#553142').map(call=>call.slice(2)),
+  assert.deepEqual(warning.calls.filter(call=>call[1]==='#374153').map(call=>call.slice(2)),
    [[0,62,960,190],[0,396,960,144]]);
   a.art.arcadeField(active,{...fire,firing:true},170.5,reducedMotion);
   a.art.arcadeRails(active,{...fire,firing:true},170.5);
   assert.ok(active.calls.some(call=>call[1]==='#ffe3bb'));
   assert.deepEqual(active.calls.filter(call=>call[1]==='#a73a32').map(call=>call.slice(2)),
    [[0,62,960,190],[0,396,960,144]]);
+ assert.ok(warning.calls.some(call=>call[1]==='#8d8d8d'&&call[3]===62&&call[4]===960&&call[5]===478));
+ const vertical=makeContext(),transforms=[];
+ vertical.transform=(...matrix)=>transforms.push(matrix);
+ const column={...fire,axis:'x',center:340,halfGap:115};
+ a.art.arcadeField(vertical,column,169.5,reducedMotion);
+ a.art.arcadeRails(vertical,column,169.5);
+ assert.deepEqual(transforms,[[0,1,1,0,0,62],[0,1,1,0,0,62]]);
+ assert.deepEqual(vertical.calls.filter(call=>call[1]==='#374153').map(call=>call.slice(2)),
+  [[0,0,478,225],[0,455,478,505]]);
  }
 }
 // Each slot uses its own cached medallion and leaves its remaining lifetime visible.

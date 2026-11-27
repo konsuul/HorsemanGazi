@@ -15,7 +15,7 @@ Unter goldenen Kuppeln zieht etwas seine Kreise, das besser nie hätte fliegen l
 - Eine aktive Weinwaffe ermöglicht Sonderangriffe, die ihren Weinbalken verbrauchen. Der goldene Sonderwein füllt den Balken wieder auf. Ohne aktive Weinwaffe verleiht er dem Standardschuss zehn Sekunden lang zusätzliche Projektile nach oben und unten.
 - Fünf Herzen zum Rundenstart. Ausrüstung kann das Maximum erhöhen. Die Bewegung ist gegenüber der vorigen Version weitere 5 % schneller.
 - N schaltet die Musik ein oder aus. M schaltet die Soundeffekte separat.
-- Esc oder die Menü-Taste am Controller öffnet die Pause mit Ausrüstung, Musiklautstärke und bestätigbarem Rundenende. Freiwillig beendete Runden zeigen die Auswertung und zählen nicht für die Punktetafel.
+- Esc oder die Menü-Taste am Controller öffnet die Pause mit gesammelten Power-ups, Ausrüstung, Musiklautstärke und bestätigbarem Rundenende. Freiwillig beendete Runden zeigen die Auswertung und zählen nicht für die Punktetafel.
 - Q: Käserausch auslösen, sobald die Anzeige voll ist. Abschüsse, Schutzblocks und einmalig gewertete knappe Ausweichmanöver laden sie auf. Zwölf Sekunden Grunddauer mit mehr Schaden und zusätzliche Seitenangriffe; bei Aktivierung werden sichtbare reguläre Gegner besiegt; ihre Belohnungen und Orbs sowie vorhandene Gegenstände bleiben erhalten. Sichtbare feindliche Geschosse werden entfernt. Bosse bleiben.
 - Besiegte Gegner hinterlassen Leuchtkugeln mit Erfahrungspunkten. Bei jedem Stufenaufstieg pausiert das Spiel zur Kartenauswahl. Die erste Stufe benötigt 10 Punkte; der Bedarf steigt zunächst auf das aufgerundete 1,5-Fache, ab Stufe 10 um 12 % und höchstens auf 1500. Stärkere Gegner und Bosse geben mehr Punkte. Orbs driften mit dem Spielfeld nach links und fliegen erst in Magnetreichweite zum Pferd. Der Grundradius beträgt 78 Pixel, Korkenzieher erweitert ihn um 12 Pixel pro Rang; der Balken am unteren Spielfeldrand zeigt den Stufenfortschritt. Aufgesammelte Orbs geben vor Talent- und Ausrüstungsboni das 1,875-Fache ihres XP-Werts. Klicken, 1 / 2 / 3 oder mit Pfeiltasten oder A / D wählen und mit Enter bestätigen. Die Verbesserung gilt für die laufende Runde. Sind im späten Spiel nur noch zwei passende Karten verfügbar, zeigt die Auswahl beide.
 - Türkis gerahmte Flaschen mit Pluszeichen sind Powerups. Rot umrandete, hohle Projektile sind gefährlich. Getroffene Gegner blitzen weiß auf.
@@ -48,7 +48,7 @@ Die zuletzt aufgenommene Weinsorte bestimmt die Waffe für 18 Sekunden, verläng
 | Riesling | Prisma, zerfällt bei Treffer | Drei Prismen mit je fünf Splittern |
 | Merlot | Rückkehrendes Sägeblatt | Zwei große Sägeblätter |
 | Malbec | Kettenblitz über zwei Ziele | Kette über vier Ziele |
-| Muskat | Zwei kurz kreisende Monde | Drei größere Orbitgeschosse |
+| Muskat | Gerader Käseschuss und zwei Monde bis zum Weinende | Drei größere Orbitgeschosse |
 | Sherry | Ballistischer Sprengsatz | Drei Mörsergranaten |
 | Madeira | Wachsende Schallwelle | Große durchdringende Wellenfront |
 | Eiswein | Zwei bremsende Eissplitter | Fünffachfächer mit stärkerem Frost |
@@ -121,7 +121,7 @@ Das Game Over wählt einen spöttischen Roast und einen motivierenden Nachsatz. 
 
 Jeder besiegte Boss und jeder der zehn seltenen Sondergegner lässt ein Ausrüstungsitem fallen. Sondergegner würfeln 75 % gewöhnliche und 25 % seltene Beute. Bei Bossen sind es 20 % gewöhnliche, 65 % seltene und 15 % legendäre Beute. Im Spiel gibt es 50 Items. Das Symbol zeigt den Ausrüstungsplatz, der Rahmen die Seltenheit. Die Beute bleibt 20 Sekunden aktiver Spielzeit liegen und wird durch Berührung aufgenommen. Die Beute der Ruhrpott-Bosse erscheint nach der Rückkehr ins Hauptspiel.
 
-Das Pfert trägt je ein Item an Kopf, Hufen, Sattel, Geschirr und Talisman. Ein Fund belegt automatisch einen freien passenden Platz. Weitere Funde landen im Rucksack mit vier Reserveplätzen. Unter **Pause → Ausrüstung** kannst du die Werte ansehen und ein Reserveitem gegen das getragene Item tauschen. Ist der Rucksack voll, pausiert die Runde zur Auswahl. Du kannst das getragene Item oder einen Rucksackplatz ersetzen oder den Fund zurücklassen. Wähle per Klick oder mit Pfeiltasten, Stick oder Steuerkreuz und bestätige mit Enter oder A (PlayStation ×).
+Das Pfert trägt je ein Item an Kopf, Hufen, Sattel, Geschirr und Talisman. Ein Fund belegt automatisch einen freien passenden Platz. Weitere Funde landen im Rucksack mit acht Reserveplätzen. Unter **Pause → Ausrüstung** zeigt dir jede Karte den passenden Ausrüstungsplatz. Dort kannst du die Werte ansehen und ein Reserveitem gegen das getragene Item tauschen. Ist der Rucksack voll, pausiert die Runde zur Auswahl. Du kannst das getragene Item oder einen Rucksackplatz ersetzen oder den Fund zurücklassen. Wähle per Klick oder mit Pfeiltasten, Stick oder Steuerkreuz und bestätige mit Enter oder A (PlayStation ×).
 
 Getragene Items verstärken zum Beispiel Angriff, Flugtempo, Käserausch oder Weinwaffen. Ein erhöhtes Herzmaximum lässt sich durch Heilung auffüllen. Beim Tod gehen getragene Items, Rucksack und offene Beute verloren. Die gesammelten Talentpunkte werden wie gewohnt gespeichert.
 
@@ -137,7 +137,7 @@ Kampflicht reagiert lokal auf geladene Geschosse und Treffer. Die Bosskörper be
 
 ## Flugmanöver und Sternenpost
 
-- **Arkadenfeuer** — Ab 2:49 können Batterien in den Hauptgebieten zwei oder drei Feuerwellen auslösen. Pfeile weisen zwischen die gestrichelten Feuerzonen. Richte beim Wechsel der Warnung den Flug an der neuen Lücke aus. Wer jede Welle ohne Berührung passiert, erhält je nach Gebiet 350 oder 450 Punkte.
+- **Umgebungsgefahren** — Ab 2:49 können Arkadenfeuer, Fallgitter, Kreuzfeuer, Flutkammer und Palastgitter zwei oder drei Gefahrwellen auslösen. Das Spielfeld wird grau. Pfeile weisen zwischen die gestrichelten Gefahrenzonen. Wechsle rechtzeitig in die neue Spur, die auch senkrecht verlaufen kann. Eine berührungsfreie Passage bringt je nach Gebiet 350 oder 450 Punkte.
 
 - **Windschatten** — Innerhalb von 2,5 Sekunden drei verschiedene Feindgeschosse knapp passieren. Das bringt zusätzlich zu den Streifpunkten 125 Punkte und zieht bei jeder nachladenden Patrone bis zu 1,5 Sekunden ab. Ein Herzverlust unterbricht die Serie. Im HUD zeigen drei Rauten den Stand.
 - **Sternenpost** — Frühestens ab 1:40 erscheinen im Hauptspiel drei offene goldgrüne Siegel. Wer alle drei der Reihe nach durchfliegt, löst eine Explosion mit zehn XP-Orbs aus. Jeder Orb wird einzeln gewürfelt: 50 % blau (1 Basis-XP), 30 % grün (2), 15 % rot (6) und 5 % golden (20). Rote und goldene Orbs geben auch bei Gegner- und Boss-Drops doppelte XP. Nach dem Auseinanderfliegen bleiben sie 0,25 Sekunden gesperrt. Zusätzlich besteht eine Chance von 30 % auf ein Item. Die nächste Gelegenheit kommt frühestens 110 Sekunden später. Ein verpasstes Siegel beendet nur die Lieferung.
@@ -145,7 +145,7 @@ Kampflicht reagiert lokal auf geladene Geschosse und Treffer. Die Bosskörper be
 
 ## Die mechanische Karawane
 
-Die Karten AK–AT laden beim Spielen je nach Patrone alle 2,4 bis 6,4 Sekunden eine eigene Patrone. Der nächste automatische Angriff mit dem Basisskill löst eine bereite Patrone zusätzlich aus. Die Sonnenlanze durchschlägt ihre Spur sofort als Laserimpuls. Bei mehreren bereiten Karten wechselt die Reihenfolge. Während eines Waffenweins sammeln die Patronen weiter Ladezeit.
+Die Karten AK–AT laden beim Spielen je nach Patrone alle rund 1,85 bis 4,92 Sekunden eine eigene Patrone. Der nächste automatische Angriff mit dem Basisskill löst eine bereite Patrone zusätzlich aus. Die Sonnenlanze durchschlägt ihre Spur sofort als Laserimpuls. Bei mehreren bereiten Karten wechselt die Reihenfolge. Während eines Waffenweins sammeln die Patronen weiter Ladezeit.
 
 Ab 1:40 tauchen in den regulären Wellen drei Maschinen auf. Beim **Spurweber** kreuzen sich zwei Nadeln vor seinem Bug. Der **Kieltaucher** schießt eine an den Feldrändern abprallende Kugel. Die **Splitterbake** legt zwei zeitversetzt zum Abschuss aufplatzende Ladungen.
 

@@ -2,11 +2,18 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 const noop=()=>{};
 const ctx=()=>new Proxy({createLinearGradient:()=>({addColorStop:noop}),createRadialGradient:()=>({addColorStop:noop})},{get:(o,k)=>o[k]??noop,set:(o,k,v)=>(o[k]=v,true)});
+const makeTile=()=>{
+ const context=ctx();
+ const tile={width:0,height:0,labels:[],bands:[],getContext:()=>context};
+ context.fillText=value=>{if(tile.width===382)tile.labels.push(value)};
+ context.fillRect=(x,y,w,h)=>{if(tile.width===1460&&w===1460)tile.bands.push({y,h,color:context.fillStyle})};
+ return tile;
+};
 const events={},elements={};
 const makeElement=()=>({classList:{add:noop,remove:noop},innerHTML:'',addEventListener:noop});
 elements.game={getContext:ctx};elements.overlay=makeElement();elements.start=makeElement();
 let gamepad=null;
-const sandbox={navigator:{getGamepads:()=>gamepad?[gamepad]:[]},console,Math,Set,requestAnimationFrame:noop,document:{getElementById:id=>elements[id]||(elements[id]=makeElement()),createElement:()=>({width:0,height:0,getContext:ctx})},window:{addEventListener:(name,fn)=>events[name]=fn}};
+const sandbox={navigator:{getGamepads:()=>gamepad?[gamepad]:[]},console,Math,Set,requestAnimationFrame:noop,document:{getElementById:id=>elements[id]||(elements[id]=makeElement()),createElement:makeTile},window:{addEventListener:(name,fn)=>events[name]=fn}};
 vm.createContext(sandbox);vm.runInContext(fs.readFileSync(__dirname+'/../Pfert/art.js','utf8'),sandbox);
 const source=fs.readFileSync(__dirname+'/../Pfert/game.js','utf8').replace('})();',
  'globalThis.testApi={reset,update,render,renderTransition,pollGamepad,offerCards,enemy,enemyAttack,startBoss,partHit,activateRage,hurt,keys,chooseCard,cardDefs,fireCharge,get:()=>({selectedCard,lastRare,t,runTime,level,xp,xpNeeded,orbs,choices,upgrades,hearts,score,player,enemies,bullets,beams,shots,pickups,boss,nextBoss,bossCount,state,transition,levelIndex,secret,secretTime,golden,goldenAppeared,secondAppeared,secretType,particles,deaths,arcs,flashes,threat}),setXp:v=>xp=v,setTime:v=>t=v,setFirstSeen:v=>goldenAppeared=v,setRunTime:v=>runTime=v,setNextBoss:v=>nextBoss=v,setSecretTime:v=>secretTime=v,setSpawn:v=>spawn=v,setDrop:v=>drop=v};})();');
@@ -33,9 +40,10 @@ function finishTransition(){assert.equal(a.get().state,'transition');const befor
  assert.equal(shopPng[25],6,'Ruhrpott-Buden haben einen Alphakanal');
  sandbox.PfertAssets=success.assets;
  sandbox.previewContext=ctx();
- const shopDraws=[],landmarks=[];
+ const shopDraws=[],landmarks=[],plaques=[];
  sandbox.previewContext.drawImage=(image,...args)=>{
   if(image.width===382||image.width===302)landmarks.push([image.width,...args]);
+  if(image.width===382)plaques.push(image);
   if(image!==shops)return;
   const [sx,sy,sw,sh]=args;
   assert.ok(sx>=0&&sy>=0&&sw>0&&sh>0&&sx+sw<=atlasWidth&&sy+sh<=atlasHeight);
@@ -46,11 +54,13 @@ function finishTransition(){assert.equal(a.get().state,'transition');const befor
  assert.deepEqual(shopDraws.splice(0),[104,370,676]);
  vm.runInContext('PfertArt.background(previewContext,0,2,1)',sandbox);
  assert.deepEqual(shopDraws.splice(0),[58,298,604]);
- assert.deepEqual(landmarks.splice(0),[[382,720,250],[382,674,250],[302,948,401]]);
+ assert.deepEqual(landmarks.splice(0),[[382,720,228],[382,674,228],[302,948,401]]);
  sandbox.PfertAssets={get:id=>id==='ruhrShops'?shops:null};
  vm.runInContext('PfertArt.background(previewContext,0,0,1)',sandbox);
  assert.deepEqual(shopDraws.splice(0),[104,370,676],'Buden bleiben beim Panorama-Fallback sichtbar');
- assert.deepEqual(landmarks.splice(0),[[382,720,250]]);
+ assert.deepEqual(landmarks.splice(0),[[382,720,228]]);
+ assert.equal(new Set(plaques).size,2,'Bild und Fallback verwenden jeweils das neue Schild');
+ assert.ok(plaques.every(tile=>tile.labels.includes('MASCHINENHALLE')&&tile.labels.includes('Z W E C K E L')));
  sandbox.PfertAssets=success.assets;
  vm.runInContext('PfertArt.background(previewContext,0,0,2)',sandbox);
  assert.deepEqual(shopDraws,[],'Die Buden stehen im Außenlevel');
@@ -74,6 +84,7 @@ function finishTransition(){assert.equal(a.get().state,'transition');const befor
    assert.equal(left.x,-offset,'Gebäudereihe scrollt auch beim Panorama-Fallback');
    assert.equal(right.x,left.x+left.tile.width,'Straßenkacheln schließen bündig an');
    assert.equal(right.tile,left.tile);
+   if(y!==366)assert.ok(left.tile.bands.some(({y,h})=>y===136&&h===18),'Das Mittelband reicht bis zum Kachelrand');
    streetTiles.add(left.tile);
   }
   streets.length=0;

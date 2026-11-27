@@ -142,20 +142,19 @@ reset();a.setXp(a.get().xpNeeded);a.update(.01);events.keydown({code:'KeyD',repe
  const {player,upgrades,beams}=a.get();
  upgrades.carousel=1;
  const victim=(x,y)=>Object.assign(a.enemy(0,y),{x,y,speed:0,hp:100,max:100,fire:Infinity});
- const forward=victim(220,268),above=victim(162,181),behind=victim(81,218);
- const distant=victim(500,268),outside=victim(430,150);
+ const distant=victim(500,268),above=victim(135,174),outside=victim(430,150);
  a.collectFieldPowerup({i:'rockets'});a.collectFieldPowerup({i:'shield'});a.collectFieldPowerup({i:'sweeper'});
  a.fireCharge();player.autoCooldown=Infinity;
  player.fieldPower.beamTime=0;
+ player.fieldPower.rockets=0;
  a.update(.05);
- assert.ok(forward.hp<100);assert.equal(distant.hp,100,'Drehung bleibt zunächst in Pfert-Nähe');
- assert.ok(beams[0].angle>0&&beams[0].length===114);
+ assert.ok(distant.hp<100,'Die Lichtlanze reicht sofort über das Spielfeld');
+ assert.equal(beams[0].angle,0);
  assert.equal(beams[0].color,'rgb(230,255,249)');a.render();
- const after=forward.hp;
- for(let i=0;i<5;i++)a.update(.05);
- assert.ok(above.hp<100&&behind.hp<100,'Kreisel trifft oberhalb und hinter dem Pfert');
- assert.ok(distant.hp<100,'Nach der Drehung trifft der lange Strahl nach vorn');
- assert.equal(forward.hp,after,'Drehung und Vorwärtsstrahl treffen dasselbe Ziel nur einmal');
+ const after=distant.hp;
+ for(let i=0;i<12;i++)a.update(.05);
+ assert.ok(above.hp<100,'Der umlaufende Käse trifft über dem Pfert');
+ assert.equal(distant.hp,after,'Die Lichtlanze trifft beim selben Impuls nur einmal');
  assert.equal(outside.hp,100);
 }
 {
@@ -165,11 +164,11 @@ reset();a.setXp(a.get().xpNeeded);a.update(.01);events.keydown({code:'KeyD',repe
  player.attacks=3;a.fireCharge();player.autoCooldown=Infinity;
  assert.equal(beams.length,6);
  assert.deepEqual(Array.from(beams.slice(1,4),b=>b.shotAngle),[0,-.09,.09]);
- assert.ok(beams.slice(1).every(b=>b.carousel&&b.opacity===.8&&b.damage<beams[0].damage&&b.hitTargets!==beams[0].hitTargets));
+ assert.ok(beams.slice(1).every(b=>b.opacity===.8&&b.damage<beams[0].damage&&b.splitTargets!==beams[0].splitTargets));
  const flank=Object.assign(a.enemy(0,307),{x:600,y:307,w:20,h:20,speed:0,hp:100,max:100,fire:Infinity});
- for(let i=0;i<6;i++)a.update(.05);
+ a.update(.05);
  assert.ok(flank.hp<100,'Ein Fächerstrahl trifft außerhalb der Spur des Hauptstrahls');
- assert.ok(a.get().beams[2].angle<0&&a.get().beams[3].angle>0,'Fächer behält seine Winkel nach der Drehung');
+ assert.ok(beams[2].angle<0&&beams[3].angle>0,'Fächer behält seine eigenen Winkel');
 }
 {
  const fillRanks=()=>{const {upgrades}=a.get();for(const card of a.cardDefs)upgrades[card.id]=Number.isFinite(card.max)?card.max:0;return upgrades};

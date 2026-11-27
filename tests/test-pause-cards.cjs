@@ -17,7 +17,7 @@ random.random=()=>0;
 const sandbox={Math:random,requestAnimationFrame:noop,navigator:{getGamepads:()=>[pad]},window:{Audio:class {constructor(){dom.music=this} addEventListener(){} play(){this.paused=false;return Promise.resolve()} pause(){this.paused=true}},localStorage:{getItem:key=>storage.get(key)??null,setItem:(key,value)=>storage.set(key,value)},addEventListener:(name,fn)=>{keys[name]??=fn}},document:{
  hidden:false,
  addEventListener:(name,fn)=>page[name]=fn,
- getElementById:id=>dom[id]||(dom[id]={id,classList:{add:noop,remove:noop,toggle:noop},addEventListener(name,fn){this['on'+name]=fn},focus(){focused=this;this.onfocus?.()},getContext:context}),
+ getElementById:id=>dom[id]||(dom[id]={id,classList:{add:noop,remove:noop,toggle:noop},addEventListener(name,fn){this['on'+name]=fn},setAttribute(name,value){this[name]=value},focus(){focused=this;this.onfocus?.()},getContext:context}),
  createElement:()=>({getContext:context})
 }};
 vm.createContext(sandbox);
@@ -62,6 +62,22 @@ pressPad(15);
 assert.equal(dom.music.volume,.63);
 assert.equal(storage.get('pfert-music-volume'),'0.63');
 press('Enter');assert.equal(a.get().state,'paused');
+press('Escape');
+
+// The pause list starts collapsed and follows the keyboard's existing menu order.
+a.reset();a.get().upgrades.damage=2;a.get().upgrades.pierce=1;
+press('Escape');
+assert.match(dom.overlay.innerHTML,/aria-expanded="false" aria-controls="pause-build-list">Power-ups <span>2/);
+assert.match(dom.overlay.innerHTML,/Käsereifung<\/span><small>Rang 2/);
+assert.match(dom.overlay.innerHTML,/Harte Kruste<\/span><small>Rang 1/);
+dom['pause-build-list']={hidden:true};
+for(let i=0;i<3;i++)press('ArrowRight');
+assert.equal(focused.id,'pause-build-toggle');
+press('Enter');
+assert.equal(dom['pause-build-list'].hidden,false);
+assert.equal(focused['aria-expanded'],'true');
+press('Enter');
+assert.equal(dom['pause-build-list'].hidden,true);
 press('Escape');
 
 // Visibility and focus pauses freeze gameplay and require an explicit resume.

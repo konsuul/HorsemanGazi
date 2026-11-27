@@ -75,7 +75,7 @@ function bottle(i){
 }
 function fill(){
  for(const id of [1,11,21,31,41])a.equipGear(item(id));
- scene().gearBag.push(...[2,12,24,42].map(item));
+ scene().gearBag.push(...[2,12,24,42,13,25,32,43].map(item));
 }
 function near(actual,expected){
  assert.ok(Math.abs(actual-expected)<1e-8,`Erwartet ${expected}, erhalten ${actual}`);
@@ -178,6 +178,8 @@ place(item(2));a.update(.01);
 assert.equal(scene().gearBag[0],item(2));
 key('Escape');key('ArrowRight');key('Enter');
 assert.equal(scene().pauseView,'inventory');
+assert.ok(element('overlay').innerHTML.includes('Rucksack · 1 / 8'));
+assert.ok(element('overlay').innerHTML.includes('class="gear-slot">Kopf</span>'));
 assert.ok(element('gear-worn-head').classList.contains('gear-target'));
 key('Escape');element('gear-open').click();
 assert.equal(scene().pauseView,'inventory','Mausklick öffnet den Rucksack ohne den Auswahlindex zu ändern');
@@ -203,13 +205,13 @@ reset();fill();
 place(item(3));a.update(.01);
 assert.equal(scene().pauseView,'loot');
 assert.match(element('overlay').innerHTML,/Korkhelm[\s\S]*Sesamkappe/);
-element('gear-replace-2').click();
-assert.equal(scene().gearBag[2],item(3));
+element('gear-replace-7').click();
+assert.equal(scene().gearBag[7],item(3));
 assert.equal(scene().wornGear.head,item(1));
 place(item(4));a.update(.01);
 key('ArrowLeft');key('Enter');
 assert.equal(scene().wornGear.head,item(4));
-assert.equal(scene().gearBag.length,4);
+assert.equal(scene().gearBag.length,8);
 place(item(5));a.update(.01);
 pressPad(0);
 assert.equal(scene().wornGear.head,item(4),'Vorauswahl lässt den Fund zurück');

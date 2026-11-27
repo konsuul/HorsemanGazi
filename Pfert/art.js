@@ -458,12 +458,40 @@ const PfertArt = (() => {
    if(neon){box(x+8,ruhrCurb-21,2,19,color);box(x+11,ruhrCurb-21,1,18,'#89586f');}
   }
  }
+ function ruhrMiddleBand(ctx,night){
+  const roof=night?'#353642':'#54505a',brick=night?'#513c40':'#695456';
+  const coping=night?'#765954':'#9e8172',seam=night?'#3b313a':'#4e414b';
+  const fog=ctx.createLinearGradient(0,60,0,ruhrCurb);
+  fog.addColorStop(0,roof+'00');fog.addColorStop(.48,roof+'55');fog.addColorStop(1,roof);
+  ctx.fillStyle=fog;ctx.fillRect(0,60,ruhrStreetPeriod,ruhrCurb-60);
+  // Regular spacing divides the tile width, including its seam.
+  for(let x=0;x<ruhrStreetPeriod;x+=146){
+   const y=88+(x/146%2)*9;
+   box(x,y+18,146,ruhrCurb-y-18,roof);
+   poly([[x+8,y+22],[x+27,y+4],[x+99,y+4],[x+125,y+22]],roof);
+   box(x+28,y+4,70,1,coping+'77');
+   box(x+14,y+24,107,31,brick);box(x+14,y+24,107,1,coping+'99');
+   for(let bay=0;bay<6;bay++){
+    const col=x+19+bay*16;
+    box(col,y+30,10,14,seam);box(col+1,y+31,8,10,night?'#77747a':'#88848a');
+    box(col+5,y+30,1,12,seam);box(col+1,y+36,8,1,seam);
+   }
+  }
+  box(0,ruhrCurb-18,ruhrStreetPeriod,18,seam);
+  box(0,ruhrCurb-18,ruhrStreetPeriod,2,coping);
+  for(let row=0;row<3;row++){
+   const y=ruhrCurb-14+row*5;
+   box(0,y,ruhrStreetPeriod,3,brick);
+   for(let x=row%2*5;x<ruhrStreetPeriod;x+=10)box(x,y,1,3,seam);
+  }
+ }
  function ruhrStreetTile(night,near){
   const row=(night?2:0)+Number(near),key='ruhr-street-'+row;
   if(cache.has(key))return cache.get(key);
   const tile=document.createElement('canvas');
   tile.width=ruhrStreetPeriod;tile.height=ruhrCurb+20;
   const previous=g;g=tile.getContext('2d');
+  if(!near)ruhrMiddleBand(g,night);
   ruhrStreetRows[row].forEach(([x,width,height,sign],i)=>ruhrHouse(x,width,height,sign,i,night,near));
   const curb=night?'#7b625d':'#7b7073',road=night?'#34313b':'#41414a';
   box(0,ruhrCurb,tile.width,20,road);box(0,ruhrCurb,tile.width,1,curb);
@@ -540,6 +568,24 @@ const PfertArt = (() => {
   box(x+5,471,113,17,'#7a4444');label(g,'CURRYWURST',x+61,483,10,'#f1d4a0','center');
   for(let i=0;i<3;i++)window(x+12+i*34,493,cream,true);
  }
+ function zweckelPlaque(ctx){
+  poly([[67,183],[77,175],[305,175],[315,183],[315,202],[306,209],[76,209],[67,202]],'#282530',2);
+  poly([[70,184],[79,177],[303,177],[312,184],[312,201],[304,207],[78,207],[70,201]],'#b78959');
+  poly([[74,185],[81,180],[301,180],[308,185],[308,199],[302,204],[80,204],[74,199]],'#353039');
+  box(83,180,216,1,'#f5dca4');box(83,203,216,1,'#795239');
+  for(const x of [85,297]){
+   poly([[x-4,192],[x,188],[x+4,192],[x,196]],'#a87953');
+   box(x-1,190,2,2,'#f8dfa6');
+  }
+  ctx.save();ctx.textAlign='center';ctx.textBaseline='alphabetic';
+  ctx.font='bold 13px Georgia, serif';
+  for(const [y,color] of [[195,'#171b28'],[194,'#f5deb4']]){
+   ctx.fillStyle=color;ctx.fillText('MASCHINENHALLE',191,y);
+  }
+  ctx.font='bold 7px monospace';ctx.fillStyle='#cbad7d';ctx.fillText('Z W E C K E L',191,202);
+  ctx.restore();
+  box(105,198,42,1,'#886549');box(235,198,42,1,'#886549');
+ }
  function ruhrLandmark(kind){
   const atlas=typeof PfertAssets!=='undefined'&&PfertAssets.get('ruhrLandmarks');
   const rect=atlas&&PfertAssets.landmarkFrames?.[kind];
@@ -547,17 +593,16 @@ const PfertArt = (() => {
   if(cache.has(key))return cache.get(key);
   const tile=document.createElement('canvas'),previous=g;
   const hall=kind==='zweckel';
-  tile.width=hall?382:302;tile.height=hall?189:134;
+  tile.width=hall?382:302;tile.height=hall?211:134;
   g=tile.getContext('2d');
   const ctx=g;
   if(rect){
    const width=tile.width-10,height=Math.round(width*rect.h/rect.w);
    ctx.imageSmoothingEnabled=false;
-   ctx.drawImage(atlas,rect.x,rect.y,rect.w,rect.h,5,tile.height-height-3,width,height);
+   ctx.drawImage(atlas,rect.x,rect.y,rect.w,rect.h,5,(hall?189:tile.height)-height-3,width,height);
    crispCharacter(ctx,tile.width,tile.height,'fabric');
    if(hall){
-    box(85,176,212,12,'#322d32');
-    label(ctx,'MASCHINENHALLE ZWECKEL',191,185,9,'#ffdfb0','center');
+    zweckelPlaque(ctx);
    }else{
     const signY=tile.height-height-3+Math.round(height*.41);
     oval(39,signY-1,7,4,['#e3ab96','#b05754','#723d48','#4b3640']);
@@ -596,8 +641,7 @@ const PfertArt = (() => {
    box(169,116,45,55,'#253540');
    box(176,122,31,49,'#594949');
    for(let i=0;i<4;i++)box(163-i*4,165+i*5,57+i*8,5,i%2?'#686063':'#9b8480');
-   box(85,176,212,12,'#322d32');
-   label(ctx,'MASCHINENHALLE ZWECKEL',191,185,9,'#ffdfb0','center');
+   zweckelPlaque(ctx);
   }else{
    poly([[3,47],[37,20],[259,20],[296,47]],'#4c4654');
    box(12,47,279,79,'#65564f');
@@ -1408,19 +1452,29 @@ const PfertArt = (() => {
  function arcadeProgress(fire,time){
   return Math.max(0,Math.min(1,(time-fire.phaseStart)/(fire.phaseEnd-fire.phaseStart)));
  }
+ function arcadeSpace(ctx,fire){
+  if(fire.axis==='x'){
+   ctx.transform(0,1,1,0,0,62);
+   return [478,0,960];
+  }
+  return [960,62,540];
+ }
  function arcadeField(ctx,fire,time,reducedMotion){
   const upper=fire.center-fire.halfGap,lower=fire.center+fire.halfGap;
   const progress=arcadeProgress(fire,time);
-  const intensity=fire.firing?(reducedMotion?.22:.19+.12*(1-progress)):.10+.05*progress;
+  const intensity=fire.firing?(reducedMotion ? .26 : .22+.12*(1-progress)):.16+.05*progress;
   ctx.save();
-  for(const [top,bottom] of [[62,upper],[lower,540]]){
+  ctx.globalCompositeOperation='saturation';ctx.fillStyle='#8d8d8d';ctx.fillRect(0,62,960,478);
+  ctx.globalCompositeOperation='source-over';ctx.fillStyle='#20263638';ctx.fillRect(0,62,960,478);
+  const [span,start,end]=arcadeSpace(ctx,fire);
+  for(const [top,bottom] of [[start,upper],[lower,end]]){
    ctx.globalAlpha=intensity;
-   ctx.fillStyle=fire.firing?'#a73a32':'#553142';
-   ctx.fillRect(0,top,960,bottom-top);
-   ctx.save();ctx.beginPath();ctx.rect(0,top,960,bottom-top);ctx.clip();
-   ctx.strokeStyle=fire.firing?'#ffcb80':'#e4a076';ctx.lineWidth=2;ctx.beginPath();
+   ctx.fillStyle=fire.firing?'#a73a32':'#374153';
+   ctx.fillRect(0,top,span,bottom-top);
+   ctx.save();ctx.beginPath();ctx.rect(0,top,span,bottom-top);ctx.clip();
+   ctx.strokeStyle=fire.firing?'#ffcb80':'#adb4c5';ctx.lineWidth=2;ctx.beginPath();
    const shift=fire.firing&&!reducedMotion?Math.round(progress*90):0;
-   for(let x=-120;x<1050;x+=48){
+   for(let x=-120;x<span+132;x+=48){
     ctx.moveTo(x-shift,top);ctx.lineTo(x-shift-86,bottom);
    }
    ctx.stroke();ctx.restore();
@@ -1430,14 +1484,16 @@ const PfertArt = (() => {
  function arcadeRails(ctx,fire,time){
   const progress=arcadeProgress(fire,time);
   ctx.save();
+  const [span]=arcadeSpace(ctx,fire);
+  const ends=[28,span-28];
   for(const direction of [-1,1]){
    const y=fire.center+direction*fire.halfGap;
-   ctx.fillStyle='#222133';ctx.fillRect(0,y-2,960,5);
+   ctx.fillStyle='#222133';ctx.fillRect(0,y-2,span,5);
    ctx.fillStyle=fire.firing?'#ffe3bb':'#9fe4d4';
-   ctx.fillRect(0,y+direction,960,1);
-   ctx.fillStyle=fire.firing?'#eb8158':'#d5a075';
-   for(let x=4;x<960;x+=24)ctx.fillRect(x,y+direction*5,14,2);
-   for(const x of [28,932]){
+   ctx.fillRect(0,y+direction,span,1);
+   ctx.fillStyle=fire.firing?'#eb8158':'#c4b398';
+   for(let x=4;x<span;x+=24)ctx.fillRect(x,y+direction*5,Math.min(14,span-x),2);
+   for(const x of ends){
     ctx.save();ctx.translate(x,y);ctx.scale(1,-direction);
     ctx.fillStyle='#242331';ctx.beginPath();
     ctx.moveTo(-14,-11);ctx.lineTo(14,-11);ctx.lineTo(14,0);ctx.lineTo(0,13);ctx.lineTo(-14,0);ctx.closePath();ctx.fill();
@@ -1448,7 +1504,7 @@ const PfertArt = (() => {
    }
   }
   if(!fire.firing){
-   for(const x of [28,932]){
+   for(const x of ends){
     const y=fire.center-6;
     ctx.fillStyle='#202131';ctx.fillRect(x-13,y-4,26,8);
     ctx.fillStyle='#7c5753';ctx.fillRect(x-11,y-2,22,4);
@@ -2046,7 +2102,7 @@ const PfertArt = (() => {
    if(s.arcadeFire){
     const fire=s.arcadeFire;
     const color=fire.firing?'#ffc8a2':'#b9e9d8';
-    label(ctx,'ARKADENFEUER',355,20,11,color);
+    label(ctx,fire.name,355,20,11,color);
     label(ctx,(fire.firing?'FEUER':'WARNUNG')+' · '+fire.remaining,604,20,10,color,'right');
    }else if(s.player.arcadeReward?.until>s.runTime){
     label(ctx,'SAUBER +'+s.player.arcadeReward.points,355,20,11,'#b9e9d8');

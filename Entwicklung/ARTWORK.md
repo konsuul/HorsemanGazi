@@ -70,7 +70,7 @@ Beide transparenten Streifen stammen aus einem gemeinsamen Pixelgrafik-Entwurf. 
 
 ## Arkadenfeuer, Bossbruchstücke und Beute
 
-Arkadenfeuer verwendet gestrichelte Ränder, schraffierte Gefahrenzonen und Pfeile zur freien Flugspur. Die sichtbaren Kanten liegen an derselben y-Grenze wie der Trefferbereich. Die aktive Welle wechselt auf Kupferrot mit hellen Kanten. Das Flimmern unterbleibt bei reduzierter Bewegung. Über den Warnungen bleiben Pfert und Feindgeschosse sichtbar.
+Arkadenfeuer verwendet gestrichelte Ränder, schraffierte Gefahrenzonen und Pfeile zur freien Flugspur. Bei Umgebungsgefahren entsättigt der Renderer den ganzen Hintergrund unter dem HUD. Die Markierung kann horizontal oder vertikal verlaufen und liegt an der Grenze des Trefferbereichs. Die aktive Welle wechselt auf Kupferrot mit hellen Kanten. Bei reduzierter Bewegung steht die Schraffur still. Über den Warnungen bleiben Pfert und Feindgeschosse sichtbar.
 
 Beim Zerstören eines Bosssegments springen kantige Bruchstücke vom Zielpunkt aus. Ausrüstung erscheint in gefassten Medaillons mit fünf silhouettenstarken Motiven für Kopf, Hufe, Sattel, Geschirr und Talisman. Der untere Balken zeigt die verbleibende Abholzeit. Die Medaillons werden pro Motiv und Seltenheitsfarbe zwischengespeichert. Feld-Power-ups zeigen eine Suchrakete, einen gewölbten Schild oder eine Räumstrahl-Optik in achteckigen Metallfassungen. Ihre Abzeichen werden einmal pro Typ gezeichnet und als Sprite wiederverwendet.
 
@@ -81,6 +81,8 @@ Im ersten Ruhrpott-Level zieht [ruhrpott-buden-v1.png](../Pfert/assets/ruhrpott-
 Vor der Trinkhalle steht ein Pixel-Cameo von VfL-Jesus Thomas Dragunski mit blonder Mähne, Sonnenbrille und VfL-Schal. [Bochum Tourismus](https://www.bochum-tourismus.de/was-ist-los/news/gute-wuensche-fuer-bochum.html)
 
 Die **Maschinenhalle Zweckel** greift Rundbogenfenster, Lisenen und die repräsentative Fassadengliederung auf. Die Spielgrafik vereinfacht Ziegelmuster und Gebäudetiefe für den scrollenden Hintergrund. [Stadt Gladbeck](https://www.gladbeck.de/inhalt/maschinenhalle) · [RuhrTriennale-Archiv](https://archiv.ruhrtriennale.de/www.2005.ruhrtriennale.de/de/spielstaetten/zeche-zweckel-gladbeck/index.html)
+
+Die Maschinenhalle trägt ein zweizeiliges Messingschild mit eingelassenem dunklem Grund und hervorgehobener Serifenschrift. Das Schild sitzt auch in der Ersatzgrafik an der Fassade. In beiden Ruhrpott-Szenen verbindet ein kachelbares Mittelband aus Hallendächern, Fenstern und Ziegelmauer die Architektur über die volle Bildschirmbreite. Es scrollt mit 23 bzw. 21 px/s zwischen Industriepanorama und Vordergrund.
 
 Bei **Getränke Jörg Kopatz** orientieren sich Schriftzug, Rotkontrast und Kronkorkenmotiv an der Anzeige des Betriebs. Die Fassade bleibt eine stilisierte Ladenfront. Für einen Abgleich von Dach, Eingängen und Fenstern fehlt eine verifizierte Fassadenaufnahme. [Anzeige in der Festschrift des Schützenvereins Gladbeck-Mitte](https://sv-gladbeck.de/wordpress/wp-content/uploads/Schuetzenverein-Gladbeck-Mitte-Festschrift-2022-7.pdf)
 
