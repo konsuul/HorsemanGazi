@@ -511,7 +511,7 @@ reset();for(const id of ['multiShot','fanShot','snakeShot','seekShot','breakShot
 equip(6);let e=placeTarget(400,268,1);shoot();a.get().bullets[0].x=400;a.update(.01);assert.ok(a.get().bullets.length>=3,'Prisma zerfällt in Splitter');
 equip(7);shoot();for(let i=0;i<13;i++)a.update(.05);assert.ok(a.get().bullets[0].vx<0,'Säge kehrt um');
 equip(8);let first=placeTarget(400,268,1),second=placeTarget(490,290,100);shoot();a.get().bullets[0].x=400;a.update(.01);assert.ok(second.hp<100,'Kettenblitz springt');assert.ok(a.get().arcs.length>0);
-equip(9);shoot();a.update(.1);let orb=a.get().bullets[0],pl=a.get().player;assert.ok(Math.abs(Math.hypot(orb.x-pl.x-22,orb.y-pl.y)-35)<1,'Orbit bleibt am Pfert');
+equip(9);shoot(1);a.update(.1);let pl=a.get().player;assert.equal(a.get().bullets.length,3);assert.ok(a.get().bullets.every(orb=>Math.abs(Math.hypot(orb.x-pl.x-22,orb.y-pl.y)-56)<1),'Muskat-Sonderangriff lädt drei Monde am Pfert');
 equip(10);shoot();let shell=a.get().bullets[0],vy=shell.vy;a.update(.1);assert.ok(shell.vy>vy,'Mörser folgt Ballistik');
 equip(11);shoot();let wave=a.get().bullets[0],height=wave.h;a.update(.1);assert.ok(wave.h>height&&wave.pierce,'Echo-Welle wächst');
 equip(12);e=placeTarget(400,268);shoot();a.get().bullets[0].x=400;a.update(.01);assert.ok(e.slow>=.28,'Frost bremst');
