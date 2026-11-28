@@ -67,6 +67,10 @@ Stage 1 bleibt als manueller Pfert-Run spielbar. Stage 2 baut darauf auf: **Eier
 
 - [ ] **Basar und Großwesir lesbarer inszenieren.** Einen 20-Sekunden-Vergleich mit Einflug, sichtbarem Ausholen und Armbruch bauen. Die Flugbahn bleibt kontrastarm, der gebrochene Arm am Boss sichtbar. Beim Laser einen schmalen hellen Kern mit transparenter Außenkante erproben. Ziel: Gefahr und Trefferfortschritt bleiben ohne Ton und bei halber Fenstergröße erkennbar. Einflug, Ausholen und Armbruch in drei stummen Chromium-Szenen bei halber Größe geprüft.
 
+#### 3.3
+
+- [ ] **Ansturm in eine Käsekiste locken.** Vorschlag: In einer einzelnen Basarwelle hängt eine optional erreichbare Käsekiste. Pfert stellt sich vor die Kiste, lässt einen Gegner seine Position erfassen und weicht seitlich aus. Nur dessen festgelegter Ansturm bricht die Kiste auf und gibt einen Schutzschild für den laufenden Run frei. Die Kiste selbst verursacht keinen Kontaktschaden; Kistenrisse und Ansturmzeichen erklären die Gelegenheit ohne Spielfeldtext. Einfache Ausweichroute offenlassen, keine Zusatztaste und keine weiteren Spawns. Erster Umfang: eine Kiste, ein bestehendes Flugprofil, ein bereits vorhandener Schild-Drop. [Ansturm in Pfert](ARCHITEKTUR.md) · [Arcade-Inspiration: Gegner als Vorteil in Darius Gaiden](https://store.steampowered.com/app/1638330/Darius_Cozmic_Collection_Arcade/).
+
 ### P2 · Übung und Wiederspielwert
 
 #### 4.1
