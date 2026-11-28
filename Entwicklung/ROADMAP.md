@@ -71,6 +71,14 @@ Stage 1 bleibt als manueller Pfert-Run spielbar. Stage 2 baut darauf auf: **Eier
 
 - [ ] **Ansturm in eine Käsekiste locken.** Vorschlag: In einer einzelnen Basarwelle hängt eine optional erreichbare Käsekiste. Pfert stellt sich vor die Kiste, lässt einen Gegner seine Position erfassen und weicht seitlich aus. Nur dessen festgelegter Ansturm bricht die Kiste auf und gibt einen Schutzschild für den laufenden Run frei. Die Kiste selbst verursacht keinen Kontaktschaden; Kistenrisse und Ansturmzeichen erklären die Gelegenheit ohne Spielfeldtext. Einfache Ausweichroute offenlassen, keine Zusatztaste und keine weiteren Spawns. Erster Umfang: eine Kiste, ein bestehendes Flugprofil, ein bereits vorhandener Schild-Drop. [Ansturm in Pfert](ARCHITEKTUR.md) · [Arcade-Inspiration: Gegner als Vorteil in Darius Gaiden](https://store.steampowered.com/app/1638330/Darius_Cozmic_Collection_Arcade/).
 
+#### 3.4
+
+- [ ] **Basar-Eskorte mit EP statt nur Punkten belohnen.** Vorschlag: Wer erst beide Bannerverbindungen löst und danach den Anführer besiegt, erhält zusätzlich drei normale EP-Orbs direkt am Anführer. Die sichtbare Reihenfolge zahlt sich so in derselben Runde aus. Der Anführer bleibt jederzeit treffbar, und ein gleichzeitiger Käserausch-Abschuss zählt nicht als vollständige Reihenfolge. Kleine Änderung am bestehenden Eskortenbonus; keine Eingabe oder Spielfeldbeschriftung ergänzen. [Aktueller Bonus](${base}/Pfert/game.js#L1381-L1397).
+
+#### 3.5
+
+- [ ] **Pfert bei reduzierter Bewegung sichtbar halten.** Vorschlag: Ist die Systemeinstellung für reduzierte Bewegung aktiv, die Figur nach einem Treffer nicht mehr ausblenden. Stattdessen zeigt eine ruhige Kontur an, wie lange der Schutz aktiv ist. Trefferpfeil, Kollisionsregeln und normale Animation bleiben unverändert. Kleine Darstellungsänderung ohne zusätzliche Eingabe oder Spielfeldtext. [Aktueller Blinkeffekt](${base}/Pfert/art.js#L1230-L1257).
+
 ### P2 · Übung und Wiederspielwert
 
 #### 4.1
